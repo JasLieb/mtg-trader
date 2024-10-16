@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { WantlistComponent } from './wantlist.component';
 import { WantlistService } from '../../services/wantlist/wantlist.service';
 import { Card } from '../../models/card';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('WantlistComponent', () => {
   let component: WantlistComponent;
@@ -15,7 +16,7 @@ describe('WantlistComponent', () => {
     ]);
     await TestBed.configureTestingModule({
       providers: [{ provide: WantlistService, useValue: wantlistSpy }],
-      imports: [WantlistComponent],
+      imports: [HttpClientTestingModule, WantlistComponent],
     }).compileComponents();
 
     wantlistService = TestBed.inject(
