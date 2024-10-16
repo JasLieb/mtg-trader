@@ -1,0 +1,7 @@
+<p>wantlist works!</p>
+
+<app-card-searcher></app-card-searcher>
+
+@if (wantlist?.cards) {
+<app-card-list [cards]="wantlist!.cards"></app-card-list>
+}

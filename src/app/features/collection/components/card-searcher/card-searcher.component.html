@@ -1,0 +1,17 @@
+<div>
+  <input
+    #cardSearch
+    type="text"
+    [formControl]="searchControl"
+    placeholder="Add card to wantlist"
+    />
+  <button textContent="add"></button>
+</div>
+
+@if (results()) {
+  <ul>
+    @for (result of results(); track result.id) {
+      <li>{{result.name}}</li>
+    }
+  </ul>
+}
