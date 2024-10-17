@@ -12,7 +12,7 @@ describe('WantlistComponent', () => {
 
   beforeEach(async () => {
     const wantlistSpy = jasmine.createSpyObj('WantlistService', [
-      'getWantlist',
+      'updateWantlist'
     ]);
     await TestBed.configureTestingModule({
       providers: [{ provide: WantlistService, useValue: wantlistSpy }],
@@ -28,33 +28,29 @@ describe('WantlistComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should get wantlist data', () => {
-    expect(wantlistService.getWantlist.calls.count()).toEqual(1);
-  });
-
   it('should not have card list if no card', () => {
-    const wantlistData = {
+    component.wantlist = {
       id: 'id',
       name: 'firstWantlist',
       cards: [],
     };
-    wantlistService.getWantlist.and.returnValue(wantlistData);
+
     fixture.detectChanges();
+
     const cardList = fixture.nativeElement.querySelector('app-card-list');
     expect(cardList).toBeNull();
   });
 
   it('should have card list if any card', () => {
-    const wantlistData = {
+    component.wantlist = {
       id: 'id',
       name: 'firstWantlist',
       cards: [{ id: 'a', name: 'toto' } as Card],
     };
-    wantlistService.getWantlist.and.returnValue(wantlistData);
     component.ngOnInit();
     fixture.detectChanges();
 
@@ -65,5 +61,19 @@ describe('WantlistComponent', () => {
   it('should have card searcher', () => {
     const searcher = fixture.nativeElement.querySelector('app-card-searcher');
     expect(searcher).toBeTruthy();
+  });
+
+  it('should add card to wantlist when searched card is found', () => {
+    component.wantlist = {
+      id: 'id',
+      name: 'firstWantlist',
+      cards: [{ id: 'a', name: 'toto' } as Card],
+    };
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    component.onAddCardToWantlist({id: 'toto', name: 'toto'} as Card);
+
+    expect(wantlistService.updateWantlist.calls.count()).toBe(1);
   });
 });

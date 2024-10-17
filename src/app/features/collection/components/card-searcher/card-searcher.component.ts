@@ -25,7 +25,7 @@ export class CardSearcherComponent implements OnInit {
   searchControl: FormControl;
 
   @Output()
-  foundCardEmitter = new EventEmitter<Card>();
+  onFoundCard = new EventEmitter<Card>();
 
   constructor(private cardService: CardService) {
     this.searchControl = new FormControl('');
@@ -52,7 +52,7 @@ export class CardSearcherComponent implements OnInit {
 
   onAddCard() {
     if (this.selectedCard) {
-      this.foundCardEmitter.emit(this.selectedCard);
+      this.onFoundCard.emit(this.selectedCard);
     }
   }
 }

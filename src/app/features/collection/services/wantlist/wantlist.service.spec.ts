@@ -21,17 +21,21 @@ describe('WantlistService', () => {
     service = TestBed.inject(WantlistService);
   });
 
-  it('should be created', () => {
+  it('should be created', (done) => {
     expect(service).toBeTruthy();
+    service.wantlists$.subscribe((wls) => {
+      expect(wls.length).toBe(0);
+      done();
+    });
+    expect(window.localStorage.getItem).toHaveBeenCalledTimes(1);
   });
 
-  it('should return undefined when unknown wantlist id', () => {
-    const wantlist = service.getWantlist('id');
-    expect(wantlist).toBeUndefined();
-  });
-
-  it('should update storage when update wantlist', () => {
-    service.updateWantlist({id:'updated', name: 'wl', cards: []});
-    expect(service.getWantlist('updated')).toBeTruthy();
+  it('should update storage when update wantlist', (done) => {
+    service.updateWantlist({ id: 'updated', name: 'wl', cards: [] });
+    expect(window.localStorage.setItem).toHaveBeenCalledTimes(1);
+    service.wantlists$.subscribe((wls) => {
+      expect(wls.length).toBe(1);
+      done();
+    });
   });
 });

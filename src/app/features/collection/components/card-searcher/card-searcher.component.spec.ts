@@ -27,7 +27,7 @@ describe('CardSearcherComponent', () => {
 
     fixture = TestBed.createComponent(CardSearcherComponent);
     component = fixture.componentInstance;
-    spyOn(component.foundCardEmitter, 'emit');
+    spyOn(component.onFoundCard, 'emit');
     fixture.detectChanges();
   });
 
@@ -92,6 +92,6 @@ describe('CardSearcherComponent', () => {
     fixture.nativeElement.querySelector('button').click();
     fixture.detectChanges();
 
-    expect(component.foundCardEmitter.emit).toHaveBeenCalledWith({ id: 't', name: 'toto' } as Card);
+    expect(component.onFoundCard.emit).toHaveBeenCalledWith({ id: 't', name: 'toto' } as Card);
   });
 });

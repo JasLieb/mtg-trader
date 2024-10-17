@@ -1,7 +1,7 @@
 <p>wantlist works!</p>
 
-<app-card-searcher></app-card-searcher>
+<app-card-searcher (onFoundCard)="onAddCardToWantlist($event)"></app-card-searcher>
 
-@if (wantlist?.cards) {
+@if (wantlist !== undefined && wantlist.cards.length > 0) {
 <app-card-list [cards]="wantlist!.cards"></app-card-list>
 }

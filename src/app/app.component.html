@@ -1,5 +1,6 @@
-<div>{{title}}</div>
-
-<app-wantlist></app-wantlist>
+<div>{{ title }}</div>
+@for (wantlist of wantlists(); track wantlist.id) {
+<app-wantlist [wantlist]="wantlist"></app-wantlist>
+}
 
 <router-outlet />
