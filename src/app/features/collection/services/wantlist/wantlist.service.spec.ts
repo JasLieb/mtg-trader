@@ -43,4 +43,14 @@ describe('WantlistService', () => {
       done();
     });
   });
+
+  it('should update storage when wantlist is created', (done) => {
+    service.create('Killing in the name');
+    expect(window.localStorage.setItem).toHaveBeenCalledTimes(1);
+    service.wantlists$.subscribe((wls) => {
+      expect(wls.length).toBe(1);
+      expect(wls[0].name).toBe('Killing in the name');
+      done();
+    });
+  });
 });

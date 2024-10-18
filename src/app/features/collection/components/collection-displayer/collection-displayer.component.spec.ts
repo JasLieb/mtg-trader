@@ -53,24 +53,13 @@ describe('CollectionDisplayerComponent', () => {
     expect(component.areWantlistsDisplayed()).toBeFalse();
   });
 
-  it('should have action buttons', () => {
-    const buttons = fixture.nativeElement.querySelector('.collection-actions');
-    expect(buttons).toBeTruthy();
-  });
-
   it(`should have displayed wantlist`, () => {
-    wantlistService.wantlists$ = of([{id: 't', name: 'toto', cards: []}] as Wantlist[])
-    fixture = TestBed.createComponent(CollectionDisplayerComponent);
-    fixture.detectChanges();
-    const wantlist = fixture.nativeElement.querySelector('app-wantlist');
+    const wantlist = fixture.nativeElement.querySelector('app-wantlists-manager');
     expect(wantlist).toBeTruthy();
   });
 
   it(`should have displayed doubles`, () => {
-    wantlistService.doubles$ = of({id: 't', name: 'toto', cards: []} as Wantlist)
-    fixture = TestBed.createComponent(CollectionDisplayerComponent);
     fixture.nativeElement.querySelectorAll('.collection-tab')[1].click();
-
     fixture.detectChanges();
 
     const doubles = fixture.nativeElement.querySelector('app-wantlist');

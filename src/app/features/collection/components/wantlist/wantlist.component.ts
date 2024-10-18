@@ -23,7 +23,7 @@ export class WantlistComponent {
       const updatedCards = [...this.wantlist().cards, card];
       this.updateWantlist({
         id: this.wantlist().id,
-        name: this.wantlist.name,
+        name: this.wantlist().name,
         cards: updatedCards,
       } as Wantlist);
     }
@@ -33,7 +33,7 @@ export class WantlistComponent {
     if (this.wantlist != undefined) {
       this.updateWantlist({
         id: this.wantlist().id,
-        name: this.wantlist.name,
+        name: this.wantlist().name,
         cards: this.wantlist().cards.filter(c => c.id !== card.id),
       } as Wantlist);
     }

@@ -1,0 +1,8 @@
+<div class="wantlists-manager-actions">
+  <input type="text" [formControl]="wantlistNameControl" placeholder="My new wantlist" />
+  <button (click)="addWantlist()">Create</button>
+</div>
+
+@for (wantlist of wantlists(); track wantlist.id) {
+  <app-wantlist [wantlist]="wantlist"></app-wantlist>
+}

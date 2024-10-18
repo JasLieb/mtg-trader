@@ -7,7 +7,9 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class WantlistService {
   private readonly wantlistsKey = 'wantlists';
-  private wantlistsBehavior = new BehaviorSubject<Wantlist[]>(this.getWantlists());
+  private wantlistsBehavior = new BehaviorSubject<Wantlist[]>(
+    this.getWantlists()
+  );
   wantlists$ = this.wantlistsBehavior.asObservable();
 
   private readonly doublesKey = 'doubles';
@@ -19,13 +21,20 @@ export class WantlistService {
   private doublesBehavior = new BehaviorSubject<Wantlist>(this.getDoubles());
   doubles$ = this.doublesBehavior.asObservable();
 
-  // constructor() {
-  //   this.wantlistsBehavior.next(this.getWantlists());
-  //   this.doublesBehavior.next();
-  // }
+  create(wantlistName: string) {
+    const wantlists = this.getWantlists();
+    this.updateWantlists([
+      ...wantlists,
+      {
+        id: Date.now().toString(),
+        name: wantlistName,
+        cards: [],
+      } as Wantlist,
+    ]);
+  }
 
   updateWantlist(wantlist: Wantlist) {
-    if(this.isDoubleWantlist(wantlist)) {
+    if (this.isDoubleWantlist(wantlist)) {
       this.updateDoubles(wantlist);
       return;
     }
@@ -56,7 +65,9 @@ export class WantlistService {
     const parsedDoubles = JSON.parse(
       window.localStorage.getItem(this.doublesKey) ?? '{}'
     ) as Wantlist;
-    return 'cards' in parsedDoubles ? parsedDoubles : this.defaultDoubleWantlist;
+    return 'cards' in parsedDoubles
+      ? parsedDoubles
+      : this.defaultDoubleWantlist;
   }
 
   private updateDoubles(wantlist: Wantlist) {

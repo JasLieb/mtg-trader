@@ -3,12 +3,8 @@
   <div class="collection-tab" (click)="showDoubles()">Doubles</div>
 </div>
 
-<div class="collection-actions"></div>
-
 @if (areWantlistsDisplayed()) {
-  @for (wantlist of wantlists(); track wantlist.id) {
-    <app-wantlist [wantlist]="wantlist"></app-wantlist>
-  }
+  <app-wantlists-manager></app-wantlists-manager>
 }
 @else {
   <app-wantlist [wantlist]="doubles()"></app-wantlist>
