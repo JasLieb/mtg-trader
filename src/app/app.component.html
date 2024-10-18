@@ -1,5 +1,10 @@
 <div>{{ title }}</div>
 
-<app-collection-displayer></app-collection-displayer>
+@if (isConnected()) {
+  <app-collection-displayer></app-collection-displayer>
+}
+@else {
+  <app-login></app-login>
+}
 
 <router-outlet />
