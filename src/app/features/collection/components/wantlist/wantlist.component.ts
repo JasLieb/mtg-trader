@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, computed, input, Input, OnInit } from '@angular/core';
 import { CardListComponent } from '../card-list/card-list.component';
 import { WantlistService } from '../../services/wantlist/wantlist.service';
 import { Wantlist } from '../../models/wantlist';
@@ -12,24 +12,34 @@ import { Card } from '../../models/card';
   templateUrl: './wantlist.component.html',
   styleUrl: './wantlist.component.scss',
 })
-export class WantlistComponent implements OnInit {
-  @Input()
-  wantlist: Wantlist | undefined = undefined;
+export class WantlistComponent {
+  wantlist = input({} as Wantlist);
+  name = computed(() => this.wantlist().name);
 
   constructor(private wantlistService: WantlistService) {}
 
-  ngOnInit(): void {
-    // this.wantlist = this.wantlistService.getWantlist('test');
-  }
-
-  onAddCardToWantlist(card: Card) {
+  addCardToWantlist(card: Card) {
     if (this.wantlist != undefined) {
-      const updatedCards = [...this.wantlist.cards, card];
-      this.wantlistService.updateWantlist({
-        id: this.wantlist.id,
+      const updatedCards = [...this.wantlist().cards, card];
+      this.updateWantlist({
+        id: this.wantlist().id,
         name: this.wantlist.name,
         cards: updatedCards,
       } as Wantlist);
     }
+  }
+
+  deleteCard(card: Card) {
+    if (this.wantlist != undefined) {
+      this.updateWantlist({
+        id: this.wantlist().id,
+        name: this.wantlist.name,
+        cards: this.wantlist().cards.filter(c => c.id !== card.id),
+      } as Wantlist);
+    }
+  }
+
+  private updateWantlist(wantlist: Wantlist) {
+    this.wantlistService.updateWantlist(wantlist);
   }
 }

@@ -9,12 +9,15 @@ describe('CardListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CardListComponent]
-    })
-    .compileComponents();
+      imports: [CardListComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CardListComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('cards', [
+      { id: 'toto', name: 'toto' } as Card,
+    ]);
+    spyOn(component.onDeletedCard, 'emit');
     fixture.detectChanges();
   });
 
@@ -23,9 +26,20 @@ describe('CardListComponent', () => {
   });
 
   it('should have displayed cards', () => {
-    component.cards = [{id: 'toto', name: 'toto'} as Card];
-    fixture.detectChanges();
-    const firstCard = fixture.nativeElement.querySelector('li');
+    const firstCard = fixture.nativeElement.querySelector('.card-name');
     expect(firstCard.textContent).toBe('toto');
+  });
+
+  it('should have delete card button', () => {
+    const deleteButton = fixture.nativeElement.querySelector('button');
+    expect(deleteButton.textContent).toBe('Delete');
+  });
+
+  it('should emit delete card when delete button is clicked', () => {
+    fixture.nativeElement.querySelector('button').click();
+    expect(component.onDeletedCard.emit).toHaveBeenCalledWith({
+      id: 'toto',
+      name: 'toto',
+    } as Card);
   });
 });

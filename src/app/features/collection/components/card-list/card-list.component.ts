@@ -1,4 +1,4 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, EventEmitter, input, Input, Output, signal } from '@angular/core';
 import { Card } from '../../models/card';
 
 @Component({
@@ -6,9 +6,15 @@ import { Card } from '../../models/card';
   standalone: true,
   imports: [],
   templateUrl: './card-list.component.html',
-  styleUrl: './card-list.component.scss'
+  styleUrl: './card-list.component.scss',
 })
 export class CardListComponent {
-  @Input()
-  cards : Card[] = [];
+  cards = input<Card[]>([]);
+
+  @Output()
+  onDeletedCard = new EventEmitter<Card>();
+
+  deleteCard(card: Card) {
+    this.onDeletedCard.emit(card);
+  }
 }

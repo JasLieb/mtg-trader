@@ -1,7 +1,10 @@
-<p>wantlist works!</p>
+<p>{{ wantlist().name }}</p>
 
-<app-card-searcher (onFoundCard)="onAddCardToWantlist($event)"></app-card-searcher>
+<app-card-searcher
+  (onFoundCard)="addCardToWantlist($event)"
+></app-card-searcher>
 
-@if (wantlist !== undefined && wantlist.cards.length > 0) {
-<app-card-list [cards]="wantlist!.cards"></app-card-list>
-}
+<app-card-list
+  [cards]="wantlist().cards"
+  (onDeletedCard)="deleteCard($event)"
+></app-card-list>

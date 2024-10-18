@@ -23,11 +23,16 @@ describe('WantlistService', () => {
 
   it('should be created', (done) => {
     expect(service).toBeTruthy();
+    expect(window.localStorage.getItem).toHaveBeenCalledTimes(2);
+    expect(window.localStorage.getItem).toHaveBeenCalledWith('wantlists');
+    expect(window.localStorage.getItem).toHaveBeenCalledWith('doubles');
     service.wantlists$.subscribe((wls) => {
       expect(wls.length).toBe(0);
+    });
+    service.doubles$.subscribe((double) => {
+      expect(double.cards.length).toBe(0);
       done();
     });
-    expect(window.localStorage.getItem).toHaveBeenCalledTimes(1);
   });
 
   it('should update storage when update wantlist', (done) => {

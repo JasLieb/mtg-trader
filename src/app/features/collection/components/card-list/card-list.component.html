@@ -1,6 +1,8 @@
-<p>card-list works!</p>
 <ul>
-  @for (card of cards; track card.id) {
-  <li>{{ card.name }}</li>
+  @for (card of cards(); track card.id) {
+  <li>
+    <div class="card-name">{{ card.name }}</div>
+    <button (click)="deleteCard(card)">Delete</button>
+  </li>
   }
 </ul>

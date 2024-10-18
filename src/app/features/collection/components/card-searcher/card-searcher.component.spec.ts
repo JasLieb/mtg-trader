@@ -54,6 +54,7 @@ describe('CardSearcherComponent', () => {
     tick(500);
 
     expect(cardService.search.calls.count()).toEqual(1);
+    expect(cardService.search).toHaveBeenCalledWith('toto');
   }));
 
   it('should not display found card when no search results', () => {
@@ -90,7 +91,6 @@ describe('CardSearcherComponent', () => {
     fixture.nativeElement.querySelector('li').click();
 
     fixture.nativeElement.querySelector('button').click();
-    fixture.detectChanges();
 
     expect(component.onFoundCard.emit).toHaveBeenCalledWith({ id: 't', name: 'toto' } as Card);
   });

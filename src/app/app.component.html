@@ -1,6 +1,5 @@
 <div>{{ title }}</div>
-@for (wantlist of wantlists(); track wantlist.id) {
-<app-wantlist [wantlist]="wantlist"></app-wantlist>
-}
+
+<app-collection-displayer></app-collection-displayer>
 
 <router-outlet />

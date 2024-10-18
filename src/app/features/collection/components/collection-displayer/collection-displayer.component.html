@@ -1,0 +1,15 @@
+<div class="collection-tabs">
+  <div class="collection-tab" (click)="showWantlists()">Wantlists</div>
+  <div class="collection-tab" (click)="showDoubles()">Doubles</div>
+</div>
+
+<div class="collection-actions"></div>
+
+@if (areWantlistsDisplayed()) {
+  @for (wantlist of wantlists(); track wantlist.id) {
+    <app-wantlist [wantlist]="wantlist"></app-wantlist>
+  }
+}
+@else {
+  <app-wantlist [wantlist]="doubles()"></app-wantlist>
+}

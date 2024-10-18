@@ -12,7 +12,7 @@ describe('WantlistComponent', () => {
 
   beforeEach(async () => {
     const wantlistSpy = jasmine.createSpyObj('WantlistService', [
-      'updateWantlist'
+      'updateWantlist',
     ]);
     await TestBed.configureTestingModule({
       providers: [{ provide: WantlistService, useValue: wantlistSpy }],
@@ -30,30 +30,6 @@ describe('WantlistComponent', () => {
 
   it('should be created', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should not have card list if no card', () => {
-    component.wantlist = {
-      id: 'id',
-      name: 'firstWantlist',
-      cards: [],
-    };
-
-    fixture.detectChanges();
-
-    const cardList = fixture.nativeElement.querySelector('app-card-list');
-    expect(cardList).toBeNull();
-  });
-
-  it('should have card list if any card', () => {
-    component.wantlist = {
-      id: 'id',
-      name: 'firstWantlist',
-      cards: [{ id: 'a', name: 'toto' } as Card],
-    };
-    component.ngOnInit();
-    fixture.detectChanges();
-
     const cardList = fixture.nativeElement.querySelector('app-card-list');
     expect(cardList).toBeTruthy();
   });
@@ -64,16 +40,32 @@ describe('WantlistComponent', () => {
   });
 
   it('should add card to wantlist when searched card is found', () => {
-    component.wantlist = {
+    fixture.componentRef.setInput('wantlist', {
       id: 'id',
       name: 'firstWantlist',
-      cards: [{ id: 'a', name: 'toto' } as Card],
-    };
-    component.ngOnInit();
+      cards: [],
+    });
     fixture.detectChanges();
 
-    component.onAddCardToWantlist({id: 'toto', name: 'toto'} as Card);
+    component.addCardToWantlist({ id: 'toto', name: 'toto' } as Card);
 
     expect(wantlistService.updateWantlist.calls.count()).toBe(1);
+    expect(wantlistService.updateWantlist).toHaveBeenCalledWith(
+      jasmine.objectContaining({ cards: [{ id: 'toto', name: 'toto' }] })
+    );
+  });
+
+  it('should delete card when onDeleteCard emited', () => {
+    fixture.componentRef.setInput('wantlist', {
+      id: 'id',
+      name: 'firstWantlist',
+      cards: [{ id: 'toto', name: 'toto' } as Card],
+    });
+
+    component.deleteCard({ id: 'toto', name: 'toto' } as Card);
+    expect(wantlistService.updateWantlist.calls.count()).toBe(1);
+    expect(wantlistService.updateWantlist).toHaveBeenCalledWith(
+      jasmine.objectContaining({ cards: [] })
+    );
   });
 });
