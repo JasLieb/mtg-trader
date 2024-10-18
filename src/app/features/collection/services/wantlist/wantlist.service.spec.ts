@@ -53,4 +53,16 @@ describe('WantlistService', () => {
       done();
     });
   });
+
+  it('should update storage when wantlist is deleted', (done) => {
+    service.updateWantlist({ id: 'toDelete', name: 'wl', cards: [] });
+
+    service.delete('toDelete');
+
+    expect(window.localStorage.setItem).toHaveBeenCalledTimes(2);
+    service.wantlists$.subscribe((wls) => {
+      expect(wls.length).toBe(0);
+      done();
+    });
+  });
 });

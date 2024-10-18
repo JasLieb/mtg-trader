@@ -46,6 +46,13 @@ export class WantlistService {
     ]);
   }
 
+  delete(wantlistId: string) {
+    const wantlists = this.getWantlists();
+    this.updateWantlists([
+      ...wantlists.filter((wl) => wl.id !== wantlistId)
+    ]);
+  }
+
   private getWantlists() {
     return JSON.parse(
       window.localStorage.getItem(this.wantlistsKey) ?? '[]'

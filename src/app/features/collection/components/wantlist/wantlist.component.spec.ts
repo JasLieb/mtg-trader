@@ -12,7 +12,7 @@ describe('WantlistComponent', () => {
 
   beforeEach(async () => {
     const wantlistSpy = jasmine.createSpyObj('WantlistService', [
-      'updateWantlist',
+      'updateWantlist', 'delete'
     ]);
     await TestBed.configureTestingModule({
       providers: [{ provide: WantlistService, useValue: wantlistSpy }],
@@ -67,5 +67,19 @@ describe('WantlistComponent', () => {
     expect(wantlistService.updateWantlist).toHaveBeenCalledWith(
       jasmine.objectContaining({ cards: [] })
     );
+  });
+
+  it('should allow wantlist deletion when delete button is clicked', () => {
+    fixture.componentRef.setInput('wantlist', {
+      id: 'id',
+      name: 'firstWantlist',
+      cards: [{ id: 'toto', name: 'toto' } as Card],
+    });
+
+    const deletionButton = fixture.nativeElement.querySelector('button');
+    deletionButton.click();
+
+    expect(wantlistService.delete.calls.count()).toBe(1);
+    expect(wantlistService.delete).toHaveBeenCalledWith('id');
   });
 });

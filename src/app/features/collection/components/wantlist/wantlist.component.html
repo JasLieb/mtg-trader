@@ -1,5 +1,9 @@
 <p>{{ wantlist().name }}</p>
 
+<div class="wantlist-actions">
+  <button (click)="deleteWantlist()">Delete wantlist</button>
+</div>
+
 <app-card-searcher
   (onFoundCard)="addCardToWantlist($event)"
 ></app-card-searcher>

@@ -18,8 +18,12 @@ export class WantlistComponent {
 
   constructor(private wantlistService: WantlistService) {}
 
+  deleteWantlist() {
+    this.wantlistService.delete(this.wantlist().id);
+  }
+
   addCardToWantlist(card: Card) {
-    if (this.wantlist != undefined) {
+    if (this.wantlist() != undefined) {
       const updatedCards = [...this.wantlist().cards, card];
       this.updateWantlist({
         id: this.wantlist().id,
