@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 
 describe('AppComponent', () => {
   let authService: jasmine.SpyObj<AuthService>;
+  let toto: jasmine.SpyObj<AuthService>;
 
   beforeEach(async () => {
     const authSpy = jasmine.createSpyObj('AuthService', ['login']);
