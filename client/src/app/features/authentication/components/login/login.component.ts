@@ -27,7 +27,7 @@ export class LoginComponent {
   login() {
     const val = this.form.value;
 
-    if (val.email && val.password) {
+    if (val.email) {
       this.authService.login(val.email, val.password).subscribe(() => {
         console.log('User is logged in');
       });

@@ -1,0 +1,22 @@
+version: "3.3"
+services:
+  front:
+    image: mtg-trader-client
+    ports: 
+      - 80:80
+    restart: always
+    depends_on:
+      - api
+    networks:
+      - main
+
+  api:
+    image: mtg-trader-server
+    ports: 
+      -  8080:8080
+    restart: always
+    networks:
+      - main
+networks:
+  main:
+    driver: bridge

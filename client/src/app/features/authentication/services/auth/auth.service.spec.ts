@@ -23,7 +23,7 @@ describe('AuthService', () => {
   it('login should call httpClient', () => {
     service.login('anything@xyz.com', 'poep').subscribe();
 
-    httpTestingController.expectOne('/api/login', 'URL to api login endpoint');
+    httpTestingController.expectOne('api/auth', 'URL to api login endpoint');
     expect().nothing();
   });
 });

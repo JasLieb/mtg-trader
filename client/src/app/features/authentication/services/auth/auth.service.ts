@@ -12,7 +12,9 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(email: string, password: string) {
-    return this.http.post<any>('/api/login', { email, password });
+    console.log("hello");
+
+    return this.http.post<any>('api/auth', { email, password });
     // this is just the HTTP call,
     // we still need to handle the reception of the token
     // .shareReplay()
