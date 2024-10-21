@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterOutlet } from '@angular/router';
 import { WantlistComponent } from './features/collection/components/wantlist/wantlist.component';
 import { CollectionDisplayerComponent } from './features/collection/components/collection-displayer/collection-displayer.component';
-import { AuthService } from './features/authentication/services/auth/auth.service';
+import { AuthService } from './core/services/auth/auth.service';
 import { LoginComponent } from './features/authentication/components/login/login.component';
 
 @Component({

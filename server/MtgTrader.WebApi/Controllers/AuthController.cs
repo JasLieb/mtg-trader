@@ -22,12 +22,12 @@ public class AuthController(
     )
     {
         var user = _authHandler.Connect(authRequest);
-        if(user is null) 
+        if (user is null)
         {
             return Unauthorized("Incorect auth informations");
         }
         var token = _jwtTokenService.CreateToken(user);
-        return Ok(token);
+        return Ok(new { usrToken = token });
     }
 
     [HttpGet]

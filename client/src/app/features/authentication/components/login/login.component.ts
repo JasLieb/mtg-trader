@@ -5,7 +5,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../../services/auth/auth.service';
+import { AuthService } from '../../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -28,14 +28,7 @@ export class LoginComponent {
     const val = this.form.value;
 
     if (val.email) {
-      this.authService.login(val.email, val.password).subscribe({
-        next: () => {
-          console.log('User is logged in');
-        },
-        error: () => {
-          console.error('error during auth');
-        },
-      });
+      this.authService.login(val.email, val.password).subscribe();
     }
   }
 }

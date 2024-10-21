@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { AuthService } from './features/authentication/services/auth/auth.service';
+import { AuthService } from './core/services/auth/auth.service';
 import { of } from 'rxjs';
 
 describe('AppComponent', () => {
