@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,11 +12,18 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(email: string, password: string) {
-    console.log("hello");
+    return this.http.post(`api/auth`, { email, password }, {observe: 'response'})
+      .pipe(
+        map(
+          (response : any) => {
+            this.isConnectedBehavior.next(response.status == 200);
+          }
+        ),
+        catchError(err => this.handleError(err)),
+      );
+  }
 
-    return this.http.post<any>('api/auth', { email, password });
-    // this is just the HTTP call,
-    // we still need to handle the reception of the token
-    // .shareReplay()
+  handleError(error: HttpErrorResponse): Observable<any> {
+    return of(new Error('Something bad happened; please try again later.'));
   }
 }

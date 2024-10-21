@@ -26,4 +26,33 @@ describe('AuthService', () => {
     httpTestingController.expectOne('api/auth', 'URL to api login endpoint');
     expect().nothing();
   });
+
+  it('success login should update isConnected$', (done) => {
+    service.login('anything@xyz.com', 'poep').subscribe();
+    const req = httpTestingController.expectOne(
+      'api/auth',
+      'URL to api login endpoint'
+    );
+    req.flush({}, { status: 200, statusText: 'ok' });
+    service.isConnected$.subscribe((isConnected) => {
+      expect(isConnected).toBeTrue();
+      done();
+    });
+  });
+
+  it('fail login should update isConnected$', (done) => {
+    service.login('anything@xyz.com', 'poep').subscribe();
+    const req = httpTestingController.expectOne(
+      'api/auth',
+      'URL to api login endpoint'
+    );
+    req.flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    service.isConnected$.subscribe({
+      next: (isConnected) => {
+        expect(isConnected).toBeFalse();
+        done();
+      }
+    });
+  });
 });

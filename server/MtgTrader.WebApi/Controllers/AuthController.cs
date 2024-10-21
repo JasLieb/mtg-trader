@@ -3,7 +3,7 @@ using MtgTrader.Core.Auth.Domain;
 using MtgTrader.Core.Auth.Handlers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AuthController(AuthHandler authHandler) : ControllerBase
 {
     private readonly AuthHandler _authHandler = authHandler;

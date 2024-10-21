@@ -28,8 +28,13 @@ export class LoginComponent {
     const val = this.form.value;
 
     if (val.email) {
-      this.authService.login(val.email, val.password).subscribe(() => {
-        console.log('User is logged in');
+      this.authService.login(val.email, val.password).subscribe({
+        next: () => {
+          console.log('User is logged in');
+        },
+        error: () => {
+          console.error('error during auth');
+        },
       });
     }
   }

@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MtgTrader.Core\MtgTrader.Core.csproj" />
   </ItemGroup>
 
