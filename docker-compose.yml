@@ -1,7 +1,6 @@
-version: "3.3"
 services:
   front:
-    image: mtg-trader-client
+    build: ./client/
     ports: 
       - 80:80
     restart: always
@@ -11,9 +10,7 @@ services:
       - main
 
   api:
-    image: mtg-trader-server
-    ports: 
-      -  8080:8080
+    build: ./server/
     restart: always
     networks:
       - main
