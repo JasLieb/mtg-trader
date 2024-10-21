@@ -11,8 +11,10 @@ public class AuthHandler
 
     }
 
-    public bool Connect(AuthRequest authRequest)
+    public User? Connect(AuthRequest authRequest)
     {
-        return authRequest.Email == "root";
+        return authRequest.Email == "root"
+            ? new User("123", authRequest.Email, authRequest.Password)
+            : null;
     }
 }

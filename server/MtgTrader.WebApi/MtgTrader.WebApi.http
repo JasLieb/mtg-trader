@@ -3,5 +3,8 @@
 GET {{MtgTrader.WebApi_HostAddress}}/auth/
 Accept: application/json
 
+POST {{MtgTrader.WebApi_HostAddress}}/auth/
+Accept: application/json
+
 
 ###

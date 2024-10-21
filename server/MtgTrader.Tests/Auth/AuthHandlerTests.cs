@@ -10,8 +10,16 @@ public class AuthHandlerTests
     }
 
     [Fact]
-    public void Should_be_authenticated_when_valid_root()
+    public void Should_return_user_when_valid_auth()
     {
-        _handler.Connect(new("root", "")).Should().BeTrue();
+        _handler.Connect(new("root", "")).Should().Be(
+            new User("123", "root", "")
+        );
+    }
+    
+    [Fact]
+    public void Should_return_null_when_invalid_auth()
+    {
+        _handler.Connect(new("toto", "tata")).Should().BeNull();
     }
 }
