@@ -12,6 +12,19 @@ services:
   api:
     build: ./server/
     restart: always
+    environment:
+      - PG_HOST=db
+    networks:
+      - main
+
+  db:
+    image: postgres:16.4
+    volumes:
+      - ./database/database.sql:/docker-entrypoint-initdb.d/database.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=MtgTrader
     networks:
       - main
 networks:

@@ -1,9 +1,12 @@
 @MtgTrader.WebApi_HostAddress = http://localhost:5161
 
-GET {{MtgTrader.WebApi_HostAddress}}/auth/
+GET {{MtgTrader.WebApi_HostAddress}}/api/
 Accept: application/json
 
-POST {{MtgTrader.WebApi_HostAddress}}/auth/
+GET {{MtgTrader.WebApi_HostAddress}}/api/auth/
+Accept: application/json
+
+POST {{MtgTrader.WebApi_HostAddress}}/api/auth/
 Accept: application/json
 
 

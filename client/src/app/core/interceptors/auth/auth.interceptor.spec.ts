@@ -28,15 +28,15 @@ describe('authInterceptor', () => {
       handle: (req: HttpRequest<any>): Observable<HttpEvent<any>> => of(new HttpResponse<any>(req))
     };
 
-    interceptor(new HttpRequest<any>('GET', ''), mockHandler.handle);
+    interceptor(new HttpRequest<any>('GET', 'api/'), mockHandler.handle);
 
     expect(window.localStorage.getItem).toHaveBeenCalledTimes(1);
 
   });
 
-  it('should put bearer token in request when found', () => {
+  it('should put bearer token in api request when found', () => {
     localStore = { 'usr-token': 'toto' };
-    let actualReq = new HttpRequest<any>('GET', '');
+    let actualReq = new HttpRequest<any>('GET', 'api/');
     const mockHandler = {
       handle: (req: HttpRequest<any>): Observable<HttpEvent<any>> => {
         actualReq = req;
@@ -49,5 +49,21 @@ describe('authInterceptor', () => {
     expect(actualReq).toBeTruthy();
     expect(actualReq.headers.has('Authorization')).toEqual(true);
     expect(actualReq.headers.get('Authorization')).toEqual(`Bearer toto`);
+  });
+
+  it('should not put bearer token in request when is not an api request', () => {
+    localStore = { 'usr-token': 'toto' };
+    let actualReq = new HttpRequest<any>('GET', 'https://sryfall.io/');
+    const mockHandler = {
+      handle: (req: HttpRequest<any>): Observable<HttpEvent<any>> => {
+        actualReq = req;
+        return of(new HttpResponse<any>(req));
+      }
+    };
+
+    interceptor(actualReq, mockHandler.handle);
+
+    expect(actualReq).toBeTruthy();
+    expect(actualReq.headers.has('Authorization')).toEqual(false);
   });
 });

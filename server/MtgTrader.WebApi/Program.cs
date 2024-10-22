@@ -1,13 +1,16 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MtgTrader.Core.Auth.Domain;
 using MtgTrader.Core.Auth.Handlers;
 using MtgTrader.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration["JWT:Secret"] = Environment.GetEnvironmentVariable("JWT_SECRET") ?? builder.Configuration["JWT:Secret"];
+builder.Configuration["PG:Host"] = Environment.GetEnvironmentVariable("PG_HOST") ?? builder.Configuration["PG:Host"];
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -44,6 +47,12 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+
+builder.Services.AddDbContextPool<AuthContext>(
+    opt =>
+        opt.UseNpgsql(GetConnectionString())
+);
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -79,3 +88,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.Run();
+
+string GetConnectionString() 
+{
+    var str = $"Server={builder.Configuration["PG:Host"]};Port={builder.Configuration["PG:Port"]};Database={builder.Configuration["PG:Db"]};UserName={builder.Configuration["PG:User"]};Password={builder.Configuration["PG:Password"]}";
+    return str;
+}
