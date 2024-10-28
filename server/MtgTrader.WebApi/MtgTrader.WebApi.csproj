@@ -8,14 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MtgTrader.Core\MtgTrader.Core.csproj" />
+    <ProjectReference Include="..\MtgTrader.Infrastructure\MtgTrader.Infrastructure.csproj" />
   </ItemGroup>
 
 

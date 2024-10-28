@@ -1,18 +1,19 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MtgTrader.Core.Auth.Domain;
-using MtgTrader.Core.Auth.Handlers;
-using MtgTrader.WebApi.Services;
+using MtgTrader.Core.Entities.Business;
+using MtgTrader.Core.Handlers.Auth;
+using MtgTrader.Infrastructure.Services.JwtToken;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController(
-    AuthHandler authHandler,
-    JwtTokenService jwtTokenService
+    IAuthHandler authHandler,
+    IJwtTokenService jwtTokenService
 ) : ControllerBase
 {
-    private readonly AuthHandler _authHandler = authHandler;
-    private readonly JwtTokenService _jwtTokenService = jwtTokenService;
+    private readonly IAuthHandler _authHandler = authHandler;
+    private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -34,6 +35,8 @@ public class AuthController(
     [Authorize]
     public ActionResult Get()
     {
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         return Ok();
     }
 }

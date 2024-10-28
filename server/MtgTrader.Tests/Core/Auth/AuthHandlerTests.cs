@@ -1,12 +1,13 @@
-namespace MtgTrader.Tests.Auth;
+namespace MtgTrader.Tests.Core.Auth;
 
 public class AuthHandlerTests
 {
-    private AuthHandler _handler;
+    private IAuthHandler _handler;
 
-    public AuthHandlerTests() 
+    public AuthHandlerTests()
     {
-        _handler = new AuthHandler();
+        var userRepository = Substitute.For<IUserRepository>();
+        _handler = new AuthHandler(userRepository);
     }
 
     [Fact]
@@ -16,7 +17,7 @@ public class AuthHandlerTests
             new User("123", "root", "")
         );
     }
-    
+
     [Fact]
     public void Should_return_null_when_invalid_auth()
     {

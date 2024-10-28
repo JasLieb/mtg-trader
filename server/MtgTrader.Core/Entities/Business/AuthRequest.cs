@@ -1,4 +1,4 @@
-namespace MtgTrader.Core.Auth.Domain;
+namespace MtgTrader.Core.Entities.Business;
 
 public record class AuthRequest(
     string Email,

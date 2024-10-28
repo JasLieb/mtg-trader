@@ -1,20 +1,22 @@
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using MtgTrader.Core.Auth.Domain;
+using MtgTrader.Core.Entities.General;
+using Config = MtgTrader.Infrastructure.Configuration;
+using MtgTrader.Infrastructure.Services.JwtToken;
 
-namespace MtgTrader.WebApi.Services;
+namespace MtgTrader.Infrastructure.Controllers.Auth;
 
-public class JwtTokenService(IConfiguration configuration)
+public class JwtTokenService(IConfiguration configuration) : IJwtTokenService
 {
     private readonly IConfiguration _configuration = configuration;
 
     public string CreateToken(User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Secret"]);
+        var key = Encoding.ASCII.GetBytes(GetConfiguration(Config.JwtConstants.Secret));
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(
@@ -24,14 +26,17 @@ public class JwtTokenService(IConfiguration configuration)
             ),
             Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(key), 
+                new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature
             ),
-            Issuer = _configuration["Jwt:Issuer"],
-            Audience = _configuration["Jwt:Audience"]
+            Issuer = GetConfiguration(Config.JwtConstants.Issuer),
+            Audience = GetConfiguration(Config.JwtConstants.Audience)
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+
+    private string GetConfiguration(string key) =>
+        _configuration[key] ?? throw new ArgumentNullException(nameof(key));
 }

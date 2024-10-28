@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MtgTrader.Core", "MtgTrader
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MtgTrader.Tests", "MtgTrader.Tests\MtgTrader.Tests.csproj", "{C38730D5-C970-4E8C-9A42-4920275D5DA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MtgTrader.Infrastructure", "MtgTrader.Infrastructure\MtgTrader.Infrastructure.csproj", "{79A62BDC-EF66-4277-B8CB-0E4B0CF1FFFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{C38730D5-C970-4E8C-9A42-4920275D5DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C38730D5-C970-4E8C-9A42-4920275D5DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C38730D5-C970-4E8C-9A42-4920275D5DA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79A62BDC-EF66-4277-B8CB-0E4B0CF1FFFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79A62BDC-EF66-4277-B8CB-0E4B0CF1FFFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79A62BDC-EF66-4277-B8CB-0E4B0CF1FFFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79A62BDC-EF66-4277-B8CB-0E4B0CF1FFFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
