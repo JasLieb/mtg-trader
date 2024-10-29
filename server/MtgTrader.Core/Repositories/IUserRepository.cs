@@ -4,4 +4,5 @@ namespace MtgTrader.Core.Repositories;
 
 public interface IUserRepository: IBaseRepository<User>
 {
+    User? GetByUsername(string username);
 }

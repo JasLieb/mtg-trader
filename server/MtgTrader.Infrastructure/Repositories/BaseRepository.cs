@@ -10,18 +10,18 @@ public class BaseRepository<T>(ApplicationContext dbContext) : IBaseRepository<T
     private readonly ApplicationContext _dbContext = dbContext;
     protected DbSet<T> DbSet => _dbContext.Set<T>();
 
-    public async Task<IEnumerable<T>> GetAll()
+    public IEnumerable<T> GetAll()
     {
-        return await _dbContext.Set<T>().AsNoTracking().ToListAsync();
+        return [.. _dbContext.Set<T>().AsNoTracking()];
     }
 
-    public async Task<T> GetById<Tid>(Tid id)
+    public T GetById<Tid>(Tid id)
     {
-        var data = await _dbContext.Set<T>().FindAsync(id);
+        var data = _dbContext.Set<T>().Find(id);
         return data ?? throw new InvalidDataException("No data found");
     }
 
-    public async Task<bool> IsExists<Tvalue>(string key, Tvalue value)
+    public bool IsExists<Tvalue>(string key, Tvalue value)
     {
         var parameter = Expression.Parameter(typeof(T), "x");
         var property = Expression.Property(parameter, key);
@@ -29,31 +29,25 @@ public class BaseRepository<T>(ApplicationContext dbContext) : IBaseRepository<T
         var equality = Expression.Equal(property, constant);
         var lambda = Expression.Lambda<Func<T, bool>>(equality, parameter);
 
-        return await _dbContext.Set<T>().AnyAsync(lambda);
+        return _dbContext.Set<T>().Any(lambda);
     }
 
-    public async Task<T> Create(T model)
+    public T Create(T model)
     {
-        await _dbContext.Set<T>().AddAsync(model);
-        await _dbContext.SaveChangesAsync();
+        _dbContext.Set<T>().Add(model);
+        _dbContext.SaveChanges();
         return model;
     }
 
-    public async Task Update(T model)
+    public void Update(T model)
     {
         _dbContext.Set<T>().Update(model);
-        await _dbContext.SaveChangesAsync();
+        _dbContext.SaveChanges();
     }
 
-    public async Task Delete(T model)
+    public void Delete(T model)
     {
         _dbContext.Set<T>().Remove(model);
-        await _dbContext.SaveChangesAsync();
+        _dbContext.SaveChanges();
     }
-
-    public async Task SaveChangeAsync()
-    {
-        await _dbContext.SaveChangesAsync();
-    }
-
 }

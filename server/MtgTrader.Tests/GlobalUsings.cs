@@ -3,8 +3,9 @@ global using Moq;
 global using NSubstitute;
 global using FluentAssertions;
 global using Microsoft.EntityFrameworkCore;
-global using Microsoft.EntityFrameworkCore.ChangeTracking;
 global using Microsoft.Extensions.Configuration;
+
+global using MtgTrader.Tests.Extensions;
 
 global using MtgTrader.Infrastructure.Contexts;
 global using MtgTrader.Infrastructure.Repositories;

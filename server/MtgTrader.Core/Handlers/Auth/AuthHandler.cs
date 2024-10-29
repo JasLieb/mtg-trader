@@ -10,9 +10,21 @@ public class AuthHandler(IUserRepository userRepository) : IAuthHandler
 
     public User? Connect(AuthRequest authRequest)
     {
-        // var u = _userRepository.IsExists()).FirstOrDefault();
-        return authRequest.Email == "root"
-            ? new User("123", authRequest.Email, authRequest.Password)
+        var user = _userRepository.GetByUsername(authRequest.Email);
+        return user is not null && user.Password == authRequest.Password
+            ? user
             : null;
+    }
+
+    public User? CreateUser(AuthRequest authRequest)
+    {
+        var canCreateUser = _userRepository.GetByUsername(authRequest.Email) is null;
+        return canCreateUser
+        ? _userRepository.Create(new(
+            Guid.NewGuid().ToString(),
+            authRequest.Email,
+            authRequest.Password
+        ))
+        : null;
     }
 }

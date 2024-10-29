@@ -7,4 +7,5 @@ namespace MtgTrader.Core.Handlers.Auth;
 public interface IAuthHandler
 {
     User? Connect(AuthRequest authRequest);
+    User? CreateUser(AuthRequest value);
 }

@@ -12,20 +12,28 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public async Task AddAsync_ValidProduct_ReturnsAddedProduct()
+    public void Should_return_new_user_when_valid_user()
     {
         var newUser = new User("idk", "toto", "toto");
-
         var userDbSetMock = new Mock<DbSet<User>>();
-
         _dbContextMock.Setup(db => db.Set<User>())
-                      .Returns(userDbSetMock.Object);
+            .Returns(userDbSetMock.Object);
 
-        userDbSetMock.Setup(dbSet => dbSet.AddAsync(newUser, default))
-                        .ReturnsAsync(null as EntityEntry<User>);
-
-        var result = await _userRepository.Create(newUser);
+        var result = _userRepository.Create(newUser);
 
         result.Should().Be(newUser);
+    }
+
+    [Fact]
+    public void Should_return_user_when_username_found()
+    {
+        var users = new List<User> { new("idk", "toto", "toto") };
+        var userDbSetMock = users.AsDbSetMock();
+        _dbContextMock.Setup(db => db.Set<User>())
+            .Returns(userDbSetMock.Object);
+
+        var result = _userRepository.GetByUsername(users[0].UserName);
+
+        result.Should().Be(users[0]);
     }
 }

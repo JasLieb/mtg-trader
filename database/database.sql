@@ -21,9 +21,9 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public."Users" (
-    "Id" "char"[] NOT NULL,
-    "UserName" "char"[] NOT NULL,
-    "Password" "char"[] NOT NULL
+    "Id" text NOT NULL,
+    "Username" text NOT NULL,
+    "Password" text NOT NULL
 );
 
 

@@ -9,5 +9,11 @@ Accept: application/json
 POST {{MtgTrader.WebApi_HostAddress}}/api/auth/
 Accept: application/json
 
+GET {{MtgTrader.WebApi_HostAddress}}/api/user/
+Accept: application/json
+
+POST {{MtgTrader.WebApi_HostAddress}}/api/user/
+Accept: application/json
+
 
 ###
