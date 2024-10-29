@@ -20,8 +20,16 @@ export class AuthService {
     this.isConnected$ = this.isConnectedBehavior.asObservable();
   }
 
-  login(email: string, password: string) {
-    return this.http.post(`api/auth`, { email, password }).pipe(
+  login(email: string, password: string): Observable<any> {
+    return this.handleAuth(`api/auth`, { email, password });
+  }
+
+  register(email: string, password: string): Observable<any> {
+    return this.handleAuth(`api/user`, { email, password });
+  }
+
+  private handleAuth(route: string, body: any): Observable<any> {
+    return this.http.post(route, body).pipe(
       map((response: any) => {
         this.isConnectedBehavior.next(true);
         window.localStorage.setItem('usr-token', `Bearer ${response.usrToken}`);
@@ -30,7 +38,7 @@ export class AuthService {
     );
   }
 
-  handleError(error: HttpErrorResponse): Observable<any> {
+  private handleError(error: HttpErrorResponse): Observable<any> {
     this.isConnectedBehavior.next(false);
     console.error(error);
     return of(new Error(error.message));

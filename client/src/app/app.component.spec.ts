@@ -43,12 +43,12 @@ describe('AppComponent', () => {
     expect(collection).toBeTruthy();
   });
 
-  it('should display login component when user is not connected', () => {
+  it('should display user home component when user is not connected', () => {
     authService.isConnected$ = of(false);
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
-    const login = fixture.nativeElement.querySelector('app-login');
-    expect(login).toBeTruthy();
+    const userHome = fixture.nativeElement.querySelector('app-user-home');
+    expect(userHome).toBeTruthy();
   });
 });

@@ -4,7 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { WantlistComponent } from './features/collection/components/wantlist/wantlist.component';
 import { CollectionDisplayerComponent } from './features/collection/components/collection-displayer/collection-displayer.component';
 import { AuthService } from './core/services/auth/auth.service';
-import { LoginComponent } from './features/authentication/components/login/login.component';
+import { UserHomeComponent } from "./features/authentication/components/user-home/user-home.component";
 
 @Component({
   selector: 'app-root',
@@ -13,8 +13,8 @@ import { LoginComponent } from './features/authentication/components/login/login
     RouterOutlet,
     WantlistComponent,
     CollectionDisplayerComponent,
-    LoginComponent,
-  ],
+    UserHomeComponent
+],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

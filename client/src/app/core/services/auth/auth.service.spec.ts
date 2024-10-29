@@ -39,13 +39,6 @@ describe('AuthService', () => {
     })
   });
 
-  it('login should call httpClient', () => {
-    service.login('anything@xyz.com', 'poep').subscribe();
-
-    httpTestingController.expectOne('api/auth', 'URL to api login endpoint');
-    expect().nothing();
-  });
-
   it('success login should update isConnected$', (done) => {
     service.login('anything@xyz.com', 'poep').subscribe();
     const req = httpTestingController.expectOne(
@@ -83,6 +76,52 @@ describe('AuthService', () => {
     );
 
     req.flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    service.isConnected$.subscribe({
+      next: (isConnected) => {
+        expect(isConnected).toBeFalse();
+        done();
+      },
+    });
+  });
+
+  it('success register should update isConnected$', (done) => {
+    service.register('anything@xyz.com', 'poep').subscribe();
+    const req = httpTestingController.expectOne(
+      'api/user',
+      'URL to api register endpoint'
+    );
+    req.flush('toto', { status: 200, statusText: 'ok' });
+    service.isConnected$.subscribe((isConnected) => {
+      expect(isConnected).toBeTrue();
+      done();
+    });
+  });
+
+  it('success register should update local storage with bearer token', () => {
+    service.register('anything@xyz.com', 'poep').subscribe();
+
+    const req = httpTestingController.expectOne(
+      'api/user',
+      'URL to api register endpoint'
+    );
+    req.flush({ usrToken: 'toto' }, { status: 200, statusText: 'ok' });
+
+    expect(window.localStorage.setItem).toHaveBeenCalledTimes(1);
+    expect(window.localStorage.setItem).toHaveBeenCalledWith(
+      'usr-token',
+      'Bearer toto'
+    );
+  });
+
+  it('fail register should update isConnected$', (done) => {
+    service.register('anything@xyz.com', 'poep').subscribe();
+    const req = httpTestingController.expectOne(
+      'api/user',
+      'URL to api login endpoint'
+    );
+
+    req.flush({}, { status: 500, statusText: 'Error' });
 
     service.isConnected$.subscribe({
       next: (isConnected) => {

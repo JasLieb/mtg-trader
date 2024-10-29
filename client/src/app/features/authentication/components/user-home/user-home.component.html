@@ -1,0 +1,11 @@
+<div class="user-home-tabs">
+  <div class="user-home-tab" (click)="showLogin()">Login</div>
+  <div class="user-home-tab" (click)="showRegister()">Register</div>
+</div>
+
+@if (isLoginMode()) {
+  <app-login></app-login>
+}
+@else {
+  <app-register></app-register>
+}
