@@ -101,7 +101,7 @@ public static class ServicesExtensions
 
     private static string GetConnectionString(ConfigurationManager configuration)
     {
-        var str = $"Server={configuration["PG:Host"]};Port={configuration["PG:Port"]};Database={configuration["PG:Db"]};UserName={configuration["PG:User"]};Password={configuration["PG:Password"]}";
+        var str = $"Server={configuration[PgConstants.Host]};Port={configuration[PgConstants.Port]};Database={configuration[PgConstants.Db]};UserName={configuration[PgConstants.User]};Password={configuration[PgConstants.Password]}";
         return str;
     }
 }

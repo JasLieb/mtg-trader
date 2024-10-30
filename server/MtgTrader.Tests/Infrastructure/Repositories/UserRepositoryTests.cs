@@ -32,7 +32,7 @@ public class UserRepositoryTests
         _dbContextMock.Setup(db => db.Set<User>())
             .Returns(userDbSetMock.Object);
 
-        var result = _userRepository.GetByUsername(users[0].UserName);
+        var result = _userRepository.GetByUsername(users[0].Username);
 
         result.Should().Be(users[0]);
     }

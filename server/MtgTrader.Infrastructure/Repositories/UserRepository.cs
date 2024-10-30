@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using MtgTrader.Core.Entities.General;
 using MtgTrader.Core.Repositories;
 using MtgTrader.Infrastructure.Contexts;

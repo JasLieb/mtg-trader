@@ -10,7 +10,7 @@ public static class ConfigurationExtensions
             Environment.GetEnvironmentVariable(JwtConstants.EnvSecret) 
             ?? builder.Configuration[JwtConstants.Secret];
         
-        builder.Configuration[PgConstants.EnvHost] = 
+        builder.Configuration[PgConstants.Host] = 
             Environment.GetEnvironmentVariable(PgConstants.EnvHost) 
             ?? builder.Configuration[PgConstants.Host];
         return builder;
