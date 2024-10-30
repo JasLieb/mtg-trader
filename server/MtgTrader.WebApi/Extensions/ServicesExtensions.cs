@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MtgTrader.Core.Handlers.Auth;
+using MtgTrader.Core.Handlers.Wantlist;
 using MtgTrader.Core.Repositories;
 using MtgTrader.Infrastructure.Configuration;
 using MtgTrader.Infrastructure.Contexts;
@@ -18,7 +19,10 @@ public static class ServicesExtensions
         services
             .AddTransient<IJwtTokenService, JwtTokenService>()
             .AddTransient<IUserRepository, UserRepository>()
-            .AddScoped<IAuthHandler, AuthHandler>();
+            .AddTransient<IWantlistRepository, WantlistRepository>()
+            .AddTransient<IWantlistCardsRepository, WantlistCardsRepository>()
+            .AddScoped<IAuthHandler, AuthHandler>()
+            .AddScoped<IWantlistHandler, WantlistHandler>();
 
     public static IServiceCollection RegisterInfrastructure(
         this IServiceCollection services,

@@ -21,7 +21,7 @@ public class JwtTokenServiceTests
         _configuration[JwtConstants.Issuer].Returns("test");
         _configuration[JwtConstants.Secret].Returns("testsecrettestsecrettestsecrettestsecrettestsecret");
 
-        var result = _jwtToken.CreateToken(new User("id", "email", "pass"));
+        var result = _jwtToken.CreateToken(new GEntities.User("id", "email", "pass"));
 
         result.Should().NotBeEmpty();
     }
@@ -29,7 +29,7 @@ public class JwtTokenServiceTests
     [Fact]
     public void Should_throw_Argument_Null_Exception_when_configuration_not_initialized()
     {
-        var act = () => _jwtToken.CreateToken(new User("id", "email", "pass"));
+        var act = () => _jwtToken.CreateToken(new  GEntities.User("id", "email", "pass"));
         act.Should().Throw<ArgumentNullException>();
     }
 }

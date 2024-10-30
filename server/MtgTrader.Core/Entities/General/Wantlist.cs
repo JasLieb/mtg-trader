@@ -1,10 +1,14 @@
 namespace MtgTrader.Core.Entities.General;
 
-public class Wantlist
+public class Wantlist(
+    string id,
+    string name,
+    string ownerId
+)
 {
-    public string Id { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string OwnerId { get; set; } = string.Empty;
+    public string Id { get; set; } = id;
+    public string Name { get; set; } = name;
+    public string OwnerId { get; set; } = ownerId;
     public User? Owner { get; set; } = null;
 
     public ICollection<WantlistCards> Cards { get; set; } = [];

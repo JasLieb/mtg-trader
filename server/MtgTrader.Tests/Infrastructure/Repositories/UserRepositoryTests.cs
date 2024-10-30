@@ -12,11 +12,11 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public void Should_return_new_user_when_valid_user()
+    public void Should_return_new_user_when_create_valid_user()
     {
-        var newUser = new User("idk", "toto", "toto");
-        var userDbSetMock = new Mock<DbSet<User>>();
-        _dbContextMock.Setup(db => db.Set<User>())
+        var newUser = new GEntities.User("idk", "toto", "toto");
+        var userDbSetMock = new Mock<DbSet<GEntities.User>>();
+        _dbContextMock.Setup(db => db.Set<GEntities.User>())
             .Returns(userDbSetMock.Object);
 
         var result = _userRepository.Create(newUser);
@@ -25,11 +25,11 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public void Should_return_user_when_username_found()
+    public void Should_return_user_when_get_username_found()
     {
-        var users = new List<User> { new("idk", "toto", "toto") };
+        var users = new List<GEntities.User> { new("idk", "toto", "toto") };
         var userDbSetMock = users.AsDbSetMock();
-        _dbContextMock.Setup(db => db.Set<User>())
+        _dbContextMock.Setup(db => db.Set<GEntities.User>())
             .Returns(userDbSetMock.Object);
 
         var result = _userRepository.GetByUsername(users[0].Username);
