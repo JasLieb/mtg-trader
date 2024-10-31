@@ -1,4 +1,5 @@
-using MtgTrader.Core.Entities.Business;
+using MtgTrader.Core.Entities.Business.Requests;
+using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Repositories;
 
 namespace MtgTrader.Core.Handlers.Wantlist;
@@ -11,23 +12,38 @@ public class WantlistHandler(
     private readonly IWantlistRepository _wantlistRepository = wantlistRepository;
     private readonly IWantlistCardsRepository _wantlistCardsRepository = wantlistCardsRepository;
 
-    public Entities.General.Wantlist AddCard(AddCardRequest addCardRequest)
+    public Entities.General.Wantlist UpdateWantlist(UpdateWantlistRequest wantlistRequest)
     {
-        _wantlistCardsRepository.Create(new Entities.General.WantlistCards(
-            addCardRequest.WantlistId,
-            addCardRequest.CardId
-        ));
-        return _wantlistRepository.GetById(addCardRequest.WantlistId);
+        _wantlistCardsRepository.UpdateWantlist(
+            wantlistRequest.WantlistId,
+            wantlistRequest.Cards
+        );
+        return _wantlistRepository.GetById(wantlistRequest.WantlistId);
     }
 
-    public Entities.General.Wantlist CreateWantlist(CreateWantlistRequest request)
+    public Entities.General.Wantlist CreateWantlist(
+        CreateWantlistRequest request,
+        string userId
+    )
     {
         return _wantlistRepository.Create(
             new Entities.General.Wantlist(
             Guid.NewGuid().ToString(), 
             request.WantlistName, 
-            request.OwnerId
+            userId
         )
         );
+    }
+
+    public IEnumerable<FormattedWantlistResponse> GetWantlists(string userId)
+    {
+        return _wantlistRepository.GetUserWantlists(userId)
+            .Select(
+                originalWl => new FormattedWantlistResponse(
+                    originalWl.Id,
+                    originalWl.Name,
+                    originalWl.Cards.Select(c => c.CardId)
+                )
+            );
     }
 }

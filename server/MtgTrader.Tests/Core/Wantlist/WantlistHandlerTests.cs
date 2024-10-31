@@ -14,13 +14,35 @@ public class WantlistHandlerTests
     }
 
     [Fact]
+    public void Should_return_formatted_wantlist_when_get_user_wantlists()
+    {
+        _wantlistRepository.GetUserWantlists("user").Returns(
+            [
+                new GEntities.Wantlist("test", "name", "user")
+                {
+                    Cards = [new GEntities.WantlistCards("test", "card")]
+                }
+            ]
+        );
+        
+        var wantlists = _handler.GetWantlists("user");
+    
+        wantlists.First().Should().BeEquivalentTo(
+            new BResEntities.FormattedWantlistResponse(
+                "test", "name", ["card"]
+            )            
+        );
+    }
+
+    [Fact]
     public void Should_return_new_wantlist_when_is_created()
     {
         var expectedWantlist = new GEntities.Wantlist("id", "new", "user");
         _wantlistRepository.Create(Arg.Any<GEntities.Wantlist>()).Returns(expectedWantlist);
         
         var actualWantlist = _handler.CreateWantlist(
-            new BEntities.CreateWantlistRequest("new", "user")
+            new BReqREntities.CreateWantlistRequest("new"),
+            "user"
         );
     
         _wantlistRepository.Received().Create(Arg.Any<GEntities.Wantlist>());
@@ -37,13 +59,14 @@ public class WantlistHandlerTests
         };
         _wantlistRepository.GetById("fav").Returns(expectedWantlist);
 
-        var actualWantlist = _handler.AddCard(
-            new BEntities.AddCardRequest("Conflux", "fav")
+        var actualWantlist = _handler.UpdateWantlist(
+            new BReqREntities.UpdateWantlistRequest("fav", ["Conflux"])
         );
 
-        _wantlistCardsRepository.Received().Create(
-            Arg.Is<GEntities.WantlistCards>(
-                w => w.CardId == "Conflux"  && w.WantlistId == "fav"
+        _wantlistCardsRepository.Received().UpdateWantlist(
+            "fav",
+            Arg.Is<IEnumerable<string>>(
+                cards => cards.Contains("Conflux")
             )
         );
         actualWantlist.Should().Be(expectedWantlist);

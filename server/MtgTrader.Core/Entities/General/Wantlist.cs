@@ -9,7 +9,6 @@ public class Wantlist(
     public string Id { get; set; } = id;
     public string Name { get; set; } = name;
     public string OwnerId { get; set; } = ownerId;
-    public User? Owner { get; set; } = null;
-
+    
     public ICollection<WantlistCards> Cards { get; set; } = [];
 }

@@ -1,5 +1,4 @@
 using MtgTrader.Infrastructure.Configuration;
-using NSubstitute.ExceptionExtensions;
 
 namespace MtgTrader.Tests.Infrastructure.Services;
 
@@ -27,7 +26,7 @@ public class JwtTokenServiceTests
     }
 
     [Fact]
-    public void Should_throw_Argument_Null_Exception_when_configuration_not_initialized()
+    public void Should_throw_argument_null_exception_when_configuration_not_initialized()
     {
         var act = () => _jwtToken.CreateToken(new  GEntities.User("id", "email", "pass"));
         act.Should().Throw<ArgumentNullException>();

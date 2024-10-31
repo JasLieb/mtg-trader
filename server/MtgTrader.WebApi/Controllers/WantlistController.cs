@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MtgTrader.Core.Entities.Business;
+using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Handlers.Wantlist;
 
 namespace MtgTrader.WebApi.Controllers;
@@ -12,6 +12,19 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
 {
     private readonly IWantlistHandler _wantlistHandler = wantlistHandler;
 
+    [HttpGet]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public ActionResult Get()
+    {
+        var claim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (claim == null) return Problem("Unknown user");
+        var wantlists = _wantlistHandler.GetWantlists(claim.Value);
+        return Ok(wantlists);
+    }
+
     [HttpPost]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -21,22 +34,23 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
         [FromBody] CreateWantlistRequest request
     )
     {
-        var claim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);   
+        var claim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
         if (claim == null) return Problem("Unknown user");
-        var wantlist = _wantlistHandler.CreateWantlist(request with { OwnerId = claim.Value});
-        return Ok(wantlist);
+        _ = _wantlistHandler.CreateWantlist(request, claim.Value);
+        return Get();
     }
-    
+
+
     [HttpPut]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult Put(
-        [FromBody] AddCardRequest request
+        [FromBody] UpdateWantlistRequest request
     )
     {
-        var wantlist = _wantlistHandler.AddCard(request);
-        return Ok(wantlist);
+        _ = _wantlistHandler.UpdateWantlist(request);
+        return Get();
     }
 }

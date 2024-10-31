@@ -15,6 +15,9 @@ Accept: application/json
 POST {{MtgTrader.WebApi_HostAddress}}/api/user/
 Accept: application/json
 
+GET {{MtgTrader.WebApi_HostAddress}}/api/wantlist/
+Accept: application/json
+
 POST {{MtgTrader.WebApi_HostAddress}}/api/wantlist/
 Accept: application/json
 

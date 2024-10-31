@@ -1,4 +1,4 @@
-using MtgTrader.Core.Entities.Business;
+using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Entities.General;
 using MtgTrader.Core.Repositories;
 

@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MtgTrader.Core.Entities.Business;
+using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Handlers.Auth;
 using MtgTrader.Infrastructure.Services.JwtToken;
 

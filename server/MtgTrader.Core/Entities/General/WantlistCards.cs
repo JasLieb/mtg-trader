@@ -10,5 +10,4 @@ public class WantlistCards(
     public string CardId { get; set; } = cardId;
     
     public Wantlist? WantlistOrigin { get; set; }
-    public Card? CardOrigin { get; set; }
 }

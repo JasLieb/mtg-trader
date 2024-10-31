@@ -1,9 +1,10 @@
-using MtgTrader.Core.Entities.Business;
+using MtgTrader.Core.Entities.Business.Requests;
 
 namespace MtgTrader.Core.Handlers.Wantlist;
 
 public interface IWantlistHandler
 {
-    Entities.General.Wantlist AddCard(AddCardRequest addCardRequest);
-    Entities.General.Wantlist CreateWantlist(CreateWantlistRequest request);
+    Entities.General.Wantlist UpdateWantlist(UpdateWantlistRequest wantlistRequest);
+    Entities.General.Wantlist CreateWantlist(CreateWantlistRequest request, string userId);
+    IEnumerable<Entities.Business.Responses.FormattedWantlistResponse> GetWantlists(string userId);
 }

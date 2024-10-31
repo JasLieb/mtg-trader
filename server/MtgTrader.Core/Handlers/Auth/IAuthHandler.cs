@@ -1,5 +1,5 @@
 using System;
-using MtgTrader.Core.Entities.Business;
+using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Entities.General;
 
 namespace MtgTrader.Core.Handlers.Auth;
