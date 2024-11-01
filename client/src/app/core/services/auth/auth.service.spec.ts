@@ -72,9 +72,9 @@ describe('AuthService', () => {
     service.login('anything@xyz.com', 'poep').subscribe();
     const req = httpTestingController.expectOne(
       'api/auth',
-      'URL to api login endpoint'
+      'URL to api post login endpoint'
     );
-
+    expect(req.request.method).toBe('POST');
     req.flush({}, { status: 401, statusText: 'Unauthorized' });
 
     service.isConnected$.subscribe({

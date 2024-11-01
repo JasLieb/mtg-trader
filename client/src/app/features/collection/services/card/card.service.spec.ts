@@ -26,4 +26,14 @@ describe('CardService', () => {
     );
     expect().nothing();
   });
+
+  it('fetch should call httpClient', () => {
+    service.fetch('anything').subscribe();
+
+    httpTestingController.expectOne(
+      'https://api.scryfall.com/cards/anything',
+      'URL to scryfall endpoint to fetch card from an id'
+    );
+    expect().nothing();
+  });
 });

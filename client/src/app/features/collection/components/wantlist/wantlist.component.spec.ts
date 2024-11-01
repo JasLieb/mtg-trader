@@ -19,9 +19,7 @@ describe('WantlistComponent', () => {
       imports: [HttpClientTestingModule, WantlistComponent],
     }).compileComponents();
 
-    wantlistService = TestBed.inject(
-      WantlistService
-    ) as jasmine.SpyObj<WantlistService>;
+    wantlistService = TestBed.inject(WantlistService) as jasmine.SpyObj<WantlistService>;
 
     fixture = TestBed.createComponent(WantlistComponent);
     component = fixture.componentInstance;

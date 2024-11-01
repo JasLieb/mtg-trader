@@ -7,16 +7,28 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class CardService {
-  constructor(private _httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) {}
 
   search(query: string): Observable<Card[]> {
-    return this._httpClient
+    return this.httpClient
       .get(`https://api.scryfall.com/cards/search?q="${query}"`)
       .pipe(
         map((res: any) => res.data.map(this.parseCard)),
         catchError((err) => {
           console.log(err);
           return of([]);
+        })
+      );
+  }
+
+  fetch(cardId: string): Observable<Card> {
+    return this.httpClient
+      .get(`https://api.scryfall.com/cards/${cardId}`)
+      .pipe(
+        map((res: any) => this.parseCard(res)),
+        catchError((err) => {
+          console.log(err);
+          return of(err);
         })
       );
   }

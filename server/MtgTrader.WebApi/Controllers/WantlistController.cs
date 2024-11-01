@@ -54,13 +54,13 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
         return Get();
     }
     
-    [HttpDelete("{wantlistId}")]
+    [HttpDelete]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult Delete(
-        string wantlistId
+        [FromQuery] string wantlistId
     )
     {
         _wantlistHandler.DeleteWantlist(wantlistId);
