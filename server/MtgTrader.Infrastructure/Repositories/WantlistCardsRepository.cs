@@ -21,4 +21,9 @@ public class WantlistCardsRepository(ApplicationContext dbContext)
                 Create(new(wantlistId, cardId));
         }
     }
+
+    public IEnumerable<WantlistCards> GetCards(string wantlistId)
+    {
+        return [.. DbSet.Where(wc => wc.WantlistId == wantlistId)];
+    }
 }

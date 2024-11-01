@@ -54,12 +54,27 @@ public class WantlistCardsRepositoryTests
         var wantlistCardsSetMock = new WantlistCards[] { wantlist }.AsDbSetMock();
         _dbContextMock.Setup(db => db.Set<WantlistCards>())
             .Returns(wantlistCardsSetMock.Object);
-        var cards = new string[] { expectedCardId };
 
         _wantlistCardsRepository.UpdateWantlist("want", []);
 
         wantlistCardsSetMock.Verify(m => m.Add(It.IsAny<WantlistCards>()), Times.Never());
         wantlistCardsSetMock.Verify(m => m.Remove(It.IsAny<WantlistCards>()), Times.Once());
         _dbContextMock.Verify(m => m.SaveChanges(), Times.Once());
+    }
+
+    [Fact]
+    public void Should_return_wantlist_cards_when_get_cards()
+    {
+        var expectedCardId = "conflux";
+        var wantlistId = "want";
+        var wantlist = new WantlistCards(wantlistId, expectedCardId);
+        var wantlistCardsSetMock = new WantlistCards[] { wantlist }.AsDbSetMock();
+        _dbContextMock.Setup(db => db.Set<WantlistCards>())
+            .Returns(wantlistCardsSetMock.Object);
+
+        var wantlistCards = _wantlistCardsRepository.GetCards("want");
+
+        wantlistCards.Should().HaveCount(1);
+        wantlistCards.ElementAt(0).CardId.Should().Be(expectedCardId);
     }
 }

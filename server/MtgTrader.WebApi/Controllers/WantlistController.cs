@@ -53,4 +53,17 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
         _ = _wantlistHandler.UpdateWantlist(request);
         return Get();
     }
+    
+    [HttpDelete("{wantlistId}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public ActionResult Delete(
+        string wantlistId
+    )
+    {
+        _wantlistHandler.DeleteWantlist(wantlistId);
+        return Get();
+    }
 }

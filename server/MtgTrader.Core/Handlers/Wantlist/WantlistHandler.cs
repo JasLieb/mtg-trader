@@ -46,4 +46,15 @@ public class WantlistHandler(
                 )
             );
     }
+
+    public void DeleteWantlist(string wantlistId)
+    {
+        var wantlist = _wantlistRepository.GetById(wantlistId);
+        var cards = _wantlistCardsRepository.GetCards(wantlist.Id);
+
+        foreach (var card in cards)
+            _wantlistCardsRepository.Delete(card);
+
+        _wantlistRepository.Delete(wantlist);
+    }
 }

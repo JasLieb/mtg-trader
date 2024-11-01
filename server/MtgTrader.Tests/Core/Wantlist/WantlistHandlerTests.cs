@@ -71,4 +71,34 @@ public class WantlistHandlerTests
         );
         actualWantlist.Should().Be(expectedWantlist);
     }
+
+    [Fact]
+    public void Should_delete_wantlist_when_wantlist_is_deleted()
+    {
+        _wantlistRepository.GetById("fav").Returns(
+            new GEntities.Wantlist("fav", "fav", "user")
+        );
+        
+        _handler.DeleteWantlist("fav");
+    
+        _wantlistRepository.Received().Delete(
+            Arg.Is<GEntities.Wantlist>(w => w.Id == "fav")
+        );
+    }
+    
+    [Fact]
+    public void Should_delete_wantlist_cards_when_wantlist_is_deleted()
+    {
+        _wantlistRepository.GetById("fav").Returns(
+            new GEntities.Wantlist("fav", "fav", "user")
+        );
+        var wantlistCard = new GEntities.WantlistCards("fav", "card");
+        _wantlistCardsRepository.GetCards("fav").Returns(
+            [wantlistCard]
+        );
+        
+        _handler.DeleteWantlist("fav");
+
+        _wantlistCardsRepository.Received().Delete(wantlistCard);
+    }
 }
