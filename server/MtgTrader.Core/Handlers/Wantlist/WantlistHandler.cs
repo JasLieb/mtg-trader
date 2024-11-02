@@ -12,8 +12,11 @@ public class WantlistHandler(
     private readonly IWantlistRepository _wantlistRepository = wantlistRepository;
     private readonly IWantlistCardsRepository _wantlistCardsRepository = wantlistCardsRepository;
 
-    public Entities.General.Wantlist UpdateWantlist(UpdateWantlistRequest wantlistRequest)
+    public Entities.General.Wantlist? UpdateWantlist(UpdateWantlistRequest wantlistRequest)
     {
+        if(!_wantlistRepository.IsWantlistExist(wantlistRequest.WantlistId))
+            return null;
+
         _wantlistCardsRepository.UpdateWantlist(
             wantlistRequest.WantlistId,
             wantlistRequest.Cards
@@ -28,10 +31,10 @@ public class WantlistHandler(
     {
         return _wantlistRepository.Create(
             new Entities.General.Wantlist(
-            Guid.NewGuid().ToString(), 
-            request.WantlistName, 
-            userId
-        )
+                Guid.NewGuid().ToString(), 
+                request.WantlistName, 
+                userId
+            )
         );
     }
 
@@ -50,11 +53,13 @@ public class WantlistHandler(
     public void DeleteWantlist(string wantlistId)
     {
         var wantlist = _wantlistRepository.GetById(wantlistId);
-        var cards = _wantlistCardsRepository.GetCards(wantlist.Id);
+        if(wantlist != null) {
+            var cards = _wantlistCardsRepository.GetCards(wantlist.Id);
 
-        foreach (var card in cards)
-            _wantlistCardsRepository.Delete(card);
+            foreach (var card in cards)
+                _wantlistCardsRepository.Delete(card);
 
-        _wantlistRepository.Delete(wantlist);
+            _wantlistRepository.Delete(wantlist);
+        }
     }
 }

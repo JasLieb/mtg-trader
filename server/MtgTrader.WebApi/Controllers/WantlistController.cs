@@ -50,8 +50,10 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
         [FromBody] UpdateWantlistRequest request
     )
     {
-        _ = _wantlistHandler.UpdateWantlist(request);
-        return Get();
+        var wantlist = _wantlistHandler.UpdateWantlist(request);
+        return wantlist is null 
+            ? Problem("Wantlist doesnt exists")
+            : Get();
     }
     
     [HttpDelete]

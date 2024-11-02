@@ -15,10 +15,10 @@ public class BaseRepository<T>(ApplicationContext dbContext) : IBaseRepository<T
         return [.. _dbContext.Set<T>().AsNoTracking()];
     }
 
-    public T GetById<Tid>(Tid id)
+    public T? GetById<Tid>(Tid id)
     {
         var data = _dbContext.Set<T>().Find(id);
-        return data ?? throw new InvalidDataException("No data found");
+        return data;
     }
 
     public bool IsExists<Tvalue>(string key, Tvalue value)

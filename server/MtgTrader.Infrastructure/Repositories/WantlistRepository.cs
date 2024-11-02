@@ -10,6 +10,11 @@ public class WantlistRepository(ApplicationContext dbContext)
 {
     public IEnumerable<Wantlist> GetUserWantlists(string userId)
     {
-        return [.. DbSet.Where( x => x.OwnerId == userId ).Include(x => x.Cards)];
+        return [.. DbSet.Where(x => x.OwnerId == userId).Include(x => x.Cards)];
+    }
+
+    public bool IsWantlistExist(string wantlistId)
+    {
+        return DbSet.Any(x => x.Id == wantlistId);
     }
 }

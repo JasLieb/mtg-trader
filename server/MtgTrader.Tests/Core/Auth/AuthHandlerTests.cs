@@ -3,12 +3,14 @@ namespace MtgTrader.Tests.Core.Auth;
 public class AuthHandlerTests
 {
     private readonly IUserRepository _userRepository;
+    private readonly IWantlistRepository _wantlistRepository;
     private readonly IAuthHandler _handler;
 
     public AuthHandlerTests()
     {
         _userRepository = Substitute.For<IUserRepository>();
-        _handler = new AuthHandler(_userRepository);
+        _wantlistRepository = Substitute.For<IWantlistRepository>();
+        _handler = new AuthHandler(_userRepository, _wantlistRepository);
     }
 
     [Fact]
@@ -35,6 +37,21 @@ public class AuthHandlerTests
         var result = _handler.CreateUser(new("root", "toto"));
     
         result.Should().Be(newUser);
+    }
+    
+    [Fact]
+    public void Should_create_user_double_when_valid_creation()
+    {
+        var newUser = new  GEntities.User("123", "root", "toto");
+        _userRepository.Create(null!).ReturnsForAnyArgs(newUser);
+    
+        _handler.CreateUser(new("root", "toto"));
+    
+        _wantlistRepository.Received().Create(
+            Arg.Is<GEntities.Wantlist>(
+                wl => wl.Id.EndsWith("_doubles")
+            )
+        );
     }
 
     [Fact]

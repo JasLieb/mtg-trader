@@ -32,13 +32,4 @@ public class UserController(
         var token = _jwtTokenService.CreateToken(user);
         return Ok(new { usrToken = token });
     }
-
-    [HttpGet]
-    [Authorize]
-    public ActionResult Get()
-    {
-        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        return Ok();
-    }
 }

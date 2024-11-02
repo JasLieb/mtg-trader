@@ -41,13 +41,8 @@ describe('WantlistService', () => {
     service = TestBed.inject(WantlistService);
   });
 
-  it('should be created', (done) => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
-    expect(window.localStorage.getItem).toHaveBeenCalledWith('doubles');
-    service.doubles$.subscribe((double) => {
-      expect(double.cards.length).toBe(0);
-      done();
-    });
   });
 
   it('should request get call when created', () => {
@@ -55,6 +50,7 @@ describe('WantlistService', () => {
       request.method.includes('GET')
     );
     expect(reqs).toHaveSize(1);
+    expect(reqs[0].request.body).toBeNull();
   });
 
   it('should update wantlists$ when receive wantlists response', (done) => {
@@ -82,21 +78,29 @@ describe('WantlistService', () => {
   it('should request put call when update wantlist', () => {
     service.updateWantlist({ id: 'updated', name: 'wl', cards: [] });
 
-    const reqs = httpTestingController.match((request) => request.method.includes('PUT'));
+    const reqs = httpTestingController.match((request) =>
+      request.method.includes('PUT')
+    );
     expect(reqs).toHaveSize(1);
+    expect(reqs[0].request.body).toEqual({ wantlistId: 'updated', cards: [] });
   });
 
   it('should request post call when create wantlist', () => {
     service.create('toto');
 
-    const reqs = httpTestingController.match((request) => request.method.includes('POST'));
+    const reqs = httpTestingController.match((request) =>
+      request.method.includes('POST')
+    );
     expect(reqs).toHaveSize(1);
+    expect(reqs[0].request.body).toEqual({ wantlistName: 'toto' });
   });
 
   it('should request delete call when delete wantlist', () => {
     service.delete('toto');
 
-    const reqs = httpTestingController.match((request) => request.method.includes('DELETE'));
+    const reqs = httpTestingController.match((request) =>
+      request.method.includes('DELETE')
+    );
     expect(reqs).toHaveSize(1);
     expect(reqs[0].request.urlWithParams).toContain('wantlist?wantlistId=toto');
   });

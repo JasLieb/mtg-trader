@@ -4,9 +4,13 @@ using MtgTrader.Core.Repositories;
 
 namespace MtgTrader.Core.Handlers.Auth;
 
-public class AuthHandler(IUserRepository userRepository) : IAuthHandler
+public class AuthHandler(
+    IUserRepository userRepository, 
+    IWantlistRepository wantlistRepository
+) : IAuthHandler
 {
     private readonly IUserRepository _userRepository = userRepository;
+    private readonly IWantlistRepository _wantlistRepository = wantlistRepository;
 
     public User? Connect(AuthRequest authRequest)
     {
@@ -19,12 +23,18 @@ public class AuthHandler(IUserRepository userRepository) : IAuthHandler
     public User? CreateUser(AuthRequest authRequest)
     {
         var canCreateUser = _userRepository.GetByUsername(authRequest.Email) is null;
-        return canCreateUser
-        ? _userRepository.Create(new(
-            Guid.NewGuid().ToString(),
-            authRequest.Email,
-            authRequest.Password
-        ))
-        : null;
+        if(canCreateUser) {
+            var userId = Guid.NewGuid().ToString();
+            var user = _userRepository.Create(new(
+                userId,
+                authRequest.Email,
+                authRequest.Password
+            ));
+            _wantlistRepository.Create(
+                new($"{userId}_doubles", "doubles", userId)
+            );
+            return user;
+        }
+        return null;
     }
 }

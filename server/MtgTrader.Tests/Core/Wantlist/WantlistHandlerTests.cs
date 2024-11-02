@@ -58,18 +58,30 @@ public class WantlistHandlerTests
             Cards = [ new("fav", "Conflux")]
         };
         _wantlistRepository.GetById("fav").Returns(expectedWantlist);
+        _wantlistRepository.IsWantlistExist("fav").Returns(true);
 
         var actualWantlist = _handler.UpdateWantlist(
             new BReqREntities.UpdateWantlistRequest("fav", ["Conflux"])
         );
 
         _wantlistCardsRepository.Received().UpdateWantlist(
-            "fav",
+            Arg.Is<string>( id => id == "fav"),
             Arg.Is<IEnumerable<string>>(
                 cards => cards.Contains("Conflux")
             )
         );
         actualWantlist.Should().Be(expectedWantlist);
+    }
+
+    [Fact]
+    public void Should_return_null_when_card_is_added_and_wantlist_not_created()
+    {
+        _wantlistRepository.IsWantlistExist(Arg.Any<string>()).Returns(false);
+        var wantlist = _handler.UpdateWantlist(
+            new BReqREntities.UpdateWantlistRequest("fav", ["Conflux"])
+        );
+
+        wantlist.Should().BeNull();
     }
 
     [Fact]
