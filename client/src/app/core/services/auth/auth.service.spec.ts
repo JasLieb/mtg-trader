@@ -31,21 +31,51 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should be connected on creation when local storage contains token', (done) => {
-    service.isConnected$.subscribe(isConnected => {
+  it('should check if is valid token on creation when local storage contains token', () => {
+    const req = httpTestingController.expectOne(
+      'api/user',
+      'URL to api get user endpoint'
+    );
+    expect(req.request.method).toBe('GET');
+  });
+
+  it('should be connected when check valid token', (done) => {
+    const req = httpTestingController.expectOne(
+      'api/user',
+      'URL to api get user endpoint'
+    );
+
+    req.flush({}, { status: 200, statusText: 'ok'})
+
+    service.isConnected$.subscribe((isConnected) => {
       expect(window.localStorage.getItem).toHaveBeenCalledTimes(1);
       expect(isConnected).toBeTrue();
       done();
-    })
+    });
+  });
+
+  it('should not be connected when check invalid token', (done) => {
+    const req = httpTestingController.expectOne(
+      'api/user',
+      'URL to api get user endpoint'
+    );
+
+    req.flush({}, { status: 500, statusText: 'invalid token'})
+
+    service.isConnected$.subscribe((isConnected) => {
+      expect(window.localStorage.getItem).toHaveBeenCalledTimes(1);
+      expect(isConnected).toBeFalse();
+      done();
+    });
   });
 
   it('success login should update isConnected$', (done) => {
     service.login('anything@xyz.com', 'poep').subscribe();
-    const req = httpTestingController.expectOne(
-      'api/auth',
-      'URL to api login endpoint'
+    const reqs = httpTestingController.match(
+      (req) => req.method == 'POST' && req.url == 'api/auth'
     );
-    req.flush('toto', { status: 200, statusText: 'ok' });
+
+    reqs[0].flush('toto', { status: 200, statusText: 'ok' });
     service.isConnected$.subscribe((isConnected) => {
       expect(isConnected).toBeTrue();
       done();
@@ -55,11 +85,10 @@ describe('AuthService', () => {
   it('success login should update local storage with bearer token', () => {
     service.login('anything@xyz.com', 'poep').subscribe();
 
-    const req = httpTestingController.expectOne(
-      'api/auth',
-      'URL to api login endpoint'
+    const reqs = httpTestingController.match(
+      (req) => req.method == 'POST' && req.url == 'api/auth'
     );
-    req.flush({ usrToken: 'toto' }, { status: 200, statusText: 'ok' });
+    reqs[0].flush({ usrToken: 'toto' }, { status: 200, statusText: 'ok' });
 
     expect(window.localStorage.setItem).toHaveBeenCalledTimes(1);
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
@@ -70,12 +99,11 @@ describe('AuthService', () => {
 
   it('fail login should update isConnected$', (done) => {
     service.login('anything@xyz.com', 'poep').subscribe();
-    const req = httpTestingController.expectOne(
-      'api/auth',
-      'URL to api post login endpoint'
+    const reqs = httpTestingController.match(
+      (req) => req.method == 'POST' && req.url == 'api/auth'
     );
-    expect(req.request.method).toBe('POST');
-    req.flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    reqs[0].flush({}, { status: 401, statusText: 'Unauthorized' });
 
     service.isConnected$.subscribe({
       next: (isConnected) => {
@@ -87,11 +115,12 @@ describe('AuthService', () => {
 
   it('success register should update isConnected$', (done) => {
     service.register('anything@xyz.com', 'poep').subscribe();
-    const req = httpTestingController.expectOne(
-      'api/user',
-      'URL to api register endpoint'
+    const reqs = httpTestingController.match(
+      (req) => req.method == 'POST' && req.url == 'api/user'
     );
-    req.flush('toto', { status: 200, statusText: 'ok' });
+
+    reqs[0].flush('toto', { status: 200, statusText: 'ok' });
+
     service.isConnected$.subscribe((isConnected) => {
       expect(isConnected).toBeTrue();
       done();
@@ -101,11 +130,11 @@ describe('AuthService', () => {
   it('success register should update local storage with bearer token', () => {
     service.register('anything@xyz.com', 'poep').subscribe();
 
-    const req = httpTestingController.expectOne(
-      'api/user',
-      'URL to api register endpoint'
+    const reqs = httpTestingController.match(
+      (req) => req.method == 'POST' && req.url == 'api/user'
     );
-    req.flush({ usrToken: 'toto' }, { status: 200, statusText: 'ok' });
+
+    reqs[0].flush({ usrToken: 'toto' }, { status: 200, statusText: 'ok' });
 
     expect(window.localStorage.setItem).toHaveBeenCalledTimes(1);
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
@@ -116,12 +145,11 @@ describe('AuthService', () => {
 
   it('fail register should update isConnected$', (done) => {
     service.register('anything@xyz.com', 'poep').subscribe();
-    const req = httpTestingController.expectOne(
-      'api/user',
-      'URL to api login endpoint'
+    const reqs = httpTestingController.match(
+      (req) => req.method == 'POST' && req.url == 'api/user'
     );
 
-    req.flush({}, { status: 500, statusText: 'Error' });
+    reqs[0].flush({}, { status: 500, statusText: 'Error' });
 
     service.isConnected$.subscribe({
       next: (isConnected) => {

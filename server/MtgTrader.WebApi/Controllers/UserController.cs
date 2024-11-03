@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Handlers.Auth;
 using MtgTrader.Infrastructure.Services.JwtToken;
@@ -16,6 +17,19 @@ public class UserController(
 {
     private readonly IAuthHandler _authHandler = authHandler;
     private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
+
+    [HttpGet]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public ActionResult Get()
+    {
+        var accessToken = Request.Headers[HeaderNames.Authorization];
+
+        var isValidToken = _jwtTokenService.CheckToken(accessToken.ToString());
+        return isValidToken ? Ok() : Problem("Invalid token");
+    }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]

@@ -13,20 +13,9 @@ describe('WantlistService', () => {
   let service: WantlistService;
   let httpTestingController: HttpTestingController;
   let cardService: jasmine.SpyObj<CardService>;
-  let localStore: any;
 
   beforeEach(() => {
     const cardSpy = jasmine.createSpyObj('CardService', ['fetch']);
-
-    localStore = {};
-
-    spyOn(window.localStorage, 'getItem').and.callFake((key) =>
-      key in localStore ? localStore[key] : null
-    );
-    spyOn(window.localStorage, 'setItem').and.callFake(
-      (key, value) => (localStore[key] = value + '')
-    );
-    spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
 
     TestBed.configureTestingModule({
       providers: [{ provide: CardService, useValue: cardSpy }],

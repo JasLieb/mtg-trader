@@ -14,11 +14,30 @@ public class JwtTokenServiceTests
     }
 
     [Fact]
+    public void Should_return_false_when_check_invalid_token()
+    {
+        InitConfiguration();
+    
+        var result = _jwtToken.CheckToken("nawak");
+
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Should_return_true_when_check_valid_token()
+    {
+        InitConfiguration();
+        var validToken = _jwtToken.CreateToken(new GEntities.User("toto", "toto", "pass"));
+    
+        var result = _jwtToken.CheckToken(validToken);
+
+        result.Should().BeTrue();
+    }
+
+    [Fact]
     public void Should_return_token_when_configuration_is_initialized()
     {
-        _configuration[JwtConstants.Audience].Returns("test");
-        _configuration[JwtConstants.Issuer].Returns("test");
-        _configuration[JwtConstants.Secret].Returns("testsecrettestsecrettestsecrettestsecrettestsecret");
+        InitConfiguration();
 
         var result = _jwtToken.CreateToken(new GEntities.User("id", "email", "pass"));
 
@@ -30,5 +49,12 @@ public class JwtTokenServiceTests
     {
         var act = () => _jwtToken.CreateToken(new  GEntities.User("id", "email", "pass"));
         act.Should().Throw<ArgumentNullException>();
+    }
+
+    private void InitConfiguration()
+    {
+        _configuration[JwtConstants.Audience].Returns("test");
+        _configuration[JwtConstants.Issuer].Returns("test");
+        _configuration[JwtConstants.Secret].Returns("testsecrettestsecrettestsecrettestsecrettestsecret");
     }
 }
