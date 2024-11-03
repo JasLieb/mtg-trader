@@ -34,7 +34,10 @@ export class AuthService {
     return this.http.post(route, body).pipe(
       map((response: any) => {
         this.isConnectedBehavior.next(true);
-        window.localStorage.setItem(this.userTokenKey, `Bearer ${response.usrToken}`);
+        window.localStorage.setItem(
+          this.userTokenKey,
+          `Bearer ${response.usrToken}`
+        );
       }),
       catchError((err) => this.handleError(err))
     );

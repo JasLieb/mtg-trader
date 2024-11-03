@@ -1,8 +1,9 @@
 using MtgTrader.WebApi.Extensions;
 
-var builder = 
+var builder =
     WebApplication.CreateBuilder(args)
-    .RegisterConfiguration();
+    .RegisterConfiguration()
+    .RegisterHttpsRedirection();
 
 builder.Services
     .RegisterSwagger()
@@ -12,15 +13,18 @@ builder.Services
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseHsts();
+}
 
-app.MapControllers();
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.MapControllers();
 
 app.Run();
