@@ -1,5 +1,3 @@
-\connect "MtgTrader"
-
 --
 -- PostgreSQL database dump
 --
@@ -7,7 +5,7 @@
 -- Dumped from database version 16.4
 -- Dumped by pg_dump version 16.4
 
--- Started on 2024-10-30 11:12:16 CET
+-- Started on 2024-11-03 08:47:12 CET
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -51,35 +49,36 @@ CREATE TABLE public."Users" (
 ALTER TABLE public."Users" OWNER TO postgres;
 
 --
--- TOC entry 216 (class 1259 OID 16408)
--- Name: Wantlist; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public."Wantlist" (
-    "Id" text NOT NULL,
-    "Name" text NOT NULL,
-    "OwnerId" text
-);
-
-
-ALTER TABLE public."Wantlist" OWNER TO postgres;
-
---
 -- TOC entry 218 (class 1259 OID 279678)
 -- Name: WantlistCards; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public."WantlistCards" (
-    id text NOT NULL,
-    "Wantlist" text,
-    "Card" text
+    "Id" text NOT NULL,
+    "WantlistId" text,
+    "CardId" text
 );
 
 
 ALTER TABLE public."WantlistCards" OWNER TO postgres;
 
 --
--- TOC entry 3603 (class 0 OID 279665)
+-- TOC entry 216 (class 1259 OID 16408)
+-- Name: Wantlists; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Wantlists" (
+    "Id" text NOT NULL,
+    "Name" text NOT NULL,
+    "OwnerId" text,
+    "UserId" text
+);
+
+
+ALTER TABLE public."Wantlists" OWNER TO postgres;
+
+--
+-- TOC entry 3602 (class 0 OID 279665)
 -- Dependencies: 217
 -- Data for Name: Card; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -45043,32 +45042,6 @@ INSERT INTO public."Card" VALUES ('fffe7b2b-22c3-4e6a-9b1b-c6d7b29b9f86');
 
 
 --
--- TOC entry 3601 (class 0 OID 16399)
--- Dependencies: 215
--- Data for Name: Users; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-INSERT INTO public."Users" VALUES ('2aee772e-d8bc-414b-83f6-e84876c10b83', 'jas', 'jas');
-INSERT INTO public."Users" VALUES ('223b11a9-6519-4fe2-9525-710e85990e3c', 'root', '');
-
-
---
--- TOC entry 3602 (class 0 OID 16408)
--- Dependencies: 216
--- Data for Name: Wantlist; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
--- TOC entry 3604 (class 0 OID 279678)
--- Dependencies: 218
--- Data for Name: WantlistCards; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
 -- TOC entry 3455 (class 2606 OID 279671)
 -- Name: Card Card_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
@@ -45088,32 +45061,23 @@ ALTER TABLE ONLY public."Users"
 
 --
 -- TOC entry 3453 (class 2606 OID 16414)
--- Name: Wantlist Wantlist_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: Wantlists Wantlist_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public."Wantlist"
+ALTER TABLE ONLY public."Wantlists"
     ADD CONSTRAINT "Wantlist_pkey" PRIMARY KEY ("Id");
 
 
 --
--- TOC entry 3457 (class 2606 OID 279685)
--- Name: WantlistCards WantlistCards_Wantlist_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public."WantlistCards"
-    ADD CONSTRAINT "WantlistCards_Wantlist_fkey" FOREIGN KEY (id) REFERENCES public."Wantlist"("Id");
-
-
---
 -- TOC entry 3456 (class 2606 OID 279673)
--- Name: Wantlist Wantlist_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: Wantlists Wantlist_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public."Wantlist"
+ALTER TABLE ONLY public."Wantlists"
     ADD CONSTRAINT "Wantlist_fkey" FOREIGN KEY ("OwnerId") REFERENCES public."Users"("Id") NOT VALID;
 
 
--- Completed on 2024-10-30 11:12:16 CET
+-- Completed on 2024-11-03 08:47:13 CET
 
 --
 -- PostgreSQL database dump complete
