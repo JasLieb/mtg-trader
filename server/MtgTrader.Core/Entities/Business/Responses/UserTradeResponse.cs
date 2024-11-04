@@ -1,7 +1,7 @@
 namespace MtgTrader.Core.Entities.Business.Responses;
 
-public record class UserResponse(
+public record class UserTradeResponse(
     string Id,
     string Name,
-    IEnumerable<WantlistResponse> Wantlists
+    WantlistResponse Doubles
 );

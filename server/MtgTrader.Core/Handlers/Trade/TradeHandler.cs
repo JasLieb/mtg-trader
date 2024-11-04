@@ -17,24 +17,28 @@ public class TradeHandler(
         var tradeableWantlists = _wantlistRepository.FindTradeableDoubles(userId, wantlists);
         return new(
             MakeTradeableResponseContent(
-                tradeableWantlists.GroupBy(wl => wl.OwnerId)
+                tradeableWantlists
             )
             .ToList()
         );
     }
 
-    private IEnumerable<UserResponse> MakeTradeableResponseContent(
-        IEnumerable<IGrouping<string, Entities.General.Wantlist>> wantlistsGroupByUserId
+    private IEnumerable<UserTradeResponse> MakeTradeableResponseContent(
+        IEnumerable<Entities.General.Wantlist> wantlists
     )
     {
-        foreach(var groupBy in wantlistsGroupByUserId)
+        foreach(var wantlist in wantlists)
         {
-            var user = _userRepository.GetByUserId(groupBy.Key);
+            var user = _userRepository.GetByUserId(wantlist.OwnerId);
             if(user is not null)
-                yield return new UserResponse(
+                yield return new UserTradeResponse(
                     user.Id, 
                     user.Username, 
-                    groupBy.Select(wl => new WantlistResponse(wl.Id, wl.Name, wl.Cards.Select(c => c.CardId)))
+                    new WantlistResponse(
+                        wantlist.Id, 
+                        wantlist.Name, 
+                        wantlist.Cards.Select(c => c.CardId)
+                    )
                 );
 
         }

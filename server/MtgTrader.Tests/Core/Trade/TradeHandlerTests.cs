@@ -52,8 +52,8 @@ public class TradeHandlerTests
         var userId = "userId";
         var userWantlists = new List<GEntities.Wantlist>() {new ("id", "name", "ownerId")};
         _wantlistRepository.GetUserWantlists(userId).Returns(userWantlists);
-        var tradeableDoubles = new List<GEntities.Wantlist>() {new ("id1_doubles", "name2", "owner2Id")};
-        _wantlistRepository.FindTradeableDoubles(userId, userWantlists).Returns(tradeableDoubles);
+        var tradeableDouble = new GEntities.Wantlist("id1_doubles", "name2", "owner2Id");
+        _wantlistRepository.FindTradeableDoubles(userId, userWantlists).Returns([tradeableDouble]);
         var expectedUser = new User("owner2Id", "toto", "");
         _userRepository.GetByUserId("owner2Id").Returns(expectedUser);
 
@@ -66,12 +66,10 @@ public class TradeHandlerTests
                     new(
                         expectedUser.Id, 
                         expectedUser.Username,
-                        tradeableDoubles.Select(
-                            tradeableDouble => new WantlistResponse(
-                                tradeableDouble.Id,
-                                tradeableDouble.Name,
-                                tradeableDouble.Cards.Select(wc => wc.CardId)
-                            )
+                        new WantlistResponse(
+                            tradeableDouble.Id,
+                            tradeableDouble.Name,
+                            tradeableDouble.Cards.Select(wc => wc.CardId)
                         )
                     )
                 ]
