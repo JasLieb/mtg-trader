@@ -7,5 +7,5 @@
   <app-wantlists-manager></app-wantlists-manager>
 }
 @else {
-  <app-wantlist [wantlist]="doubles()"></app-wantlist>
+  <app-wantlist [canDelete]="false" [wantlist]="doubles()"></app-wantlist>
 }

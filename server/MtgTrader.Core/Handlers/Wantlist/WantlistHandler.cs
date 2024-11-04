@@ -52,6 +52,7 @@ public class WantlistHandler(
 
     public void DeleteWantlist(string wantlistId)
     {
+        if(IsDoubleWantlist(wantlistId)) return;
         var wantlist = _wantlistRepository.GetById(wantlistId);
         if(wantlist != null) {
             var cards = _wantlistCardsRepository.GetCards(wantlist.Id);
@@ -61,5 +62,10 @@ public class WantlistHandler(
 
             _wantlistRepository.Delete(wantlist);
         }
+    }
+
+    private bool IsDoubleWantlist(string wantlistId)
+    {
+        return wantlistId.EndsWith("_doubles");
     }
 }

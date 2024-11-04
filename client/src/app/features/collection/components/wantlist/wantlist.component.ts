@@ -14,6 +14,7 @@ import { CollectionCardListComponent } from '../collection-card-list/collection-
 })
 export class WantlistComponent {
   wantlist = input({} as Wantlist);
+  canDelete = input<boolean>(true);
   name = computed(() => this.wantlist().name);
 
   constructor(private wantlistService: WantlistService) {}

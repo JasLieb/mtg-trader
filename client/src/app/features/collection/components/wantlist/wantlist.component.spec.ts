@@ -53,6 +53,14 @@ describe('WantlistComponent', () => {
     );
   });
 
+  it('should not have delete button when not allowed from input', () => {
+    fixture.componentRef.setInput('canDelete', false);
+    fixture.detectChanges();
+
+    const deleteButton = fixture.nativeElement.querySelector('button');
+    expect(deleteButton).toBe('hidden');
+  });
+
   it('should delete card when onDeleteCard emited', () => {
     fixture.componentRef.setInput('wantlist', {
       id: 'id',

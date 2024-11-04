@@ -85,6 +85,14 @@ public class WantlistHandlerTests
     }
 
     [Fact]
+    public void Should_not_delete_wantlist_when_is_double_list()
+    {
+        _handler.DeleteWantlist("fav_doubles");
+
+        _wantlistRepository.DidNotReceive().Delete(Arg.Any<GEntities.Wantlist>());
+    }
+    
+    [Fact]
     public void Should_delete_wantlist_when_wantlist_is_deleted()
     {
         _wantlistRepository.GetById("fav").Returns(
