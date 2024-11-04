@@ -1,19 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CardListComponent } from './card-list.component';
-import { Card } from '../../models/card';
+import { CollectionCardListComponent } from './collection-card-list.component';
+import { Card } from '../../../common/models/card';
 
-describe('CardListComponent', () => {
-  let component: CardListComponent;
-  let fixture: ComponentFixture<CardListComponent>;
+describe('CollectionCardListComponent', () => {
+  let component: CollectionCardListComponent;
+  let fixture: ComponentFixture<CollectionCardListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CardListComponent],
-    }).compileComponents();
+      imports: [CollectionCardListComponent]
+    })
+    .compileComponents();
 
-    fixture = TestBed.createComponent(CardListComponent);
+    fixture = TestBed.createComponent(CollectionCardListComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   function initInput() {
@@ -32,18 +34,11 @@ describe('CardListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have displayed cards when input is setted', () => {
+  it('should have card list component displayed when input is setted', () => {
     initInput();
 
     const firstCard = fixture.nativeElement.querySelector('.card-name');
     expect(firstCard.textContent).toBe('toto');
-  });
-
-  it('should not have delete card button when output is not setted', () => {
-    initInput();
-
-    const deleteButton = fixture.nativeElement.querySelector('button');
-    expect(deleteButton).toBeNull();
   });
 
   it('should have delete card button when output is setted', () => {

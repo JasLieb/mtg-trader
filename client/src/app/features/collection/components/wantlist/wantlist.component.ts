@@ -1,14 +1,14 @@
 import { Component, computed, input, Input, OnInit } from '@angular/core';
-import { CardListComponent } from '../../../common/components/card-list/card-list.component';
 import { WantlistService } from '../../services/wantlist/wantlist.service';
 import { Wantlist } from '../../models/wantlist';
 import { CardSearcherComponent } from '../card-searcher/card-searcher.component';
 import { Card } from '../../../common/models/card';
+import { CollectionCardListComponent } from '../collection-card-list/collection-card-list.component';
 
 @Component({
   selector: 'app-wantlist',
   standalone: true,
-  imports: [CardListComponent, CardSearcherComponent],
+  imports: [CollectionCardListComponent, CardSearcherComponent],
   templateUrl: './wantlist.component.html',
   styleUrl: './wantlist.component.scss',
 })

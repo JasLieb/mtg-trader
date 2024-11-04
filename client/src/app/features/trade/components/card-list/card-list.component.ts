@@ -1,5 +1,5 @@
 import { Component, EventEmitter, input, Input, Output, signal } from '@angular/core';
-import { Card } from '../../models/card';
+import { Card } from '../../../common/models/card';
 
 @Component({
   selector: 'app-card-list',
@@ -10,11 +10,4 @@ import { Card } from '../../models/card';
 })
 export class CardListComponent {
   cards = input<Card[]>([]);
-
-  @Output()
-  onDeletedCard = new EventEmitter<Card>();
-
-  deleteCard(card: Card) {
-    this.onDeletedCard.emit(card);
-  }
 }

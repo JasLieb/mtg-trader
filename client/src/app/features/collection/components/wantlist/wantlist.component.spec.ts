@@ -28,7 +28,7 @@ describe('WantlistComponent', () => {
 
   it('should be created', () => {
     expect(component).toBeTruthy();
-    const cardList = fixture.nativeElement.querySelector('app-card-list');
+    const cardList = fixture.nativeElement.querySelector('app-collection-card-list');
     expect(cardList).toBeTruthy();
   });
 

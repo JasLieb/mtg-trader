@@ -1,7 +1,7 @@
 import { AfterContentInit, Component, signal } from '@angular/core';
 import { TradeService } from '../../services/trade/trade.service';
 import { UserDoubles } from '../../models/user-doubles';
-import { CardListComponent } from '../../../common/components/card-list/card-list.component';
+import { CardListComponent } from '../card-list/card-list.component';
 
 @Component({
   selector: 'app-trade-home',

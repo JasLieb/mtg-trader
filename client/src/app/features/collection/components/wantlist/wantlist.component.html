@@ -8,7 +8,7 @@
   (onFoundCard)="addCardToWantlist($event)"
 ></app-card-searcher>
 
-<app-card-list
+<app-collection-card-list
   [cards]="wantlist().cards"
   (onDeletedCard)="deleteCard($event)"
-></app-card-list>
+></app-collection-card-list>
