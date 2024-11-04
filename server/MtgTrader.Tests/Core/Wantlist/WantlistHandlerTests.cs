@@ -14,13 +14,13 @@ public class WantlistHandlerTests
     }
 
     [Fact]
-    public void Should_return_formatted_wantlist_when_get_user_wantlists()
+    public void Should_return_wantlist_response_when_get_user_wantlists()
     {
         _wantlistRepository.GetUserWantlists("user").Returns(
             [
                 new GEntities.Wantlist("test", "name", "user")
                 {
-                    Cards = [new GEntities.WantlistCards("test", "card")]
+                    Cards = [new WantlistCards("test", "card")]
                 }
             ]
         );
@@ -28,7 +28,7 @@ public class WantlistHandlerTests
         var wantlists = _handler.GetWantlists("user");
     
         wantlists.First().Should().BeEquivalentTo(
-            new BResEntities.FormattedWantlistResponse(
+            new WantlistResponse(
                 "test", "name", ["card"]
             )            
         );
@@ -41,7 +41,7 @@ public class WantlistHandlerTests
         _wantlistRepository.Create(Arg.Any<GEntities.Wantlist>()).Returns(expectedWantlist);
         
         var actualWantlist = _handler.CreateWantlist(
-            new BReqREntities.CreateWantlistRequest("new"),
+            new CreateWantlistRequest("new"),
             "user"
         );
     
@@ -61,7 +61,7 @@ public class WantlistHandlerTests
         _wantlistRepository.IsWantlistExist("fav").Returns(true);
 
         var actualWantlist = _handler.UpdateWantlist(
-            new BReqREntities.UpdateWantlistRequest("fav", ["Conflux"])
+            new UpdateWantlistRequest("fav", ["Conflux"])
         );
 
         _wantlistCardsRepository.Received().UpdateWantlist(
@@ -78,7 +78,7 @@ public class WantlistHandlerTests
     {
         _wantlistRepository.IsWantlistExist(Arg.Any<string>()).Returns(false);
         var wantlist = _handler.UpdateWantlist(
-            new BReqREntities.UpdateWantlistRequest("fav", ["Conflux"])
+            new UpdateWantlistRequest("fav", ["Conflux"])
         );
 
         wantlist.Should().BeNull();
@@ -104,7 +104,7 @@ public class WantlistHandlerTests
         _wantlistRepository.GetById("fav").Returns(
             new GEntities.Wantlist("fav", "fav", "user")
         );
-        var wantlistCard = new GEntities.WantlistCards("fav", "card");
+        var wantlistCard = new WantlistCards("fav", "card");
         _wantlistCardsRepository.GetCards("fav").Returns(
             [wantlistCard]
         );

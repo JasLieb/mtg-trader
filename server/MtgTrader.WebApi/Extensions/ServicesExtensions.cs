@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MtgTrader.Core.Handlers.Auth;
+using MtgTrader.Core.Handlers.Trade;
 using MtgTrader.Core.Handlers.Wantlist;
 using MtgTrader.Core.Repositories;
 using MtgTrader.Infrastructure.Configuration;
@@ -22,7 +23,8 @@ public static class ServicesExtensions
             .AddTransient<IWantlistRepository, WantlistRepository>()
             .AddTransient<IWantlistCardsRepository, WantlistCardsRepository>()
             .AddScoped<IAuthHandler, AuthHandler>()
-            .AddScoped<IWantlistHandler, WantlistHandler>();
+            .AddScoped<IWantlistHandler, WantlistHandler>()
+            .AddScoped<ITradeHandler, TradeHandler>();
 
     public static IServiceCollection RegisterInfrastructure(
         this IServiceCollection services,

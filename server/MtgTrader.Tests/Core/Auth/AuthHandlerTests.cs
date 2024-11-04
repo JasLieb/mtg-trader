@@ -16,7 +16,7 @@ public class AuthHandlerTests
     [Fact]
     public void Should_return_user_when_valid_auth()
     {
-        var expectedUser = new GEntities.User("123", "root", "");
+        var expectedUser = new User("123", "root", "");
         _userRepository.GetByUsername("root").Returns(expectedUser);
         _handler.Connect(new("root", "")).Should().Be(expectedUser);
     }
@@ -24,14 +24,14 @@ public class AuthHandlerTests
     [Fact]
     public void Should_return_null_when_invalid_auth()
     {
-        _userRepository.GetByUsername("toto").Returns(null as  GEntities.User);
+        _userRepository.GetByUsername("toto").Returns(null as User);
         _handler.Connect(new("toto", "tata")).Should().BeNull();
     }
 
     [Fact]
     public void Should_return_user_when_valid_creation()
     {
-        var newUser = new  GEntities.User("123", "root", "toto");
+        var newUser = new User("123", "root", "toto");
         _userRepository.Create(null!).ReturnsForAnyArgs(newUser);
     
         var result = _handler.CreateUser(new("root", "toto"));
@@ -42,7 +42,7 @@ public class AuthHandlerTests
     [Fact]
     public void Should_create_user_double_when_valid_creation()
     {
-        var newUser = new  GEntities.User("123", "root", "toto");
+        var newUser = new User("123", "root", "toto");
         _userRepository.Create(null!).ReturnsForAnyArgs(newUser);
     
         _handler.CreateUser(new("root", "toto"));

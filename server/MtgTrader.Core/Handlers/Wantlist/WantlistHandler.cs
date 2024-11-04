@@ -38,11 +38,11 @@ public class WantlistHandler(
         );
     }
 
-    public IEnumerable<FormattedWantlistResponse> GetWantlists(string userId)
+    public IEnumerable<WantlistResponse> GetWantlists(string userId)
     {
         return _wantlistRepository.GetUserWantlists(userId)
             .Select(
-                originalWl => new FormattedWantlistResponse(
+                originalWl => new WantlistResponse(
                     originalWl.Id,
                     originalWl.Name,
                     originalWl.Cards.Select(c => c.CardId)

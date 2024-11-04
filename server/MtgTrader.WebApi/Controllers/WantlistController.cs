@@ -1,8 +1,8 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Handlers.Wantlist;
+using ControllerExtensions = MtgTrader.WebApi.Extensions.ControllerExtensions;
 
 namespace MtgTrader.WebApi.Controllers;
 
@@ -19,9 +19,9 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult Get()
     {
-        var claim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-        if (claim == null) return Problem("Unknown user");
-        var wantlists = _wantlistHandler.GetWantlists(claim.Value);
+        var userId = ControllerExtensions.GetUserIdFromToken(this);
+        if (userId == null) return Problem("Unknown user");
+        var wantlists = _wantlistHandler.GetWantlists(userId);
         return Ok(wantlists);
     }
 
@@ -34,9 +34,9 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
         [FromBody] CreateWantlistRequest request
     )
     {
-        var claim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-        if (claim == null) return Problem("Unknown user");
-        _ = _wantlistHandler.CreateWantlist(request, claim.Value);
+        var userId = ControllerExtensions.GetUserIdFromToken(this);
+        if (userId == null) return Problem("Unknown user");
+        _ = _wantlistHandler.CreateWantlist(request, userId);
         return Get();
     }
 

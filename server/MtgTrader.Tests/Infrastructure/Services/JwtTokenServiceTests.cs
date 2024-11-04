@@ -27,7 +27,7 @@ public class JwtTokenServiceTests
     public void Should_return_true_when_check_valid_token()
     {
         InitConfiguration();
-        var validToken = _jwtToken.CreateToken(new GEntities.User("toto", "toto", "pass"));
+        var validToken = _jwtToken.CreateToken(new User("toto", "toto", "pass"));
     
         var result = _jwtToken.CheckToken(validToken);
 
@@ -39,7 +39,7 @@ public class JwtTokenServiceTests
     {
         InitConfiguration();
 
-        var result = _jwtToken.CreateToken(new GEntities.User("id", "email", "pass"));
+        var result = _jwtToken.CreateToken(new User("id", "email", "pass"));
 
         result.Should().NotBeEmpty();
     }
@@ -47,7 +47,7 @@ public class JwtTokenServiceTests
     [Fact]
     public void Should_throw_argument_null_exception_when_configuration_not_initialized()
     {
-        var act = () => _jwtToken.CreateToken(new  GEntities.User("id", "email", "pass"));
+        var act = () => _jwtToken.CreateToken(new User("id", "email", "pass"));
         act.Should().Throw<ArgumentNullException>();
     }
 

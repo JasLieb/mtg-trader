@@ -1,6 +1,3 @@
-using Moq;
-using MtgTrader.Core.Entities.General;
-
 namespace MtgTrader.Tests.Infrastructure.Repositories;
 
 public class WantlistCardsRepositoryTests

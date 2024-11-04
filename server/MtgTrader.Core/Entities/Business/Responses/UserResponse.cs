@@ -1,7 +1,7 @@
 namespace MtgTrader.Core.Entities.Business.Responses;
 
-public record class FormattedWantlistResponse(
+public record class UserResponse(
     string Id,
     string Name,
-    IEnumerable<string> CardIds
+    IEnumerable<WantlistResponse> Wantlists
 );

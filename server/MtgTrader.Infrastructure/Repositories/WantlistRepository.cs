@@ -17,4 +17,35 @@ public class WantlistRepository(ApplicationContext dbContext)
     {
         return DbSet.Any(x => x.Id == wantlistId);
     }
+
+    public IEnumerable<Wantlist> FindTradeableDoubles(
+        string ownerId,
+        IEnumerable<Wantlist> wantedWantlists
+    )
+    {
+        var dbSet = DbSet.Where(wl => 
+            wl.OwnerId != ownerId
+            && wl.Id.Contains("_doubles")
+        )
+        .Include(wl => wl.Cards)
+        .ToList();
+        return wantedWantlists.SelectMany(
+            wantedWantlist =>
+                dbSet
+                .Where(
+                    targetWantlist => ContainsCardsFrom(
+                        targetWantlist,
+                        wantedWantlist
+                    )
+                )
+        )
+        .ToList();
+    }
+
+    private bool ContainsCardsFrom(Wantlist targetWantlist, Wantlist originWantlist) =>
+        targetWantlist.Cards
+            .Select(wc => wc.CardId)
+            .Any(
+                originWantlist.Cards.Select(wc => wc.CardId).Contains
+            );
 }

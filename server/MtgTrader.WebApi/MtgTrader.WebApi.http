@@ -24,5 +24,7 @@ Accept: application/json
 DELETE {{MtgTrader.WebApi_HostAddress}}/api/wantlist?wantlistId={wantlistId}
 Accept: application/json
 
+GET {{MtgTrader.WebApi_HostAddress}}/api/trade/
+Accept: application/json
 
 ###
