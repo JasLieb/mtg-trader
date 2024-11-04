@@ -1,10 +1,10 @@
 <div>{{ title }}</div>
 
 @if (isConnected()) {
-  <app-collection-displayer></app-collection-displayer>
-}
-@else {
-  <app-user-home></app-user-home>
+   <div class="app-nav-bar">
+      <div class="app-nav-item" (click)="navigateMyCollection()">My collection</div>
+      <div class="app-nav-item" (click)="navigateTrade()">Trade</div>
+   </div>
 }
 
 <router-outlet />
