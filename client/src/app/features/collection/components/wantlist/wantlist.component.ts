@@ -1,9 +1,9 @@
 import { Component, computed, input, Input, OnInit } from '@angular/core';
-import { CardListComponent } from '../card-list/card-list.component';
+import { CardListComponent } from '../../../common/components/card-list/card-list.component';
 import { WantlistService } from '../../services/wantlist/wantlist.service';
 import { Wantlist } from '../../models/wantlist';
 import { CardSearcherComponent } from '../card-searcher/card-searcher.component';
-import { Card } from '../../models/card';
+import { Card } from '../../../common/models/card';
 
 @Component({
   selector: 'app-wantlist',

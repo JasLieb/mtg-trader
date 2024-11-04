@@ -1,4 +1,4 @@
-import { Card } from "./card";
+import { Card } from "../../common/models/card";
 
 export interface Wantlist {
   id: string,

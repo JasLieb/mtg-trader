@@ -5,8 +5,8 @@ import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
-import { CardService } from '../card/card.service';
-import { Card } from '../../models/card';
+import { CardService } from '../../../common/services/card/card.service';
+import { Card } from '../../../common/models/card';
 import { of } from 'rxjs';
 
 describe('WantlistService', () => {
@@ -40,6 +40,26 @@ describe('WantlistService', () => {
     );
     expect(reqs).toHaveSize(1);
     expect(reqs[0].request.body).toBeNull();
+  });
+
+  it('should fetch card when receive wantlists response', () => {
+    const req = httpTestingController.match((request) =>
+      request.method.includes('GET')
+    )[0];
+
+    req.flush(
+      [
+        {
+          id: 'dbf588d9-2b35-4fd0-8776-37e6e6da9f5d',
+          name: 'string',
+          cardIds: ['0000419b-0bba-4488-8f7a-6194544ce91e'],
+        },
+      ],
+      { status: 200, statusText: 'ok' }
+    );
+
+    expect(cardService.fetch.calls.count()).toBe(1);
+    expect(cardService.fetch).toHaveBeenCalledWith('0000419b-0bba-4488-8f7a-6194544ce91e');
   });
 
   it('should update wantlists$ when receive wantlists response', (done) => {

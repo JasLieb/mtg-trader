@@ -6,10 +6,10 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { CardService } from '../../services/card/card.service';
+import { CardService } from '../../../common/services/card/card.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, mergeMap } from 'rxjs';
-import { Card } from '../../models/card';
+import { Card } from '../../../common/models/card';
 
 @Component({
   selector: 'app-card-searcher',

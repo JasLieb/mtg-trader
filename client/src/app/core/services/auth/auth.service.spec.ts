@@ -31,7 +31,7 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should check if is valid token on creation when local storage contains token', () => {
+  it('should request get call when creation and local storage contains token', () => {
     const req = httpTestingController.expectOne(
       'api/user',
       'URL to api get user endpoint'

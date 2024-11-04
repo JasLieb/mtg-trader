@@ -6,8 +6,8 @@ import {
 } from '@angular/core/testing';
 
 import { CardSearcherComponent } from './card-searcher.component';
-import { CardService } from '../../services/card/card.service';
-import { Card } from '../../models/card';
+import { CardService } from '../../../common/services/card/card.service';
+import { Card } from '../../../common/models/card';
 import { of } from 'rxjs';
 
 describe('CardSearcherComponent', () => {

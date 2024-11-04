@@ -11,8 +11,8 @@ import {
   switchMap,
 } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { CardService } from '../card/card.service';
-import { Card } from '../../models/card';
+import { CardService } from '../../../common/services/card/card.service';
+import { Card } from '../../../common/models/card';
 import { UserWantlists } from '../../models/user-wantlists';
 
 @Injectable({
@@ -65,17 +65,20 @@ export class WantlistService {
               wantlist.cardIds.map((c: any) => this.cardService.fetch(c))
           );
           return cardsObs.length == 0
-          ? of({ cards: [], wantlists: response })
-          : forkJoin(cardsObs).pipe(
-            map((cards) => {
-              return { cards: cards, wantlists: response };
-            })
-          );
+            ? of({ cards: [], wantlists: response })
+            : forkJoin(cardsObs).pipe(
+                map((cards) => {
+                  return { cards: cards, wantlists: response };
+                })
+              );
         }),
         catchError((err) => this.handleError(err))
       )
       .subscribe((wl) => {
-        const userWantlists = this.parseWantlistResponse(wl.wantlists, wl.cards);
+        const userWantlists = this.parseWantlistResponse(
+          wl.wantlists,
+          wl.cards
+        );
         this.wantlistsBehavior.next(userWantlists.wantlists);
         this.doublesBehavior.next(userWantlists.doubles);
       });
@@ -86,7 +89,10 @@ export class WantlistService {
     return of(new Error(error.message));
   }
 
-  private parseWantlistResponse(wantlists: any[], cards: Card[]): UserWantlists {
+  private parseWantlistResponse(
+    wantlists: any[],
+    cards: Card[]
+  ): UserWantlists {
     const parsedWl = wantlists.map((wantlist: any) => {
       return {
         id: wantlist.id,
@@ -98,8 +104,8 @@ export class WantlistService {
     });
 
     return {
-      wantlists: parsedWl.filter(wl => !wl.id.includes('double')),
-      doubles: parsedWl.find(wl => wl.id.includes('double'))
-    } as UserWantlists
+      wantlists: parsedWl.filter((wl) => !wl.id.includes('double')),
+      doubles: parsedWl.find((wl) => wl.id.includes('double')),
+    } as UserWantlists;
   }
 }

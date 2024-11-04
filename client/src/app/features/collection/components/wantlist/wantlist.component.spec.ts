@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WantlistComponent } from './wantlist.component';
 import { WantlistService } from '../../services/wantlist/wantlist.service';
-import { Card } from '../../models/card';
+import { Card } from '../../../common/models/card';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('WantlistComponent', () => {

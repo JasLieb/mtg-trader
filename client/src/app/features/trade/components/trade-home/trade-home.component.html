@@ -1,1 +1,8 @@
-<p>trade-home works!</p>
+@for (user of users(); track user.id) {
+<div class="trade-user">
+  <div>{{ user.name }}</div>
+  <app-card-list
+    [cards]="user.doubles"
+  ></app-card-list>
+</div>
+}
