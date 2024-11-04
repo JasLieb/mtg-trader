@@ -64,7 +64,7 @@ describe('AppComponent', () => {
 
     fixture.detectChanges();
 
-    expect(router.navigate).toHaveBeenCalledWith(['/wantlists']);
+    expect(router.navigate).toHaveBeenCalledWith(['/collection']);
   });
 
   it('should navigate to MyCollection displayer when My collection item is clicked', () => {
@@ -74,7 +74,7 @@ describe('AppComponent', () => {
 
     fixture.nativeElement.querySelectorAll('.app-nav-item')[0].click();
     expect(router.navigate).toHaveBeenCalledTimes(2);
-    expect(router.navigate).toHaveBeenCalledWith(['/wantlists']);
+    expect(router.navigate).toHaveBeenCalledWith(['/collection']);
   });
 
   it('should navigate to Trade when Trade nav item is clicked', () => {

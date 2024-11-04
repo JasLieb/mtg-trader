@@ -27,7 +27,7 @@ export class AppComponent {
   }
 
   navigateMyCollection() {
-    this.router.navigate(['/wantlists']);
+    this.router.navigate(['/collection']);
   }
 
   navigateTrade() {
