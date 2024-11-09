@@ -24,47 +24,58 @@ public class TradeHandlerTests
     [Fact]
     public void Should_retrieve_wantlists_which_contains_wanted_cards_when_trade()
     {
-        var expectedWantlists = new List<GEntities.Wantlist>() {new ("id", "name", "ownerId")};
-        _wantlistRepository.GetUserWantlists("user").Returns(expectedWantlists);
+        var expectedWantlist = new GEntities.Wantlist("id", "name", "ownerId") ;
+        var wantlists = new List<GEntities.Wantlist>() 
+        { 
+            expectedWantlist,
+            new("id_doubles", "doubles", "ownerId"),
+        };
+        _wantlistRepository.GetUserWantlists("user").Returns(wantlists);
 
         _tradeHandler.FindTrades("user");
 
-        _wantlistRepository.Received().FindTradeableDoubles("user", expectedWantlists);
+        _wantlistRepository.Received().FindTradeableDoubles(
+            "user", 
+            Arg.Is<IEnumerable<GEntities.Wantlist>>(wls => 
+                wls.Count() == 1 && wls.Contains(expectedWantlist)
+            )
+        );
     }
 
     [Fact]
     public void Should_retrieve_tradeable_double_owner_when_trade()
     {
         var userId = "user";
-        var userWantlists = new List<GEntities.Wantlist>() {new ("id", "name", "ownerId")};
+        var userWantlists = new List<GEntities.Wantlist>() { new("id", "name", "ownerId"), new("id_doubles", "name", "ownerId") };
         _wantlistRepository.GetUserWantlists(userId).Returns(userWantlists);
-        var tradeableDoubles = new List<GEntities.Wantlist>() {new ("id1_doubles", "name2", "owner2Id")};
-        _wantlistRepository.FindTradeableDoubles(userId, userWantlists).Returns(tradeableDoubles);
+        var tradeableDoubles = new List<GEntities.Wantlist>() { new("id1_doubles", "name2", "owner2Id") };
+        _wantlistRepository.FindTradeableDoubles(null, null).ReturnsForAnyArgs(tradeableDoubles);
 
         _tradeHandler.FindTrades(userId);
 
         _userRepository.Received().GetByUserId("owner2Id");
     }
-    
+
     [Fact]
     public void Should_return_tradeable_response_when_trade()
     {
         var userId = "userId";
-        var userWantlists = new List<GEntities.Wantlist>() {new ("id", "name", "ownerId")};
+        var userWantlists = new List<GEntities.Wantlist>() { new("id", "name", "ownerId") };
         _wantlistRepository.GetUserWantlists(userId).Returns(userWantlists);
         var tradeableDouble = new GEntities.Wantlist("id1_doubles", "name2", "owner2Id");
-        _wantlistRepository.FindTradeableDoubles(userId, userWantlists).Returns([tradeableDouble]);
+        _wantlistRepository.FindTradeableDoubles(null, null).ReturnsForAnyArgs([tradeableDouble]);
         var expectedUser = new User("owner2Id", "toto", "");
         _userRepository.GetByUserId("owner2Id").Returns(expectedUser);
 
-        
+
         var tradeableResponse = _tradeHandler.FindTrades(userId);
 
+        tradeableResponse.Users.Count().Should().Be(1);
         tradeableResponse.Should().BeEquivalentTo(
             new TradeableResponse(
                 [
                     new(
-                        expectedUser.Id, 
+                        expectedUser.Id,
                         expectedUser.Username,
                         new WantlistResponse(
                             tradeableDouble.Id,

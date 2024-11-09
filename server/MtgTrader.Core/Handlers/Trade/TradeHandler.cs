@@ -4,7 +4,7 @@ using MtgTrader.Core.Repositories;
 namespace MtgTrader.Core.Handlers.Trade;
 
 public class TradeHandler(
-    IWantlistRepository wantlistRepository, 
+    IWantlistRepository wantlistRepository,
     IUserRepository userRepository
 ) : ITradeHandler
 {
@@ -13,7 +13,10 @@ public class TradeHandler(
 
     public TradeableResponse FindTrades(string userId)
     {
-        var wantlists = _wantlistRepository.GetUserWantlists(userId);
+        var wantlists = _wantlistRepository
+            .GetUserWantlists(userId)
+            .Where(wl => !wl.Id.EndsWith("_doubles"));
+            
         var tradeableWantlists = _wantlistRepository.FindTradeableDoubles(userId, wantlists);
         return new(
             MakeTradeableResponseContent(
@@ -27,16 +30,16 @@ public class TradeHandler(
         IEnumerable<Entities.General.Wantlist> wantlists
     )
     {
-        foreach(var wantlist in wantlists)
+        foreach (var wantlist in wantlists)
         {
             var user = _userRepository.GetByUserId(wantlist.OwnerId);
-            if(user is not null)
+            if (user is not null)
                 yield return new UserTradeResponse(
-                    user.Id, 
-                    user.Username, 
+                    user.Id,
+                    user.Username,
                     new WantlistResponse(
-                        wantlist.Id, 
-                        wantlist.Name, 
+                        wantlist.Id,
+                        wantlist.Name,
                         wantlist.Cards.Select(c => c.CardId)
                     )
                 );
