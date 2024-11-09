@@ -13,10 +13,12 @@ describe('AppComponent', () => {
     const authSpy = jasmine.createSpyObj('AuthService', ['login']);
     const routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
+    routerSpy.navigate.and.callFake(() => Promise.resolve(true));
+
     await TestBed.configureTestingModule({
       providers: [
         { provide: AuthService, useValue: authSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: Router, useValue: routerSpy },
       ],
       imports: [
         AppComponent,
@@ -52,40 +54,59 @@ describe('AppComponent', () => {
     const nav = fixture.nativeElement.querySelector('.app-nav-bar');
     expect(nav).toBeTruthy();
 
-    const navElements = fixture.nativeElement.querySelectorAll('.app-nav-item');
+    const navElements = fixture.nativeElement.querySelectorAll('a');
     expect(navElements.length).toBe(2);
     expect(navElements[0].innerText).toBe('My collection');
     expect(navElements[1].innerText).toBe('Trade');
   });
 
-  it('should navigate to MyCollection displayer when user is connected', () => {
+  it('should navigate to MyCollection displayer when user is connected', (done) => {
     authService.isConnected$ = of(true);
     const fixture = TestBed.createComponent(AppComponent);
 
     fixture.detectChanges();
 
-    expect(router.navigate).toHaveBeenCalledWith(['/collection']);
+    fixture.whenStable().then(() => {
+      expect(router.navigate).toHaveBeenCalledWith(['/collection']);
+      expect(fixture.componentInstance.isCollectionTab()).toBe(true);
+      expect(fixture.componentInstance.isTradeTab()).toBe(false);
+      done();
+    });
   });
 
-  it('should navigate to MyCollection displayer when My collection item is clicked', () => {
+  it('should navigate to MyCollection displayer when My collection item is clicked', (done) => {
     authService.isConnected$ = of(true);
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
-    fixture.nativeElement.querySelectorAll('.app-nav-item')[0].click();
-    expect(router.navigate).toHaveBeenCalledTimes(2);
-    expect(router.navigate).toHaveBeenCalledWith(['/collection']);
+    fixture.nativeElement.querySelectorAll('a')[0].click();
+
+    fixture.detectChanges();
+
+    fixture.whenStable().then(() => {
+      expect(router.navigate).toHaveBeenCalledTimes(2);
+      expect(router.navigate).toHaveBeenCalledWith(['/collection']);
+      expect(fixture.componentInstance.isCollectionTab()).toBe(true);
+      expect(fixture.componentInstance.isTradeTab()).toBe(false);
+      done();
+    });
   });
 
-  it('should navigate to Trade when Trade nav item is clicked', () => {
+  it('should navigate to Trade when Trade nav item is clicked', (done) => {
     authService.isConnected$ = of(true);
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
-    fixture.nativeElement.querySelectorAll('.app-nav-item')[1].click();
-    expect(router.navigate).toHaveBeenCalledWith(['/trade']);
-  });
+    fixture.nativeElement.querySelectorAll('a')[1].click();
+    fixture.detectChanges();
 
+    fixture.whenStable().then(() => {
+      expect(router.navigate).toHaveBeenCalledWith(['/trade']);
+      expect(fixture.componentInstance.isCollectionTab()).toBe(false);
+      expect(fixture.componentInstance.isTradeTab()).toBe(true);
+      done();
+    });
+  });
 
   it('should navigate to user home component when user is not connected', () => {
     authService.isConnected$ = of(false);
@@ -94,6 +115,7 @@ describe('AppComponent', () => {
     fixture.detectChanges();
 
     expect(router.navigate).toHaveBeenCalledWith(['/auth']);
+    expect(fixture.componentInstance.isCollectionTab()).toBe(false);
+    expect(fixture.componentInstance.isTradeTab()).toBe(false);
   });
-
 });

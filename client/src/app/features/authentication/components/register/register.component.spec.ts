@@ -4,6 +4,7 @@ import { RegisterComponent } from './register.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { of } from 'rxjs';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -14,9 +15,12 @@ describe('RegisterComponent', () => {
     const authSpy = jasmine.createSpyObj('AuthService', ['register']);
     await TestBed.configureTestingModule({
       providers: [{ provide: AuthService, useValue: authSpy }],
-      imports: [RegisterComponent, HttpClientTestingModule]
-    })
-    .compileComponents();
+      imports: [
+        RegisterComponent,
+        HttpClientTestingModule,
+        NoopAnimationsModule,
+      ],
+    }).compileComponents();
 
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     authService.register.and.callFake(() => of(''));

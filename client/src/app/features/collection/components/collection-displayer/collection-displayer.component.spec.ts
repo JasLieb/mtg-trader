@@ -2,9 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CollectionDisplayerComponent } from './collection-displayer.component';
 import { WantlistService } from '../../services/wantlist/wantlist.service';
-import { of } from 'rxjs';
-import { Wantlist } from '../../models/wantlist';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CollectionDisplayerComponent', () => {
   let component: CollectionDisplayerComponent;
@@ -13,9 +12,12 @@ describe('CollectionDisplayerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CollectionDisplayerComponent, HttpClientTestingModule]
-    })
-    .compileComponents();
+      imports: [
+        CollectionDisplayerComponent,
+        HttpClientTestingModule,
+        NoopAnimationsModule,
+      ],
+    }).compileComponents();
 
     wantlistService = TestBed.inject(
       WantlistService
@@ -31,38 +33,32 @@ describe('CollectionDisplayerComponent', () => {
   });
 
   it('should have wantlist and double tabs', () => {
-    const tabs = fixture.nativeElement.querySelectorAll('.collection-tab');
+    const tabs = fixture.nativeElement.querySelectorAll('.mat-mdc-tab');
     expect(tabs.length).toBe(2);
   });
 
-  it('should have wantlist displayed on wantlist tab clicked', () => {
-    const tabs = fixture.nativeElement.querySelectorAll('.collection-tab');
-
-    tabs[0].click();
+  it(`should have displayed wantlist`, (done) => {
+    fixture.nativeElement.querySelectorAll('.mat-mdc-tab')[0].click();
     fixture.detectChanges();
 
-    expect(component.areWantlistsDisplayed()).toBeTrue();
+    fixture.whenStable().then(() => {
+      const wantlist = fixture.nativeElement.querySelector(
+        'app-wantlists-manager'
+      );
+      expect(wantlist).toBeTruthy();
+      done();
+    });
   });
 
-  it('should have doubles displayed on double tab clicked', () => {
-    const tabs = fixture.nativeElement.querySelectorAll('.collection-tab');
-
-    tabs[1].click();
+  it(`should have displayed doubles`, (done) => {
+    fixture.nativeElement.querySelectorAll('.mat-mdc-tab')[1].click();
     fixture.detectChanges();
 
-    expect(component.areWantlistsDisplayed()).toBeFalse();
-  });
-
-  it(`should have displayed wantlist`, () => {
-    const wantlist = fixture.nativeElement.querySelector('app-wantlists-manager');
-    expect(wantlist).toBeTruthy();
-  });
-
-  it(`should have displayed doubles`, () => {
-    fixture.nativeElement.querySelectorAll('.collection-tab')[1].click();
-    fixture.detectChanges();
-
-    const doubles = fixture.nativeElement.querySelector('app-wantlist');
-    expect(doubles).toBeTruthy();
+    fixture.whenStable().then(() => {
+      const doubles =
+        fixture.debugElement.nativeElement.querySelector('app-wantlist');
+      expect(doubles).toBeTruthy();
+      done();
+    });
   });
 });

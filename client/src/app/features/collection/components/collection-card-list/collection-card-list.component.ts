@@ -1,13 +1,14 @@
 import { Component, EventEmitter, input, Output } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
 import { Card } from '../../../common/models/card';
-import { CardListComponent } from '../../../trade/components/card-list/card-list.component';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-collection-card-list',
   standalone: true,
-  imports: [],
+  imports: [MatCardModule, MatButtonModule],
   templateUrl: './collection-card-list.component.html',
-  styleUrl: './collection-card-list.component.scss'
+  styleUrl: './collection-card-list.component.scss',
 })
 export class CollectionCardListComponent {
   cards = input<Card[]>([]);

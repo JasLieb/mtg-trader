@@ -5,6 +5,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TradeService } from '../../services/trade/trade.service';
 import { of } from 'rxjs';
 import { UserDoubles } from '../../models/user-doubles';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('TradeHomeComponent', () => {
   let component: TradeHomeComponent;
@@ -15,13 +16,15 @@ describe('TradeHomeComponent', () => {
     const tradeSpy = jasmine.createSpyObj('TradeService', ['find']);
     await TestBed.configureTestingModule({
       providers: [{ provide: TradeService, useValue: tradeSpy }],
-      imports: [TradeHomeComponent, HttpClientTestingModule]
-    })
-    .compileComponents();
+      imports: [
+        TradeHomeComponent,
+        HttpClientTestingModule,
+        NoopAnimationsModule,
+      ],
+    }).compileComponents();
 
     service = TestBed.inject(TradeService) as jasmine.SpyObj<TradeService>;
     service.find.and.callFake(() => of([]));
-
   });
 
   function initFixture() {
@@ -41,14 +44,14 @@ describe('TradeHomeComponent', () => {
   });
 
   it('should display user with tradeable doubles when some', () => {
-    service.find.and.callFake(() => of([{}] as UserDoubles[]))
+    service.find.and.callFake(() => of([{}] as UserDoubles[]));
 
     initFixture();
 
     const users = fixture.nativeElement.querySelectorAll('.trade-user');
     expect(users.length).toBe(1);
 
-    const cardList = fixture.nativeElement.querySelector('app-card-list');
+    const cardList = fixture.nativeElement.querySelector('app-trade-card-list');
     expect(cardList).toBeTruthy();
   });
 });

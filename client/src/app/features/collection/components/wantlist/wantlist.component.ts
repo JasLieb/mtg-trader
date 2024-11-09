@@ -14,18 +14,13 @@ import { CollectionCardListComponent } from '../collection-card-list/collection-
 })
 export class WantlistComponent {
   wantlist = input({} as Wantlist);
-  canDelete = input<boolean>(true);
   name = computed(() => this.wantlist().name);
 
   constructor(private wantlistService: WantlistService) {}
 
-  deleteWantlist() {
-    this.wantlistService.delete(this.wantlist().id);
-  }
-
   addCardToWantlist(card: Card) {
     if (this.wantlist() != undefined) {
-      const updatedCards = [...this.wantlist().cards, card];
+      const updatedCards = [...(this.wantlist().cards ?? []), card];
       this.updateWantlist({
         id: this.wantlist().id,
         name: this.wantlist().name,
@@ -39,7 +34,7 @@ export class WantlistComponent {
       this.updateWantlist({
         id: this.wantlist().id,
         name: this.wantlist().name,
-        cards: this.wantlist().cards.filter(c => c.id !== card.id),
+        cards: this.wantlist().cards.filter((c) => c.id !== card.id),
       } as Wantlist);
     }
   }

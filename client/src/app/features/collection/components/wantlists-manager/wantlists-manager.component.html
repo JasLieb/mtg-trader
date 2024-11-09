@@ -1,8 +1,30 @@
-<div class="wantlists-manager-actions">
-  <input type="text" [formControl]="wantlistNameControl" placeholder="My new wantlist" />
-  <button (click)="addWantlist()">Create</button>
-</div>
+<div class="wantlist-manager-container">
+  <div class="wantlist-manager-actions">
+    <mat-form-field>
+      <input
+        matInput
+        type="text"
+        [formControl]="wantlistNameControl"
+        placeholder="My new wantlist"
+      />
+    </mat-form-field>
+    <button mat-button (click)="addWantlist()">Create</button>
+  </div>
 
-@for (wantlist of wantlists(); track wantlist.id) {
-  <app-wantlist [wantlist]="wantlist"></app-wantlist>
-}
+  <mat-accordion>
+    @for (wantlist of wantlists(); track wantlist.id) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{ wantlist.name }}</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-wantlist [wantlist]="wantlist"></app-wantlist>
+      <mat-action-row>
+        <button
+          mat-button
+          (click)="deleteWantlist(wantlist.id)"
+        >Delete wantlist</button>
+      </mat-action-row>
+    </mat-expansion-panel>
+    }
+  </mat-accordion>
+</div>

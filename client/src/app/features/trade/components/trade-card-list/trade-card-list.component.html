@@ -1,0 +1,8 @@
+<div class="trade-card-list-container">
+  @for (card of cards(); track card.id) {
+  <div class="trade-card">
+    <div class="trade-card-name">{{ card.name }}</div>
+    <img class="trade-card-image" [src]="card.image_uri" [alt]="card.name" />
+  </div>
+  }
+</div>

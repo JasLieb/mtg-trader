@@ -3,6 +3,7 @@ import { LoginComponent } from './login.component';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -13,7 +14,7 @@ describe('LoginComponent', () => {
     const authSpy = jasmine.createSpyObj('AuthService', ['login']);
     await TestBed.configureTestingModule({
       providers: [{ provide: AuthService, useValue: authSpy }],
-      imports: [LoginComponent, HttpClientTestingModule],
+      imports: [LoginComponent, HttpClientTestingModule, NoopAnimationsModule],
     }).compileComponents();
 
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;

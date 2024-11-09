@@ -1,16 +1,10 @@
-<p>{{ wantlist().name }}</p>
+<div class="wantlist-container">
+  <app-card-searcher
+    (onFoundCard)="addCardToWantlist($event)"
+  ></app-card-searcher>
 
-<div class="wantlist-actions">
-  @if (canDelete()) {
-    <button (click)="deleteWantlist()">Delete wantlist</button>
-  }
+  <app-collection-card-list
+    [cards]="wantlist().cards"
+    (onDeletedCard)="deleteCard($event)"
+  ></app-collection-card-list>
 </div>
-
-<app-card-searcher
-  (onFoundCard)="addCardToWantlist($event)"
-></app-card-searcher>
-
-<app-collection-card-list
-  [cards]="wantlist().cards"
-  (onDeletedCard)="deleteCard($event)"
-></app-collection-card-list>

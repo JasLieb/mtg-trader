@@ -4,6 +4,7 @@ import { WantlistComponent } from './wantlist.component';
 import { WantlistService } from '../../services/wantlist/wantlist.service';
 import { Card } from '../../../common/models/card';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('WantlistComponent', () => {
   let component: WantlistComponent;
@@ -12,14 +13,21 @@ describe('WantlistComponent', () => {
 
   beforeEach(async () => {
     const wantlistSpy = jasmine.createSpyObj('WantlistService', [
-      'updateWantlist', 'delete'
+      'updateWantlist',
+      'delete',
     ]);
     await TestBed.configureTestingModule({
       providers: [{ provide: WantlistService, useValue: wantlistSpy }],
-      imports: [HttpClientTestingModule, WantlistComponent],
+      imports: [
+        HttpClientTestingModule,
+        WantlistComponent,
+        NoopAnimationsModule,
+      ],
     }).compileComponents();
 
-    wantlistService = TestBed.inject(WantlistService) as jasmine.SpyObj<WantlistService>;
+    wantlistService = TestBed.inject(
+      WantlistService
+    ) as jasmine.SpyObj<WantlistService>;
 
     fixture = TestBed.createComponent(WantlistComponent);
     component = fixture.componentInstance;
@@ -28,7 +36,9 @@ describe('WantlistComponent', () => {
 
   it('should be created', () => {
     expect(component).toBeTruthy();
-    const cardList = fixture.nativeElement.querySelector('app-collection-card-list');
+    const cardList = fixture.nativeElement.querySelector(
+      'app-collection-card-list'
+    );
     expect(cardList).toBeTruthy();
   });
 
@@ -53,14 +63,6 @@ describe('WantlistComponent', () => {
     );
   });
 
-  it('should not have delete button when not allowed from input', () => {
-    fixture.componentRef.setInput('canDelete', false);
-    fixture.detectChanges();
-
-    const deleteButton = fixture.nativeElement.querySelector('button');
-    expect(deleteButton).toBe('hidden');
-  });
-
   it('should delete card when onDeleteCard emited', () => {
     fixture.componentRef.setInput('wantlist', {
       id: 'id',
@@ -73,19 +75,5 @@ describe('WantlistComponent', () => {
     expect(wantlistService.updateWantlist).toHaveBeenCalledWith(
       jasmine.objectContaining({ cards: [] })
     );
-  });
-
-  it('should allow wantlist deletion when delete button is clicked', () => {
-    fixture.componentRef.setInput('wantlist', {
-      id: 'id',
-      name: 'firstWantlist',
-      cards: [{ id: 'toto', name: 'toto' } as Card],
-    });
-
-    const deletionButton = fixture.nativeElement.querySelector('button');
-    deletionButton.click();
-
-    expect(wantlistService.delete.calls.count()).toBe(1);
-    expect(wantlistService.delete).toHaveBeenCalledWith('id');
   });
 });

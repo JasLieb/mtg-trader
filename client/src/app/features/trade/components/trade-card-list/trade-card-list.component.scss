@@ -1,11 +1,11 @@
-.collection-card-container {
+.trade-card-list-container {
   margin: 1%;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
 }
 
-.collection-card {
+.trade-card {
   flex: 1 0;
   margin: 1%;
   padding: 1%;
@@ -19,7 +19,7 @@
   max-height: fit-content;
 }
 
-.collection-card-image {
+.trade-card-image {
   width: 33%;
   height: auto;
 }

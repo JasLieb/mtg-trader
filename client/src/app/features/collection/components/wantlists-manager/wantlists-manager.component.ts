@@ -4,11 +4,20 @@ import { WantlistService } from '../../services/wantlist/wantlist.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { WantlistComponent } from '../wantlist/wantlist.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-wantlists-manager',
   standalone: true,
-  imports: [WantlistComponent, ReactiveFormsModule],
+  imports: [
+    WantlistComponent,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatButtonModule,
+    MatExpansionModule,
+  ],
   templateUrl: './wantlists-manager.component.html',
   styleUrl: './wantlists-manager.component.scss',
 })
@@ -23,6 +32,15 @@ export class WantlistsManagerComponent {
   }
 
   addWantlist() {
-    this.wantlistService.create(this.wantlistNameControl.value);
+    if (
+      this.wantlistNameControl.value &&
+      this.wantlistNameControl.value.length > 0
+    ) {
+      this.wantlistService.create(this.wantlistNameControl.value);
+    }
+  }
+
+  deleteWantlist(wantlistId: string) {
+    this.wantlistService.delete(wantlistId);
   }
 }

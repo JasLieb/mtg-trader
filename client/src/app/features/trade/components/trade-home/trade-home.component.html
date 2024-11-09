@@ -1,8 +1,17 @@
-@for (user of users(); track user.id) {
-<div class="trade-user">
-  <div>{{ user.name }}</div>
-  <app-card-list
-    [cards]="user.doubles"
-  ></app-card-list>
+<div class="trade-home-container">
+  <mat-accordion>
+    @for (user of users(); track user.id) {
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title class="trade-user">{{ user.name }}</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-trade-card-list [cards]="user.doubles"></app-trade-card-list>
+      <!-- <mat-action-row>
+        <button mat-button (click)="deleteWantlist(wantlist.id)">
+          Delete wantlist
+        </button>
+      </mat-action-row> -->
+    </mat-expansion-panel>
+    }
+  </mat-accordion>
 </div>
-}

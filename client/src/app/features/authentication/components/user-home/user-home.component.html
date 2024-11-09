@@ -1,11 +1,8 @@
-<div class="user-home-tabs">
-  <div class="user-home-tab" (click)="showLogin()">Login</div>
-  <div class="user-home-tab" (click)="showRegister()">Register</div>
-</div>
-
-@if (isLoginMode()) {
-  <app-login></app-login>
-}
-@else {
-  <app-register></app-register>
-}
+<mat-tab-group>
+  <mat-tab class="user-home-tab" label="Login">
+    <app-login></app-login>
+  </mat-tab>
+  <mat-tab class="user-home-tab" label="Register">
+    <app-register></app-register>
+  </mat-tab>
+</mat-tab-group>

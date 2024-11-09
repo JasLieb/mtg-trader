@@ -1,9 +1,13 @@
-<ul>
+<div class="collection-card-container">
   @for (card of cards(); track card.id) {
-  <li>
-    <div class="card-name">{{ card.name }}</div>
-    <img class="card-image" src="{{ card.image_uri }}" />
-    <button (click)="deleteCard(card)">Delete</button>
-  </li>
+    <div class="collection-card">
+      <div class="collection-card-name">{{card.name}}</div>
+      <img
+        class="collection-card-image"
+        [src]="card.image_uri"
+        [alt]="card.name"
+      />
+      <button mat-button (click)="deleteCard(card)">Delete</button>
+    </div>
   }
-</ul>
+</div>

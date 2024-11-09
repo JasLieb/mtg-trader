@@ -1,11 +1,8 @@
-<div class="collection-tabs">
-  <div class="collection-tab" (click)="showWantlists()">Wantlists</div>
-  <div class="collection-tab" (click)="showDoubles()">Doubles</div>
-</div>
-
-@if (areWantlistsDisplayed()) {
-  <app-wantlists-manager></app-wantlists-manager>
-}
-@else {
-  <app-wantlist [canDelete]="false" [wantlist]="doubles()"></app-wantlist>
-}
+<mat-tab-group>
+  <mat-tab label="Wantlists">
+    <app-wantlists-manager></app-wantlists-manager>
+  </mat-tab>
+  <mat-tab label="Doubles">
+    <app-wantlist [wantlist]="doubles()"></app-wantlist>
+  </mat-tab>
+</mat-tab-group>

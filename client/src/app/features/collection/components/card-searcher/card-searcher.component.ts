@@ -7,14 +7,24 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { CardService } from '../../../common/services/card/card.service';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
 import { debounceTime, distinctUntilChanged, filter, mergeMap } from 'rxjs';
 import { Card } from '../../../common/models/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-card-searcher',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    FormsModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    MatButtonModule,
+  ],
   templateUrl: './card-searcher.component.html',
   styleUrl: './card-searcher.component.scss',
 })

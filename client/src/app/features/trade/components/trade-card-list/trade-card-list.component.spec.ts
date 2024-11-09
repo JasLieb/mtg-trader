@@ -1,19 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CardListComponent } from './card-list.component';
+import { TradeCardListComponent } from './trade-card-list.component';
 import { Card } from '../../../common/models/card';
 
-describe('CardListComponent', () => {
-  let component: CardListComponent;
-  let fixture: ComponentFixture<CardListComponent>;
+describe('TradeCardListComponent', () => {
+  let component: TradeCardListComponent;
+  let fixture: ComponentFixture<TradeCardListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CardListComponent],
-    }).compileComponents();
+      imports: [TradeCardListComponent]
+    })
+    .compileComponents();
 
-    fixture = TestBed.createComponent(CardListComponent);
+    fixture = TestBed.createComponent(TradeCardListComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   function initInput() {
@@ -30,7 +32,7 @@ describe('CardListComponent', () => {
   it('should have displayed cards when input is setted', () => {
     initInput();
 
-    const firstCard = fixture.nativeElement.querySelector('.card-name');
+    const firstCard = fixture.nativeElement.querySelector('.trade-card-name');
     expect(firstCard.textContent).toBe('toto');
   });
 });

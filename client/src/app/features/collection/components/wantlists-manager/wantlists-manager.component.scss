@@ -1,0 +1,14 @@
+.wantlist-manager-container {
+  margin: 1%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
+
+.wantlist-manager-actions {
+  margin: 1% 0;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-evenly;
+}

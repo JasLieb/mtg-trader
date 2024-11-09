@@ -2,12 +2,12 @@ import { Component, EventEmitter, input, Input, Output, signal } from '@angular/
 import { Card } from '../../../common/models/card';
 
 @Component({
-  selector: 'app-card-list',
+  selector: 'app-trade-card-list',
   standalone: true,
   imports: [],
-  templateUrl: './card-list.component.html',
-  styleUrl: './card-list.component.scss',
+  templateUrl: './trade-card-list.component.html',
+  styleUrl: './trade-card-list.component.scss',
 })
-export class CardListComponent {
+export class TradeCardListComponent {
   cards = input<Card[]>([]);
 }

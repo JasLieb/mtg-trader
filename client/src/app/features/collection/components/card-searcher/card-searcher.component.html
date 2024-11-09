@@ -1,16 +1,36 @@
-<div>
+<form class="example-form">
+  <mat-form-field class="example-full-width">
+    <input
+      matInput
+      type="text"
+      [formControl]="searchControl"
+      placeholder="Exotic Orchard"
+      [formControl]="searchControl"
+      [matAutocomplete]="auto"
+      class="example-input"
+    />
+    <mat-autocomplete #auto="matAutocomplete">
+      @for (card of results(); track card.id) {
+      <mat-option (click)="onCardClicked(card)">{{ card.name }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+  <button mat-button (click)="onAddCard()">Add to wantlist</button>
+</form>
+
+<!-- <div>
   <input
     type="text"
     [formControl]="searchControl"
     placeholder="Exotic Orchard"
   />
   <button (click)="onAddCard()">Add to wantlist</button>
-</div>
+</div>-->
 
-@if (results()) {
+<!-- @if (results()) {
 <ul>
   @for (result of results(); track result.id) {
   <li (click)="onCardClicked(result)">{{ result.name }}</li>
   }
 </ul>
-}
+} -->

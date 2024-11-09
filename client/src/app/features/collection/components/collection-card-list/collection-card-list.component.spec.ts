@@ -9,9 +9,8 @@ describe('CollectionCardListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CollectionCardListComponent]
-    })
-    .compileComponents();
+      imports: [CollectionCardListComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CollectionCardListComponent);
     component = fixture.componentInstance;
@@ -34,11 +33,14 @@ describe('CollectionCardListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have card list component displayed when input is setted', () => {
+  it('should have card list component displayed when input is setted', (done) => {
     initInput();
 
-    const firstCard = fixture.nativeElement.querySelector('.card-name');
-    expect(firstCard.textContent).toBe('toto');
+    fixture.whenStable().then(() => {
+      const firstCard = fixture.nativeElement.querySelector('.collection-card-name');
+      expect(firstCard.textContent).toBe('toto');
+      done();
+    });
   });
 
   it('should have delete card button when output is setted', () => {

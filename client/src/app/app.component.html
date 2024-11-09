@@ -1,10 +1,16 @@
-<div>{{ title }}</div>
 
-@if (isConnected()) {
-   <div class="app-nav-bar">
-      <div class="app-nav-item" (click)="navigateMyCollection()">My collection</div>
-      <div class="app-nav-item" (click)="navigateTrade()">Trade</div>
-   </div>
-}
+<div class="app-container">
 
-<router-outlet />
+  <div class="app-nav-container">
+    <div class="app-title">{{ title }}</div>
+    @if (isConnected()) {
+      <nav class="app-nav-bar">
+        <a [class.app-a-selected]="isCollectionTab()" (click)="navigateMyCollection()">My collection</a>
+        <a [class.app-a-selected]="isTradeTab()" (click)="navigateTrade()">Trade</a>
+      </nav>
+    }
+  </div>
+  <div class="app-body">
+    <router-outlet />
+  </div>
+</div>

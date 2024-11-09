@@ -1,6 +1,7 @@
 import {
   ComponentFixture,
   fakeAsync,
+  flush,
   TestBed,
   tick,
 } from '@angular/core/testing';
@@ -9,6 +10,8 @@ import { CardSearcherComponent } from './card-searcher.component';
 import { CardService } from '../../../common/services/card/card.service';
 import { Card } from '../../../common/models/card';
 import { of } from 'rxjs';
+import { By } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CardSearcherComponent', () => {
   let component: CardSearcherComponent;
@@ -20,7 +23,7 @@ describe('CardSearcherComponent', () => {
 
     await TestBed.configureTestingModule({
       providers: [{ provide: CardService, useValue: cardSpy }],
-      imports: [CardSearcherComponent],
+      imports: [CardSearcherComponent, NoopAnimationsModule],
     }).compileComponents();
 
     cardService = TestBed.inject(CardService) as jasmine.SpyObj<CardService>;
@@ -55,43 +58,83 @@ describe('CardSearcherComponent', () => {
 
     expect(cardService.search.calls.count()).toEqual(1);
     expect(cardService.search).toHaveBeenCalledWith('toto');
+    flush();
   }));
 
   it('should not display found card when no search results', () => {
-    const results = fixture.nativeElement.querySelector('ul');
-    expect(results).toBeNull();
+    const results = document.querySelectorAll('mat-option');
+    expect(results.length).toBe(0);
   });
 
-  it('should display found card when search result is returned', fakeAsync(() => {
+  it('should display found card when search result is returned', (done) => {
     cardService.search.and.returnValue(
       of([{ id: 't', name: 'toto' }] as Card[])
     );
-    component.searchControl.setValue('toto');
-    tick(500);
+    const inputElement = fixture.debugElement.query(By.css('input')); // Returns DebugElement
+    inputElement.nativeElement.dispatchEvent(new Event('focusin'));
+    inputElement.nativeElement.value = 'toto';
+    inputElement.nativeElement.dispatchEvent(new Event('input'));
 
     fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();
 
-    const results = fixture.nativeElement.querySelector('li');
-    expect(results).toBeTruthy();
-  }));
-
-  it("should replace selected result and clear results when found card's name is clicked", () => {
-    component.results.set([{ id: 't', name: 'toto' }] as Card[]);
-    fixture.detectChanges();
-
-    fixture.nativeElement.querySelector('li').click();
-
-    expect(component.searchControl.value).toBe('toto');
-    expect(component.results()).toBe(undefined);
+      const results = document.querySelectorAll('mat-option');
+      console.log(results);
+      expect(results.length).toBe(1);
+      done();
+    });
   });
 
-  it('should emit output event when add card is clicked', () => {
+  it("should replace selected result and clear results when found card's name is clicked", (done) => {
+    cardService.search.and.returnValue(
+      of([{ id: 't', name: 'toto' }] as Card[])
+    );
     component.results.set([{ id: 't', name: 'toto' }] as Card[]);
     fixture.detectChanges();
-    fixture.nativeElement.querySelector('li').click();
 
-    fixture.nativeElement.querySelector('button').click();
+    const inputElement = fixture.debugElement.query(By.css('input')); // Returns DebugElement
+    inputElement.nativeElement.dispatchEvent(new Event('focusin'));
+    inputElement.nativeElement.value = 'toto';
+    inputElement.nativeElement.dispatchEvent(new Event('input'));
 
-    expect(component.onFoundCard.emit).toHaveBeenCalledWith({ id: 't', name: 'toto' } as Card);
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+
+      fixture.detectChanges();
+
+      const matOptions = document.querySelectorAll('mat-option');
+      (matOptions[0] as HTMLElement).click();
+
+      expect(component.searchControl.value).toBe('toto');
+      expect(component.results()).toBe(undefined);
+      done();
+    });
+  });
+
+  it('should emit output event when add card is clicked', (done) => {
+    cardService.search.and.returnValue(
+      of([{ id: 't', name: 'toto' }] as Card[])
+    );
+    component.results.set([{ id: 't', name: 'toto' }] as Card[]);
+
+    const inputElement = fixture.debugElement.query(By.css('input')); // Returns DebugElement
+    inputElement.nativeElement.dispatchEvent(new Event('focusin'));
+    inputElement.nativeElement.value = 'toto';
+    inputElement.nativeElement.dispatchEvent(new Event('input'));
+
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      (document.querySelectorAll('mat-option')[0] as HTMLElement).click();
+
+      var btns = fixture.nativeElement.querySelectorAll('button');
+      btns[btns.length - 1].click();
+
+      expect(component.onFoundCard.emit).toHaveBeenCalledWith({
+        id: 't',
+        name: 'toto',
+      } as Card);
+      done();
+    });
   });
 });
