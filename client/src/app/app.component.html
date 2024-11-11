@@ -1,16 +1,49 @@
-
 <div class="app-container">
+  <mat-drawer-container class="app-drawer-container">
+    <mat-drawer #drawer class="app-drawer-sidenav" mode="side">
+      <mat-list role="list">
+        <h2 matSubheader>My Collection</h2>
+        <mat-list-item
+          class="app-nav-item"
+          role="listitem"
+          [class.app-a-selected]="isWantlists()"
+          (click)="navigateWantlists()"
+          >Wantlists</mat-list-item
+        >
+        <mat-list-item
+          class="app-nav-item"
+          role="listitem"
+          [class.app-a-selected]="isDoubles()"
+          (click)="navigateDoubles()"
+          >Doubles</mat-list-item
+        >
+        <h2 matSubheader>Trade</h2>
+        <mat-list-item
+          class="app-nav-item"
+          role="listitem"
+          [class.app-a-selected]="isTradeTab()"
+          (click)="navigateTrade()"
+          >Trade</mat-list-item
+        >
+      </mat-list>
+    </mat-drawer>
 
-  <div class="app-nav-container">
-    <div class="app-title">{{ title }}</div>
-    @if (isConnected()) {
-      <nav class="app-nav-bar">
-        <a [class.app-a-selected]="isCollectionTab()" (click)="navigateMyCollection()">My collection</a>
-        <a [class.app-a-selected]="isTradeTab()" (click)="navigateTrade()">Trade</a>
-      </nav>
-    }
-  </div>
-  <div class="app-body">
-    <router-outlet />
+    <mat-drawer-content class="app-drawer-content">
+      <div class="app-nav-bar">
+        @if (isConnected()) {
+        <button mat-icon-button type="button" (click)="drawer.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        }
+        <div class="app-title">{{ title }}</div>
+      </div>
+
+      <div class="app-body">
+        <router-outlet />
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+  <div class="app-footer">
+    <div>Created by JasLieb - 2024</div>
   </div>
 </div>

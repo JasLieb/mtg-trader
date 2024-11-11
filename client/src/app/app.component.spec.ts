@@ -4,6 +4,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AuthService } from './core/services/auth/auth.service';
 import { of } from 'rxjs';
 import { Router, RouterModule } from '@angular/router';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('AppComponent', () => {
   let authService: jasmine.SpyObj<AuthService>;
@@ -24,6 +25,7 @@ describe('AppComponent', () => {
         AppComponent,
         HttpClientTestingModule,
         RouterModule.forRoot([]),
+        NoopAnimationsModule
       ],
     }).compileComponents();
 
@@ -54,39 +56,43 @@ describe('AppComponent', () => {
     const nav = fixture.nativeElement.querySelector('.app-nav-bar');
     expect(nav).toBeTruthy();
 
-    const navElements = fixture.nativeElement.querySelectorAll('a');
-    expect(navElements.length).toBe(2);
-    expect(navElements[0].innerText).toBe('My collection');
-    expect(navElements[1].innerText).toBe('Trade');
+    const navElements = fixture.nativeElement.querySelectorAll('.app-nav-item');
+    expect(navElements.length).toBe(3);
+    expect(navElements[0].innerText).toBe('Wantlists');
+    expect(navElements[1].innerText).toBe('Doubles');
+    expect(navElements[2].innerText).toBe('Trade');
   });
 
-  it('should navigate to MyCollection displayer when user is connected', (done) => {
+  it('should navigate to Wantlists when user is connected', (done) => {
     authService.isConnected$ = of(true);
     const fixture = TestBed.createComponent(AppComponent);
 
     fixture.detectChanges();
 
     fixture.whenStable().then(() => {
-      expect(router.navigate).toHaveBeenCalledWith(['/collection']);
-      expect(fixture.componentInstance.isCollectionTab()).toBe(true);
+      expect(router.navigate).toHaveBeenCalledWith(['/wantlists']);
+      expect(fixture.componentInstance.isWantlists()).toBe(true);
+      expect(fixture.componentInstance.isDoubles()).toBe(false);
       expect(fixture.componentInstance.isTradeTab()).toBe(false);
       done();
     });
   });
 
-  it('should navigate to MyCollection displayer when My collection item is clicked', (done) => {
+  it('should navigate to Wantlists when My collection wantlists item is clicked', (done) => {
     authService.isConnected$ = of(true);
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
-    fixture.nativeElement.querySelectorAll('a')[0].click();
+    fixture.nativeElement.querySelectorAll('.app-nav-item')[0].click();
 
     fixture.detectChanges();
 
     fixture.whenStable().then(() => {
       expect(router.navigate).toHaveBeenCalledTimes(2);
-      expect(router.navigate).toHaveBeenCalledWith(['/collection']);
-      expect(fixture.componentInstance.isCollectionTab()).toBe(true);
+      expect(router.navigate).toHaveBeenCalledWith(['/wantlists']);
+
+      expect(fixture.componentInstance.isWantlists()).toBe(true);
+      expect(fixture.componentInstance.isDoubles()).toBe(false);
       expect(fixture.componentInstance.isTradeTab()).toBe(false);
       done();
     });
@@ -97,12 +103,13 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
-    fixture.nativeElement.querySelectorAll('a')[1].click();
+    fixture.nativeElement.querySelectorAll('.app-nav-item')[2].click();
     fixture.detectChanges();
 
     fixture.whenStable().then(() => {
       expect(router.navigate).toHaveBeenCalledWith(['/trade']);
-      expect(fixture.componentInstance.isCollectionTab()).toBe(false);
+      expect(fixture.componentInstance.isWantlists()).toBe(false);
+      expect(fixture.componentInstance.isDoubles()).toBe(false);
       expect(fixture.componentInstance.isTradeTab()).toBe(true);
       done();
     });
@@ -115,7 +122,6 @@ describe('AppComponent', () => {
     fixture.detectChanges();
 
     expect(router.navigate).toHaveBeenCalledWith(['/auth']);
-    expect(fixture.componentInstance.isCollectionTab()).toBe(false);
     expect(fixture.componentInstance.isTradeTab()).toBe(false);
   });
 });

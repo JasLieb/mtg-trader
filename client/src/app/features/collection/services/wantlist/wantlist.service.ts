@@ -24,7 +24,7 @@ export class WantlistService {
   private wantlistsBehavior = new BehaviorSubject<Wantlist[]>([]);
   wantlists$ = this.wantlistsBehavior.asObservable();
 
-  private doublesBehavior = new Subject<Wantlist>();
+  private doublesBehavior = new BehaviorSubject<Wantlist>({} as Wantlist);
   doubles$ = this.doublesBehavior.asObservable();
 
   constructor(private http: HttpClient, private cardService: CardService) {
