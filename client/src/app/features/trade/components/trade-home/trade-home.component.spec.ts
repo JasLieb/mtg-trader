@@ -54,4 +54,12 @@ describe('TradeHomeComponent', () => {
     const cardList = fixture.nativeElement.querySelector('app-trade-card-list');
     expect(cardList).toBeTruthy();
   });
+
+  it('should have trade actions', () => {
+    service.find.and.callFake(() => of([{}] as UserDoubles[]));
+    initFixture();
+
+    const actions = fixture.nativeElement.querySelectorAll('.trade-user-action');
+    expect(actions.length).toBe(1);
+  });
 });

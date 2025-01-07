@@ -6,11 +6,11 @@
           <mat-panel-title class="trade-user">{{ user.name }}</mat-panel-title>
         </mat-expansion-panel-header>
         <app-trade-card-list [cards]="user.doubles"></app-trade-card-list>
-      <!-- <mat-action-row>
-        <button mat-button (click)="deleteWantlist(wantlist.id)">
-          Delete wantlist
+      <mat-action-row>
+        <button mat-button class="trade-user-action">
+          
         </button>
-      </mat-action-row> -->
+      </mat-action-row>
     </mat-expansion-panel>
     }
   </mat-accordion>

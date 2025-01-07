@@ -3,11 +3,12 @@ import { TradeService } from '../../services/trade/trade.service';
 import { UserDoubles } from '../../models/user-doubles';
 import { TradeCardListComponent } from '../trade-card-list/trade-card-list.component';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-trade-home',
   standalone: true,
-  imports: [TradeCardListComponent, MatExpansionModule],
+  imports: [TradeCardListComponent, MatExpansionModule, MatButtonModule],
   templateUrl: './trade-home.component.html',
   styleUrl: './trade-home.component.scss',
 })
