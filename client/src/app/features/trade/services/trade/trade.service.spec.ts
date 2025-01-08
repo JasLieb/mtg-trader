@@ -54,11 +54,7 @@ describe('TradeService', () => {
           {
             id: 'toto',
             name: 'jas',
-            doubles: {
-              id: 'toto_doubles',
-              name: 'doubles',
-              cardIds: ['card'],
-            },
+            doubles: ['card']
           },
         ],
       },
@@ -85,11 +81,7 @@ describe('TradeService', () => {
           {
             id: 'toto',
             name: 'jas',
-            doubles: {
-              id: 'toto_doubles',
-              name: 'doubles',
-              cardIds: ['card'],
-            },
+            doubles: ['card']
           },
         ],
       },

@@ -18,8 +18,7 @@ export class TradeService {
     return this.httpClient.get('api/trade').pipe(
       switchMap((response: any) => {
         const cardsObs: Observable<Card>[] = (response.users as any[]).flatMap(
-          (users: any) =>
-            users.doubles.map((c: any) => this.cardService.fetch(c))
+          (user: any) => user.doubles.map((c: any) => this.cardService.fetch(c))
         );
         return cardsObs.length == 0
           ? of({
