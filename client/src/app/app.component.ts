@@ -1,11 +1,12 @@
-import { Component, signal, Signal, WritableSignal } from '@angular/core';
+import { Component, computed, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Router, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from './core/services/auth/auth.service';
+import { NavigationService } from './core/services/navigation/navigation.service';
 
 @Component({
   selector: 'app-root',
@@ -22,61 +23,55 @@ import { AuthService } from './core/services/auth/auth.service';
 })
 export class AppComponent {
   title = 'MTG Trader';
-  isTradeTab: WritableSignal<boolean>;
-  isWantlists: WritableSignal<boolean>;
-  isDoubles: WritableSignal<boolean>;
+  currentRoute: Signal<string>;
+  isTradeTab: Signal<boolean>;
+  isWantlistsTab: Signal<boolean>;
+  isDoublesTab: Signal<boolean>;
   isConnected: Signal<boolean>;
 
-  constructor(authService: AuthService, private router: Router) {
+  constructor(
+    authService: AuthService,
+    private navigationService: NavigationService
+  ) {
     this.isConnected = toSignal(authService.isConnected$, {
       initialValue: false,
     });
-    this.isWantlists = signal(false);
-    this.isDoubles = signal(false);
-    this.isTradeTab = signal(false);
+    this.currentRoute = toSignal(navigationService.currentRoute$, {
+      initialValue: '',
+    });
+    this.isWantlistsTab = computed(
+      () => this.currentRoute() === navigationService.wantlistsUrl
+    );
+    this.isDoublesTab = computed(
+      () => this.currentRoute() === navigationService.doublesUrl
+    );
+    this.isTradeTab = computed(
+      () => this.currentRoute() === navigationService.tradeUrl
+    );
 
     authService.isConnected$.subscribe((isConnected) => {
-      if (isConnected) this.navigateWantlists();
+      if (isConnected) this.resumeNavigation();
       else this.navigateAuth();
     });
   }
 
   private navigateAuth() {
-    this.router.navigate(['/auth']);
-    this.isTradeTab.set(false);
-    this.isWantlists.set(false);
-    this.isDoubles.set(false);
+    this.navigationService.navigateAuth();
   }
 
-  navigateMyCollection() {
-    this.router.navigate(['/collection']).then(() => {
-      this.isWantlists.set(false);
-      this.isDoubles.set(false);
-      this.isTradeTab.set(false);
-    });
+  private resumeNavigation() {
+    this.navigationService.resumeLastRoute();
   }
 
   navigateTrade() {
-    this.router.navigate(['/trade']).then(() => {
-      this.isWantlists.set(false);
-      this.isDoubles.set(false);
-      this.isTradeTab.set(true);
-    });
+    this.navigationService.navigateTrade();
   }
 
   navigateWantlists() {
-    this.router.navigate(['/wantlists']).then(() => {
-      this.isTradeTab.set(false);
-      this.isDoubles.set(false);
-      this.isWantlists.set(true);
-    });
+    this.navigationService.navigateWantlists();
   }
 
   navigateDoubles() {
-    this.router.navigate(['/doubles']).then(() => {
-      this.isTradeTab.set(false);
-      this.isWantlists.set(false);
-      this.isDoubles.set(true);
-    });
+    this.navigationService.navigateDoubles();
   }
 }

@@ -3,38 +3,40 @@ import { AppComponent } from './app.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AuthService } from './core/services/auth/auth.service';
 import { of } from 'rxjs';
-import { Router, RouterModule } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { NavigationService } from './core/services/navigation/navigation.service';
 
 describe('AppComponent', () => {
   let authService: jasmine.SpyObj<AuthService>;
-  let router: Router;
+  let navService: jasmine.SpyObj<NavigationService>;
 
   beforeEach(async () => {
     const authSpy = jasmine.createSpyObj('AuthService', ['login']);
-    const routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
-
-    routerSpy.navigate.and.callFake(() => Promise.resolve(true));
+    const navSpy = jasmine.createSpyObj('NavigationService', [
+      'resumeLastRoute',
+      'navigateAuth',
+      'navigateTrade',
+      'navigateWantlists',
+      'navigateDoubles',
+    ]);
 
     await TestBed.configureTestingModule({
       providers: [
         { provide: AuthService, useValue: authSpy },
-        { provide: Router, useValue: routerSpy },
+        { provide: NavigationService, useValue: navSpy },
       ],
-      imports: [
-        AppComponent,
-        HttpClientTestingModule,
-        RouterModule.forRoot([]),
-        NoopAnimationsModule
-      ],
+      imports: [AppComponent, HttpClientTestingModule, NoopAnimationsModule],
     }).compileComponents();
 
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    router = TestBed.inject(Router);
+    navService = TestBed.inject(
+      NavigationService
+    ) as jasmine.SpyObj<NavigationService>;
   });
 
   it('should create the app', () => {
     authService.isConnected$ = of(true);
+    navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
@@ -42,6 +44,7 @@ describe('AppComponent', () => {
 
   it(`should have the 'MTG Trader' title`, () => {
     authService.isConnected$ = of(true);
+    navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app.title).toEqual('MTG Trader');
@@ -49,6 +52,7 @@ describe('AppComponent', () => {
 
   it('should have nav bar when user is connected', () => {
     authService.isConnected$ = of(true);
+    navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
 
     fixture.detectChanges();
@@ -63,65 +67,79 @@ describe('AppComponent', () => {
     expect(navElements[2].innerText).toBe('Trade');
   });
 
-  it('should navigate to Wantlists when user is connected', (done) => {
+  it('should resume navigation when user is connected', () => {
     authService.isConnected$ = of(true);
+    navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
-
     fixture.detectChanges();
-
-    fixture.whenStable().then(() => {
-      expect(router.navigate).toHaveBeenCalledWith(['/wantlists']);
-      expect(fixture.componentInstance.isWantlists()).toBe(true);
-      expect(fixture.componentInstance.isDoubles()).toBe(false);
-      expect(fixture.componentInstance.isTradeTab()).toBe(false);
-      done();
-    });
+    expect(navService.resumeLastRoute).toHaveBeenCalled();
   });
 
-  it('should navigate to Wantlists when My collection wantlists item is clicked', (done) => {
+  it('should navigate to Wantlists when My collection wantlists item is clicked', () => {
     authService.isConnected$ = of(true);
+    navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
+    navService.currentRoute$ = of(navService.wantlistsUrl);
     fixture.nativeElement.querySelectorAll('.app-nav-item')[0].click();
 
     fixture.detectChanges();
 
-    fixture.whenStable().then(() => {
-      expect(router.navigate).toHaveBeenCalledTimes(2);
-      expect(router.navigate).toHaveBeenCalledWith(['/wantlists']);
-
-      expect(fixture.componentInstance.isWantlists()).toBe(true);
-      expect(fixture.componentInstance.isDoubles()).toBe(false);
-      expect(fixture.componentInstance.isTradeTab()).toBe(false);
-      done();
-    });
+    expect(navService.navigateWantlists).toHaveBeenCalled();
   });
 
-  it('should navigate to Trade when Trade nav item is clicked', (done) => {
+  it('should navigate to Trade when Trade nav item is clicked', () => {
     authService.isConnected$ = of(true);
+    navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
     fixture.nativeElement.querySelectorAll('.app-nav-item')[2].click();
-    fixture.detectChanges();
 
-    fixture.whenStable().then(() => {
-      expect(router.navigate).toHaveBeenCalledWith(['/trade']);
-      expect(fixture.componentInstance.isWantlists()).toBe(false);
-      expect(fixture.componentInstance.isDoubles()).toBe(false);
-      expect(fixture.componentInstance.isTradeTab()).toBe(true);
-      done();
-    });
+    expect(navService.navigateTrade).toHaveBeenCalled();
   });
 
   it('should navigate to user home component when user is not connected', () => {
+    navService.currentRoute$ = of('');
     authService.isConnected$ = of(false);
     const fixture = TestBed.createComponent(AppComponent);
 
     fixture.detectChanges();
 
-    expect(router.navigate).toHaveBeenCalledWith(['/auth']);
-    expect(fixture.componentInstance.isTradeTab()).toBe(false);
+    expect(navService.navigateAuth).toHaveBeenCalled();
+  });
+
+  it('should have wantlist underlined when is wantlists url', () => {
+    navService.currentRoute$ = of(navService.wantlistsUrl);
+    authService.isConnected$ = of(true);
+    const fixture = TestBed.createComponent(AppComponent);
+
+    fixture.detectChanges();
+
+    const wantlistItem = fixture.nativeElement.querySelector('.app-a-selected');
+
+    expect(fixture.componentInstance.isWantlistsTab()).toBeTrue();
+    expect(wantlistItem.innerText).toBe('Wantlists');
+  });
+
+  it('should have doubles underlined when is doubles url', () => {
+    authService.isConnected$ = of(true);
+    navService.currentRoute$ = of(navService.doublesUrl);
+    const fixture = TestBed.createComponent(AppComponent);
+
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.isDoublesTab()).toBeTrue();
+  });
+
+  it('should have trade underlined when is trade url', () => {
+    navService.currentRoute$ = of(navService.tradeUrl);
+    authService.isConnected$ = of(true);
+    const fixture = TestBed.createComponent(AppComponent);
+
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.isTradeTab()).toBeTrue();
   });
 });

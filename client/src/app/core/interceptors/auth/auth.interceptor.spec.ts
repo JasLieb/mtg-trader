@@ -3,6 +3,7 @@ import { HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest, HttpResponse 
 
 import { authInterceptor } from './auth.interceptor';
 import { Observable, of } from 'rxjs';
+import { initLocalStorageForTests } from '../../utils/localStorage';
 
 describe('authInterceptor', () => {
   const interceptor: HttpInterceptorFn = (req, next) =>
@@ -11,11 +12,7 @@ describe('authInterceptor', () => {
   let localStore: any;
 
   beforeEach(() => {
-    localStore = {};
-
-    spyOn(window.localStorage, 'getItem').and.callFake((key) =>
-      key in localStore ? localStore[key] : null
-    );
+    localStore = initLocalStorageForTests();
     TestBed.configureTestingModule({});
   });
 

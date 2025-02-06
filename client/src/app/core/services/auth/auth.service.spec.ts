@@ -5,6 +5,7 @@ import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
+import { initLocalStorageForTests } from '../../utils/localStorage';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -12,16 +13,7 @@ describe('AuthService', () => {
   let localStore: any;
 
   beforeEach(() => {
-    localStore = { 'usr-token': 'toto' };
-
-    spyOn(window.localStorage, 'getItem').and.callFake((key) =>
-      key in localStore ? localStore[key] : null
-    );
-    spyOn(window.localStorage, 'setItem').and.callFake(
-      (key, value) => (localStore[key] = value + '')
-    );
-    spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
-
+    localStore = initLocalStorageForTests();
     TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
     httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(AuthService);
