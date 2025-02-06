@@ -6,11 +6,10 @@ import { Card } from '../../../common/models/card';
 import { CollectionCardListComponent } from '../collection-card-list/collection-card-list.component';
 
 @Component({
-  selector: 'app-wantlist',
-  standalone: true,
-  imports: [CollectionCardListComponent, CardSearcherComponent],
-  templateUrl: './wantlist.component.html',
-  styleUrl: './wantlist.component.scss',
+    selector: 'app-wantlist',
+    imports: [CollectionCardListComponent, CardSearcherComponent],
+    templateUrl: './wantlist.component.html',
+    styleUrl: './wantlist.component.scss'
 })
 export class WantlistComponent {
   wantlist = input({} as Wantlist);

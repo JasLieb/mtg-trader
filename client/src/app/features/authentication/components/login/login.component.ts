@@ -12,11 +12,10 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [ReactiveFormsModule, MatButtonModule, FormsModule, MatInputModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+    selector: 'app-login',
+    imports: [ReactiveFormsModule, MatButtonModule, FormsModule, MatInputModule],
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.scss'
 })
 export class LoginComponent {
   form: FormGroup;

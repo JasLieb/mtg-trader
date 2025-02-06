@@ -17,17 +17,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
-  selector: 'app-card-searcher',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    FormsModule,
-    MatInputModule,
-    MatAutocompleteModule,
-    MatButtonModule,
-  ],
-  templateUrl: './card-searcher.component.html',
-  styleUrl: './card-searcher.component.scss',
+    selector: 'app-card-searcher',
+    imports: [
+        ReactiveFormsModule,
+        FormsModule,
+        MatInputModule,
+        MatAutocompleteModule,
+        MatButtonModule,
+    ],
+    templateUrl: './card-searcher.component.html',
+    styleUrl: './card-searcher.component.scss'
 })
 export class CardSearcherComponent implements OnInit, OnDestroy {
   private selectedCard: Card | undefined;

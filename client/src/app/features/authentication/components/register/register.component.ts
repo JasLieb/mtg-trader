@@ -12,11 +12,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 
 @Component({
-  selector: 'app-register',
-  standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, MatInputModule, MatButtonModule],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
+    selector: 'app-register',
+    imports: [ReactiveFormsModule, FormsModule, MatInputModule, MatButtonModule],
+    templateUrl: './register.component.html',
+    styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
   form: FormGroup;

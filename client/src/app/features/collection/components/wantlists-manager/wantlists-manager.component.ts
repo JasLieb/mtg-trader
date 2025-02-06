@@ -9,17 +9,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
-  selector: 'app-wantlists-manager',
-  standalone: true,
-  imports: [
-    WantlistComponent,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatButtonModule,
-    MatExpansionModule,
-  ],
-  templateUrl: './wantlists-manager.component.html',
-  styleUrl: './wantlists-manager.component.scss',
+    selector: 'app-wantlists-manager',
+    imports: [
+        WantlistComponent,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatButtonModule,
+        MatExpansionModule,
+    ],
+    templateUrl: './wantlists-manager.component.html',
+    styleUrl: './wantlists-manager.component.scss'
 })
 export class WantlistsManagerComponent {
   wantlists: Signal<Wantlist[]>;

@@ -5,11 +5,10 @@ import { WantlistService } from '../../services/wantlist/wantlist.service';
 import { WantlistComponent } from '../wantlist/wantlist.component';
 
 @Component({
-  selector: 'app-collection-displayer',
-  standalone: true,
-  imports: [WantlistComponent],
-  templateUrl: './doubles.component.html',
-  styleUrl: './doubles.component.scss',
+    selector: 'app-collection-displayer',
+    imports: [WantlistComponent],
+    templateUrl: './doubles.component.html',
+    styleUrl: './doubles.component.scss'
 })
 export class DoublesComponent {
   doubles: Signal<Wantlist>;

@@ -8,11 +8,10 @@ import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { UserTrader } from '../../models/user-trader';
 
 @Component({
-  selector: 'app-trade-home',
-  standalone: true,
-  imports: [TradeCardListComponent, MatExpansionModule, MatButtonModule],
-  templateUrl: './trade-home.component.html',
-  styleUrl: './trade-home.component.scss',
+    selector: 'app-trade-home',
+    imports: [TradeCardListComponent, MatExpansionModule, MatButtonModule],
+    templateUrl: './trade-home.component.html',
+    styleUrl: './trade-home.component.scss'
 })
 export class TradeHomeComponent implements AfterContentInit {
   users = signal<UserTrader[]>([]);
