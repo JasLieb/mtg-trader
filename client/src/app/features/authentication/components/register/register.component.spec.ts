@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RegisterComponent } from './register.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,16 +11,15 @@ describe('RegisterComponent', () => {
   let fixture: ComponentFixture<RegisterComponent>;
   let authService: jasmine.SpyObj<AuthService>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     const authSpy = jasmine.createSpyObj('AuthService', ['register']);
-    await TestBed.configureTestingModule({
-      providers: [{ provide: AuthService, useValue: authSpy }],
-      imports: [
-        RegisterComponent,
-        HttpClientTestingModule,
-        NoopAnimationsModule,
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: AuthService, useValue: authSpy },
+        provideHttpClientTesting(),
       ],
-    }).compileComponents();
+      imports: [RegisterComponent, NoopAnimationsModule],
+    });
 
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     authService.register.and.callFake(() => of(''));

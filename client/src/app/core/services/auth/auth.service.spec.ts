@@ -39,13 +39,13 @@ describe('AuthService', () => {
       'URL to api get user endpoint'
     );
 
-    req.flush({}, { status: 200, statusText: 'ok' });
-
     service.isConnected$.subscribe((isConnected) => {
       expect(window.localStorage.getItem).toHaveBeenCalledTimes(1);
       expect(isConnected).toBeTrue();
       done();
     });
+
+    req.flush({}, { status: 200, statusText: 'ok' });
   });
 
   it('should not be connected when check invalid token', (done) => {
@@ -54,13 +54,13 @@ describe('AuthService', () => {
       'URL to api get user endpoint'
     );
 
-    req.flush({}, { status: 500, statusText: 'invalid token' });
-
     service.isConnected$.subscribe((isConnected) => {
       expect(window.localStorage.getItem).toHaveBeenCalledTimes(1);
       expect(isConnected).toBeFalse();
       done();
     });
+
+    req.flush({}, { status: 500, statusText: 'invalid token' });
   });
 
   it('success login should update isConnected$', (done) => {
@@ -69,11 +69,12 @@ describe('AuthService', () => {
       (req) => req.method == 'POST' && req.url == 'api/auth'
     );
 
-    reqs[0].flush('toto', { status: 200, statusText: 'ok' });
     service.isConnected$.subscribe((isConnected) => {
       expect(isConnected).toBeTrue();
       done();
     });
+
+    reqs[0].flush('toto', { status: 200, statusText: 'ok' });
   });
 
   it('success login should update local storage with bearer token', () => {
@@ -97,14 +98,12 @@ describe('AuthService', () => {
       (req) => req.method == 'POST' && req.url == 'api/auth'
     );
 
-    reqs[0].flush({}, { status: 401, statusText: 'Unauthorized' });
-
-    service.isConnected$.subscribe({
-      next: (isConnected) => {
-        expect(isConnected).toBeFalse();
-        done();
-      },
+    service.isConnected$.subscribe((isConnected) => {
+      expect(isConnected).toBeFalse();
+      done();
     });
+
+    reqs[0].flush({}, { status: 401, statusText: 'Unauthorized' });
   });
 
   it('success register should update isConnected$', (done) => {
@@ -112,13 +111,12 @@ describe('AuthService', () => {
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/user'
     );
-
-    reqs[0].flush('toto', { status: 200, statusText: 'ok' });
-
     service.isConnected$.subscribe((isConnected) => {
       expect(isConnected).toBeTrue();
       done();
     });
+
+    reqs[0].flush('toto', { status: 200, statusText: 'ok' });
   });
 
   it('success register should update local storage with bearer token', () => {
@@ -143,13 +141,11 @@ describe('AuthService', () => {
       (req) => req.method == 'POST' && req.url == 'api/user'
     );
 
-    reqs[0].flush({}, { status: 500, statusText: 'Error' });
-
-    service.isConnected$.subscribe({
-      next: (isConnected) => {
-        expect(isConnected).toBeFalse();
-        done();
-      },
+    service.isConnected$.subscribe((isConnected) => {
+      expect(isConnected).toBeFalse();
+      done();
     });
+
+    reqs[0].flush({}, { status: 500, statusText: 'Error' });
   });
 });
