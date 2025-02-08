@@ -8,6 +8,7 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options) : 
     public DbSet<User> Users { get; set; }
     public DbSet<Wantlist> Wantlists { get; set; }
     public DbSet<WantlistCards> WantlistCards { get; set; }
+    public DbSet<ChatMessage> ChatMessages { get; set; }
 
     override protected void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -18,5 +19,12 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options) : 
             .HasForeignKey(e => e.WantlistId);
         
         modelBuilder.Entity<WantlistCards>().Ignore(e => e.WantlistOrigin);
+
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(e => e.Author)
+            .WithMany(e => e.ChatMessages)
+            .HasForeignKey(e => e.AuthorId);
+        
+        modelBuilder.Entity<ChatMessage>().Ignore(e => e.Author);
     }
 }

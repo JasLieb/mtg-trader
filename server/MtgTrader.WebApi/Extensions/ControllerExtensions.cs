@@ -5,8 +5,8 @@ namespace MtgTrader.WebApi.Extensions;
 
 public static class ControllerExtensions
 {
-    public static string? GetUserIdFromToken(this ControllerBase controller)
+    public static string? GetUserIdFromContext(HttpContext context)
     {
-        return controller.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
 }

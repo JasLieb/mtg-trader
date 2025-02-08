@@ -12,6 +12,19 @@ public class UserRepositoryTests
     }
 
     [Fact]
+    public void Should_add_new_user_when_create_valid_user()
+    {
+        var newUser = new User("idk", "toto", "toto");
+        var userDbSetMock = new Mock<DbSet<User>>();
+        _dbContextMock.Setup(db => db.Set<User>())
+            .Returns(userDbSetMock.Object);
+
+        var result = _userRepository.Create(newUser);
+
+        userDbSetMock.Verify(m => m.Add(It.IsAny<User>()), Times.Once());
+    }
+    
+    [Fact]
     public void Should_return_new_user_when_create_valid_user()
     {
         var newUser = new User("idk", "toto", "toto");
@@ -22,7 +35,6 @@ public class UserRepositoryTests
         var result = _userRepository.Create(newUser);
 
         result.Should().Be(newUser);
-        userDbSetMock.Verify(m => m.Add(It.IsAny<User>()), Times.Once());
     }
 
     [Fact]

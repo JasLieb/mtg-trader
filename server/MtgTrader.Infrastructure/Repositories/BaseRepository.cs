@@ -1,13 +1,12 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using MtgTrader.Core.Repositories;
-using MtgTrader.Infrastructure.Contexts;
 
 namespace MtgTrader.Infrastructure.Repositories;
 
-public class BaseRepository<T>(ApplicationContext dbContext) : IBaseRepository<T> where T : class
+public class BaseRepository<T>(DbContext dbContext) : IBaseRepository<T> where T : class
 {
-    private readonly ApplicationContext _dbContext = dbContext;
+    private readonly DbContext _dbContext = dbContext;
     protected DbSet<T> DbSet => _dbContext.Set<T>();
 
     public IEnumerable<T> GetAll()

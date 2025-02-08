@@ -20,7 +20,7 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult<WantlistsResponse> Get()
     {
-        var userId = ControllerExtensions.GetUserIdFromToken(this);
+        var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
         if (userId == null) return Problem("Unknown user");
         var wantlists = _wantlistHandler.GetWantlists(userId);
         return Ok(wantlists);
@@ -35,7 +35,7 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
         [FromBody] CreateWantlistRequest request
     )
     {
-        var userId = ControllerExtensions.GetUserIdFromToken(this);
+        var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
         if (userId == null) return Problem("Unknown user");
         _ = _wantlistHandler.CreateWantlist(request, userId);
         return Get();

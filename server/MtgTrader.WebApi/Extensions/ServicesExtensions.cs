@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MtgTrader.Core.Handlers.Auth;
+using MtgTrader.Core.Handlers.Chat;
 using MtgTrader.Core.Handlers.Trade;
 using MtgTrader.Core.Handlers.Wantlist;
 using MtgTrader.Core.Repositories;
@@ -17,6 +18,8 @@ namespace MtgTrader.WebApi.Extensions;
 
 public static class ServicesExtensions
 {
+    public const string CorsPolicyName = "SignalRCorsPolicy";
+
     public static IServiceCollection RegisterServices(this IServiceCollection services) =>
         services
             .AddTransient<ITokenService, JwtTokenService>()
@@ -25,14 +28,26 @@ public static class ServicesExtensions
             .AddTransient<IWantlistCardsRepository, WantlistCardsRepository>()
             .AddScoped<IAuthHandler, AuthHandler>()
             .AddScoped<IWantlistHandler, WantlistHandler>()
-            .AddScoped<ITradeHandler, TradeHandler>();
+            .AddScoped<ITradeHandler, TradeHandler>()
+            .AddScoped<IChatHandler, ChatHandler>();
 
     public static IServiceCollection RegisterInfrastructure(
         this IServiceCollection services,
         ConfigurationManager configuration
-    ){
+    )
+    {
+        services.AddCors(options =>
+            options.AddPolicy(
+                name: CorsPolicyName,
+                policy => policy.WithOrigins("http://localhost:4200")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+            )
+        );
+        services.AddSignalR();
         services.AddControllers();
-        services.AddDbContextPool<ApplicationContext>(
+        services.AddDbContext<ApplicationContext>(
             opt =>
                 opt.UseNpgsql(GetConnectionString(configuration))
         );

@@ -1,4 +1,5 @@
 using MtgTrader.WebApi.Extensions;
+using MtgTrader.WebApi.Hubs;
 
 var builder =
     WebApplication.CreateBuilder(args)
@@ -24,7 +25,10 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseCors(ServicesExtensions.CorsPolicyName);
 app.UseAuthorization();
+
+app.MapHub<ChatHub>("/chathub");
 app.MapControllers();
 
 app.Run();

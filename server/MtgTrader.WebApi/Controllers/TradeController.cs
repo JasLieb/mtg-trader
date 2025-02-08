@@ -22,7 +22,7 @@ public class TradeController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<TradeableResponse> Get()
     {
-        var userId = ControllerExtensions.GetUserIdFromToken(this);
+        var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
         if (userId == null) return Problem("Unknown user");
         return Ok(_tradeHandler.FindTrades(userId));
     }
