@@ -1,6 +1,13 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, of, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  Observable,
+  of,
+} from 'rxjs';
+import { subscribeOne } from '../../utils/subscribeExtensions';
 
 @Injectable({
   providedIn: 'root',
@@ -15,10 +22,11 @@ export class AuthService {
 
   constructor(private http: HttpClient) {
     if (this.hasToken()) {
-      this.http.get(this.userApiUrl).subscribe({
-        next: (_) => this.isConnectedBehavior.next(true),
-        error: (err) => this.handleError(err),
-      });
+      subscribeOne(
+        this.http.get(this.userApiUrl),
+        (_) => this.isConnectedBehavior.next(true),
+        (err) => this.handleError(err)
+      );
     }
   }
 

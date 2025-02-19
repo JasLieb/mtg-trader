@@ -1,4 +1,4 @@
-import { Component, computed, Signal } from '@angular/core';
+import { Component, computed, OnDestroy, OnInit, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterOutlet } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from './core/services/auth/auth.service';
 import { NavigationService } from './core/services/navigation/navigation.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,9 @@ import { NavigationService } from './core/services/navigation/navigation.service
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
+  private unsubscribe = new Subject();
+
   title = 'MTG Trader';
   currentRoute: Signal<string>;
   isTradeTab: Signal<boolean>;
@@ -30,7 +33,7 @@ export class AppComponent {
   isConnected: Signal<boolean>;
 
   constructor(
-    authService: AuthService,
+    private authService: AuthService,
     private navigationService: NavigationService
   ) {
     this.isConnected = toSignal(authService.isConnected$, {
@@ -48,11 +51,21 @@ export class AppComponent {
     this.isTradeTab = computed(
       () => this.currentRoute() === navigationService.tradeUrl
     );
+  }
 
-    authService.isConnected$.subscribe((isConnected) => {
-      if (isConnected) this.resumeNavigation();
-      else this.navigateAuth();
-    });
+  ngOnInit(): void {
+    this.authService.isConnected$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((isConnected) => {
+        if (isConnected)
+          this.resumeNavigation();
+        else this.navigateAuth();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe.next(null);
+    this.unsubscribe.complete();
   }
 
   private navigateAuth() {

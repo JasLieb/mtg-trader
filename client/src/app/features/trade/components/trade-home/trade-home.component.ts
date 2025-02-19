@@ -4,6 +4,7 @@ import { UserDoubles } from '../../models/user-doubles';
 import { TradeCardListComponent } from '../trade-card-list/trade-card-list.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
+import { subscribeOne } from '../../../../core/utils/subscribeExtensions';
 
 @Component({
   selector: 'app-trade-home',
@@ -18,6 +19,9 @@ export class TradeHomeComponent implements AfterContentInit {
   constructor(private tradeService: TradeService) {}
 
   ngAfterContentInit(): void {
-    this.tradeService.find().subscribe((users) => this.users.set(users));
+    subscribeOne(
+      this.tradeService.find(),
+      (users) => this.users.set(users)
+    );
   }
 }

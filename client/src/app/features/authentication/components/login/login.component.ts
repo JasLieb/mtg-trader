@@ -9,6 +9,7 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { subscribeOne } from '../../../../core/utils/subscribeExtensions';
 
 @Component({
   selector: 'app-login',
@@ -31,7 +32,7 @@ export class LoginComponent {
     const val = this.form.value;
 
     if (val.email) {
-      this.authService.login(val.email, val.password).subscribe();
+      subscribeOne(this.authService.login(val.email, val.password));
     }
   }
 }
