@@ -57,8 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authService.isConnected$
       .pipe(takeUntil(this.unsubscribe))
       .subscribe((isConnected) => {
-        if (isConnected)
-          this.resumeNavigation();
+        if (isConnected) this.resumeNavigation();
         else this.navigateAuth();
       });
   }
@@ -66,6 +65,10 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe.next(null);
     this.unsubscribe.complete();
+  }
+
+  isSmallScreen(): boolean {
+    return window.innerWidth < 480;
   }
 
   private navigateAuth() {

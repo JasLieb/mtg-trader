@@ -7,7 +7,6 @@ import { initLocalStorageForTests } from '../../utils/localStorage';
 describe('NavigationService', () => {
   let service: NavigationService;
   let router: Router;
-  let localStore: any;
 
   beforeEach(() => {
     const routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
@@ -19,7 +18,7 @@ describe('NavigationService', () => {
       imports: [RouterModule.forRoot([])],
     });
 
-    localStore = initLocalStorageForTests();
+    const _ = initLocalStorageForTests();
     router = TestBed.inject(Router);
     service = TestBed.inject(NavigationService);
   });

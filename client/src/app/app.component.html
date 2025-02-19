@@ -1,6 +1,11 @@
 <div class="app-container">
   <mat-drawer-container class="app-drawer-container">
-    <mat-drawer #drawer class="app-drawer-sidenav" mode="side">
+    <mat-drawer
+      #drawer
+      class="app-drawer-sidenav"
+      mode="side"
+      [opened]="!isSmallScreen()"
+    >
       <mat-list role="list">
         <h2 matSubheader>My Collection</h2>
         <mat-list-item
@@ -30,7 +35,7 @@
 
     <mat-drawer-content class="app-drawer-content">
       <div class="app-nav-bar">
-        @if (isConnected()) {
+        @if (isSmallScreen()) {
         <button mat-icon-button type="button" (click)="drawer.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
