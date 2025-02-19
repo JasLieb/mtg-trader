@@ -11,13 +11,4 @@ import { MatTabsModule } from '@angular/material/tabs';
   styleUrl: './user-home.component.scss'
 })
 export class UserHomeComponent {
-  isLoginMode = signal(true);
-
-  showLogin() {
-    this.isLoginMode.set(true);
-  }
-
-  showRegister() {
-    this.isLoginMode.set(false);
-  }
 }

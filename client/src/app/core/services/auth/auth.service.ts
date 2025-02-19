@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, map, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,7 @@ export class AuthService {
   private readonly userApiUrl = `api/user`;
   private readonly userTokenKey = `usr-token`;
 
-  private isConnectedBehavior = new Subject<boolean>();
+  private isConnectedBehavior = new BehaviorSubject<boolean>(false);
   isConnected$ = this.isConnectedBehavior.asObservable();
 
   constructor(private http: HttpClient) {

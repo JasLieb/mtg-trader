@@ -2,10 +2,11 @@ import { TestBed } from '@angular/core/testing';
 
 import { AuthService } from './auth.service';
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { initLocalStorageForTests } from '../../utils/localStorage';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -14,7 +15,9 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     localStore = initLocalStorageForTests();
-    TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(AuthService);
   });
@@ -37,7 +40,7 @@ describe('AuthService', () => {
       'URL to api get user endpoint'
     );
 
-    req.flush({}, { status: 200, statusText: 'ok'})
+    req.flush({}, { status: 200, statusText: 'ok' });
 
     service.isConnected$.subscribe((isConnected) => {
       expect(window.localStorage.getItem).toHaveBeenCalledTimes(1);
@@ -52,7 +55,7 @@ describe('AuthService', () => {
       'URL to api get user endpoint'
     );
 
-    req.flush({}, { status: 500, statusText: 'invalid token'})
+    req.flush({}, { status: 500, statusText: 'invalid token' });
 
     service.isConnected$.subscribe((isConnected) => {
       expect(window.localStorage.getItem).toHaveBeenCalledTimes(1);

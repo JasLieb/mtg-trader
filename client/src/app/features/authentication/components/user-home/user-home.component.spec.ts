@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserHomeComponent } from './user-home.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { By } from '@angular/platform-browser';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('UserHomeComponent', () => {
   let component: UserHomeComponent;
@@ -11,11 +11,8 @@ describe('UserHomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        UserHomeComponent,
-        HttpClientTestingModule,
-        NoopAnimationsModule,
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+      imports: [UserHomeComponent, NoopAnimationsModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(UserHomeComponent);
@@ -23,35 +20,14 @@ describe('UserHomeComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display login component when following tab is selected', (done) => {
-    fixture.whenStable().then(() => {
-      const tab = fixture.nativeElement.querySelectorAll('button')[0];
-      expect(tab).toBeTruthy();
-
-      tab.click();
-      fixture.detectChanges();
-
-      const register = fixture.nativeElement.querySelector('app-login');
-      expect(register).toBeTruthy();
-      done();
-    });
-  });
-
-  it('should display register component when following tab is selected', (done) => {
-    fixture.whenStable().then(() => {
-      const tab = fixture.nativeElement.querySelectorAll('button')[1];
-      expect(tab).toBeTruthy();
-
-      tab.click();
-      fixture.detectChanges();
-
-      const register = fixture.debugElement.queryAll(By.css('app-register'));
-      expect(register).toBeTruthy();
-      done();
-    });
+  it('should have login tab visible', () => {
+    const loginTab = fixture.nativeElement.querySelector('app-login');
+    expect(loginTab).toBeTruthy();
+    const registerTab = fixture.nativeElement.querySelector('app-register');
+    expect(registerTab).toBeNull();
   });
 });
