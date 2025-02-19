@@ -82,10 +82,7 @@ describe('NavigationService', () => {
   it('should not save last route on auth navigation', (done) => {
     service.navigateAuth();
     service.currentRoute$.subscribe((_) => {
-      expect(window.localStorage.setItem).toHaveBeenCalledWith(
-        'last-route',
-        ''
-      );
+      expect(window.localStorage.setItem).toHaveBeenCalledTimes(0);
       done();
     });
   });

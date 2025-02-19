@@ -34,12 +34,19 @@ export class NavigationService {
 
   resumeLastRoute() {
     const lastRoute = window.localStorage.getItem('last-route');
-    this.navigate(lastRoute ?? this.wantlistsUrl);
+    this.navigate(
+      lastRoute && lastRoute !== '' ? lastRoute : this.wantlistsUrl
+    );
   }
 
   private navigate(route: string, shouldSave = true) {
     this.router.navigate([route]).then(() => {
-      window.localStorage.setItem('last-route', shouldSave ? route : '');
+      if(shouldSave) {
+        window.localStorage.setItem(
+          'last-route',
+          route
+        );
+      }
       this.currentRouteBehavior.next(route);
     });
   }
