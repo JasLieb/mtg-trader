@@ -11,10 +11,9 @@ import { provideHttpClient } from '@angular/common/http';
 describe('AuthService', () => {
   let service: AuthService;
   let httpTestingController: HttpTestingController;
-  let localStore: any;
 
   beforeEach(() => {
-    localStore = initLocalStorageForTests();
+    const _ = initLocalStorageForTests();
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
@@ -65,7 +64,7 @@ describe('AuthService', () => {
   });
 
   it('success login should update isConnected$', (done) => {
-    service.login('anything@xyz.com', 'poep').subscribe();
+    service.login('anything@xyz.com', 'poep');
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/auth'
     );
@@ -78,7 +77,7 @@ describe('AuthService', () => {
   });
 
   it('success login should update local storage with bearer token', () => {
-    service.login('anything@xyz.com', 'poep').subscribe();
+    service.login('anything@xyz.com', 'poep');
 
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/auth'
@@ -93,7 +92,7 @@ describe('AuthService', () => {
   });
 
   it('fail login should update isConnected$', (done) => {
-    service.login('anything@xyz.com', 'poep').subscribe();
+    service.login('anything@xyz.com', 'poep');
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/auth'
     );
@@ -109,7 +108,7 @@ describe('AuthService', () => {
   });
 
   it('success register should update isConnected$', (done) => {
-    service.register('anything@xyz.com', 'poep').subscribe();
+    service.register('anything@xyz.com', 'poep');
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/user'
     );
@@ -123,7 +122,7 @@ describe('AuthService', () => {
   });
 
   it('success register should update local storage with bearer token', () => {
-    service.register('anything@xyz.com', 'poep').subscribe();
+    service.register('anything@xyz.com', 'poep');
 
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/user'
@@ -139,7 +138,7 @@ describe('AuthService', () => {
   });
 
   it('fail register should update isConnected$', (done) => {
-    service.register('anything@xyz.com', 'poep').subscribe();
+    service.register('anything@xyz.com', 'poep');
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/user'
     );

@@ -13,7 +13,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CardService } from '../../../common/services/card/card.service';
 import { Card } from '../../../common/models/card';
 import { UserWantlists } from '../../models/user-wantlists';
-import { subscribeOne } from '../../../../core/utils/subscribeExtensions';
+import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 
 @Injectable({
   providedIn: 'root',
@@ -57,7 +57,7 @@ export class WantlistService {
   }
 
   private subscribeWantlistResponse(response: Observable<Object>) {
-    subscribeOne(this.populateWantlistsWithFetchedCards(response), (wl) => {
+    subscribeOnce(this.populateWantlistsWithFetchedCards(response), (wl) => {
       const userWantlists = this.parseWantlistResponse(wl.wantlists, wl.cards);
       this.wantlistsBehavior.next(userWantlists.wantlists);
       this.doublesBehavior.next(userWantlists.doubles);

@@ -1,13 +1,9 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  BehaviorSubject,
-  catchError,
-  map,
-  Observable,
-  of,
-} from 'rxjs';
-import { subscribeOne } from '../../utils/subscribeExtensions';
+import { BehaviorSubject } from 'rxjs';
+import { subscribeOnce } from '../../utils/subscribeExtensions';
+import { AuthResponse } from '../../models/auth-response';
+import { AuthRequest } from '../../models/auth-request';
 
 @Injectable({
   providedIn: 'root',
@@ -22,40 +18,39 @@ export class AuthService {
 
   constructor(private http: HttpClient) {
     if (this.hasToken()) {
-      subscribeOne(
+      subscribeOnce(
         this.http.get(this.userApiUrl),
         (_) => this.isConnectedBehavior.next(true),
-        (err) => this.handleError(err)
+        (err) => this.handleError()
       );
     }
   }
 
-  login(email: string, password: string): Observable<any> {
-    return this.handleAuth(this.authApiUrl, { email, password });
+  login(email: string, password: string) {
+    this.handleAuth(this.authApiUrl, { email, password });
   }
 
-  register(email: string, password: string): Observable<any> {
-    return this.handleAuth(this.userApiUrl, { email, password });
+  register(email: string, password: string) {
+    this.handleAuth(this.userApiUrl, { email, password });
   }
 
-  private handleAuth(route: string, body: any): Observable<any> {
-    return this.http.post(route, body).pipe(
-      map((response: any) => {
+  private handleAuth(route: string, body: AuthRequest) {
+    subscribeOnce(
+      this.http.post<AuthResponse>(route, body),
+      (response) => {
         this.isConnectedBehavior.next(true);
-        window.localStorage.setItem(
-          this.userTokenKey,
-          `Bearer ${response.usrToken}`
-        );
-      }),
-      catchError((err) => this.handleError(err))
+          window.localStorage.setItem(
+            this.userTokenKey,
+            `Bearer ${response.usrToken}`
+          );
+      },
+      (err) => this.handleError()
     );
   }
 
-  private handleError(error: HttpErrorResponse): Observable<any> {
+  private handleError() {
     window.localStorage.setItem(this.userTokenKey, ``);
     this.isConnectedBehavior.next(false);
-    console.error(error);
-    return of(new Error(error.message));
   }
 
   private hasToken(): boolean {

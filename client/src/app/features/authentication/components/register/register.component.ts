@@ -9,7 +9,7 @@ import {
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { subscribeOne } from '../../../../core/utils/subscribeExtensions';
+import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 
 @Component({
   selector: 'app-register',
@@ -32,7 +32,7 @@ export class RegisterComponent {
     const val = this.form.value;
 
     if (val.email) {
-      subscribeOne(this.authService.register(val.email, val.password));
+      this.authService.register(val.email, val.password);
     }
   }
 }
