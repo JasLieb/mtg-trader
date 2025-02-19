@@ -14,7 +14,7 @@ public class WantlistHandler(
 
     public Entities.General.Wantlist? UpdateWantlist(UpdateWantlistRequest wantlistRequest)
     {
-        if(!_wantlistRepository.IsWantlistExist(wantlistRequest.WantlistId))
+        if (!_wantlistRepository.IsWantlistExist(wantlistRequest.WantlistId))
             return null;
 
         _wantlistCardsRepository.UpdateWantlist(
@@ -31,30 +31,33 @@ public class WantlistHandler(
     {
         return _wantlistRepository.Create(
             new Entities.General.Wantlist(
-                Guid.NewGuid().ToString(), 
-                request.WantlistName, 
+                Guid.NewGuid().ToString(),
+                request.WantlistName,
                 userId
             )
         );
     }
 
-    public IEnumerable<WantlistResponse> GetWantlists(string userId)
+    public WantlistsResponse GetWantlists(string userId)
     {
-        return _wantlistRepository.GetUserWantlists(userId)
+        return new(
+            _wantlistRepository.GetUserWantlists(userId)
             .Select(
                 originalWl => new WantlistResponse(
                     originalWl.Id,
                     originalWl.Name,
                     originalWl.Cards.Select(c => c.CardId)
                 )
-            );
+            )
+        );
     }
 
     public void DeleteWantlist(string wantlistId)
     {
-        if(IsDoubleWantlist(wantlistId)) return;
+        if (IsDoubleWantlist(wantlistId)) return;
         var wantlist = _wantlistRepository.GetById(wantlistId);
-        if(wantlist != null) {
+        if (wantlist != null)
+        {
             var cards = _wantlistCardsRepository.GetCards(wantlist.Id);
 
             foreach (var card in cards)

@@ -2,12 +2,14 @@ import { TestBed } from '@angular/core/testing';
 
 import { WantlistService } from './wantlist.service';
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
+  TestRequest,
 } from '@angular/common/http/testing';
 import { CardService } from '../../../common/services/card/card.service';
 import { Card } from '../../../common/models/card';
 import { of } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('WantlistService', () => {
   let service: WantlistService;
@@ -18,8 +20,11 @@ describe('WantlistService', () => {
     const cardSpy = jasmine.createSpyObj('CardService', ['fetch']);
 
     TestBed.configureTestingModule({
-      providers: [{ provide: CardService, useValue: cardSpy }],
-      imports: [HttpClientTestingModule],
+      providers: [
+        { provide: CardService, useValue: cardSpy },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     httpTestingController = TestBed.inject(HttpTestingController);
@@ -47,19 +52,12 @@ describe('WantlistService', () => {
       request.method.includes('GET')
     )[0];
 
-    req.flush(
-      [
-        {
-          id: 'dbf588d9-2b35-4fd0-8776-37e6e6da9f5d',
-          name: 'string',
-          cardIds: ['0000419b-0bba-4488-8f7a-6194544ce91e'],
-        },
-      ],
-      { status: 200, statusText: 'ok' }
-    );
+    flushRequest200(req);
 
     expect(cardService.fetch.calls.count()).toBe(1);
-    expect(cardService.fetch).toHaveBeenCalledWith('0000419b-0bba-4488-8f7a-6194544ce91e');
+    expect(cardService.fetch).toHaveBeenCalledWith(
+      '0000419b-0bba-4488-8f7a-6194544ce91e'
+    );
   });
 
   it('should update wantlists$ when receive wantlists response', (done) => {
@@ -67,16 +65,7 @@ describe('WantlistService', () => {
       request.method.includes('GET')
     )[0];
 
-    req.flush(
-      [
-        {
-          id: 'dbf588d9-2b35-4fd0-8776-37e6e6da9f5d',
-          name: 'string',
-          cardIds: ['0000419b-0bba-4488-8f7a-6194544ce91e'],
-        },
-      ],
-      { status: 200, statusText: 'ok' }
-    );
+    flushRequest200(req);
 
     service.wantlists$.subscribe((wls) => {
       expect(wls.length).toBe(1);
@@ -114,3 +103,19 @@ describe('WantlistService', () => {
     expect(reqs[0].request.urlWithParams).toContain('wantlist?wantlistId=toto');
   });
 });
+
+function flushRequest200(req: TestRequest) {
+  req.flush(
+    {
+      wantlists: [
+        {
+          id: 'dbf588d9-2b35-4fd0-8776-37e6e6da9f5d',
+          name: 'string',
+          cards: ['0000419b-0bba-4488-8f7a-6194544ce91e'],
+        },
+      ]
+    },
+    { status: 200, statusText: 'ok' }
+  );
+}
+

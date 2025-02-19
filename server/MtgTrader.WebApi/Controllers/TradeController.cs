@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Expressions;
+using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Handlers.Trade;
 using MtgTrader.WebApi.Extensions;
 
@@ -18,7 +20,7 @@ public class TradeController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult Get()
+    public ActionResult<TradeableResponse> Get()
     {
         var userId = ControllerExtensions.GetUserIdFromToken(this);
         if (userId == null) return Problem("Unknown user");

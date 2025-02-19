@@ -4,7 +4,7 @@
       #drawer
       class="app-drawer-sidenav"
       mode="side"
-      [opened]="!isSmallScreen()"
+      [opened]="!isSmallScreen() && isConnected()"
     >
       <mat-list role="list">
         <h2 matSubheader>My Collection</h2>

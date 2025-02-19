@@ -21,14 +21,13 @@ public class TradeHandler(
             .Where(wl => !wl.Id.EndsWith("_doubles"));
 
         var tradeableWantlists = _wantlistRepository.FindTradeableDoubles(userId, wantedWantlists);
-        return new(
-            MakeTradeableResponseContent(
+        return new([
+            .. MakeTradeableResponseContent(
                 tradeableWantlists,
                 wantedWantlists.SelectMany(w => w.Cards),
-                doubles?.Cards ?? []  
+                doubles?.Cards ?? []
             )
-            .ToList()
-        );
+        ]);
     }
 
     private IEnumerable<UserTradeResponse> MakeTradeableResponseContent(
@@ -53,7 +52,7 @@ public class TradeHandler(
                         .Distinct()
                         .Where(c => wantedCards.Any(wc => wc.CardId.Equals(c))),
                     doubleCards
-                        .Where(c => 
+                        .Where(c =>
                             wantedTrade.SelectMany(wt => wt.Cards)
                                 .Select(wc => wc.CardId)
                                 .Contains(c.CardId)

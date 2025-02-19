@@ -1,9 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
-import { UserDoubles } from '../../models/user-doubles';
+import {
+  combineLatest,
+  flatMap,
+  forkJoin,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
+import { TradeableResponse } from '../../models/tradeable-response';
 import { CardService } from '../../../common/services/card/card.service';
 import { Card } from '../../../common/models/card';
+import { UserTrader, UserTraderMin } from '../../models/user-trader';
 
 @Injectable({
   providedIn: 'root',
@@ -14,29 +24,39 @@ export class TradeService {
     private cardService: CardService
   ) {}
 
-  find(): Observable<UserDoubles[]> {
-    return this.httpClient.get('api/trade').pipe(
-      switchMap((response: any) => {
-        const cardsObs: Observable<Card>[] = (response.users as any[]).flatMap(
-          (user: any) => user.doubles.map((c: any) => this.cardService.fetch(c))
+  find(): Observable<UserTrader[]> {
+    return this.httpClient.get<TradeableResponse>('api/trade').pipe(
+      mergeMap((response) => {
+        return forkJoin(
+          response.users.map((userMin) => this.populateUser(userMin))
         );
-        return cardsObs.length == 0
-          ? of({
-              id: response.id,
-              name: response.name,
-              doubles: [],
-            })
-          : forkJoin(cardsObs).pipe(
-              map((cards) => {
-                return response.users.map((user: any) => {
-                  return {
-                    id: user.id,
-                    name: user.name,
-                    doubles: cards,
-                  };
-                });
-              })
-            );
+      })
+    );
+  }
+
+  private populateUser(userMin: UserTraderMin): Observable<UserTrader> {
+    const doublesObs: Observable<Card>[] = userMin.doubles.flatMap((double) =>
+      this.cardService.fetch(double)
+    );
+    const wantedsObs: Observable<Card>[] = userMin.wanted.flatMap((wanted) =>
+      this.cardService.fetch(wanted)
+    );
+    return combineLatest(
+      [forkJoin(doublesObs), forkJoin(wantedsObs)],
+      (doubles, wanted) => {
+        return {
+          doubles: doubles,
+          wanted: wanted,
+        };
+      }
+    ).pipe(
+      map((fetchedCards) => {
+        return {
+          id: userMin.id,
+          name: userMin.name,
+          doubles: fetchedCards.doubles,
+          wanted: fetchedCards.wanted,
+        } as UserTrader;
       })
     );
   }

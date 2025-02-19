@@ -4,8 +4,9 @@ import { TradeHomeComponent } from './trade-home.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TradeService } from '../../services/trade/trade.service';
 import { of } from 'rxjs';
-import { UserDoubles } from '../../models/user-doubles';
+import { TradeableResponse } from '../../models/tradeable-response';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { UserTrader } from '../../models/user-trader';
 
 describe('TradeHomeComponent', () => {
   let component: TradeHomeComponent;
@@ -44,7 +45,7 @@ describe('TradeHomeComponent', () => {
   });
 
   it('should display user with tradeable doubles when some', () => {
-    service.find.and.callFake(() => of([{}] as UserDoubles[]));
+    service.find.and.callFake(() => of([{id: '1'} as UserTrader]));
 
     initFixture();
 
@@ -56,7 +57,7 @@ describe('TradeHomeComponent', () => {
   });
 
   it('should have trade actions', () => {
-    service.find.and.callFake(() => of([{}] as UserDoubles[]));
+    service.find.and.callFake(() => of([{id: '1'} as UserTrader]));
     initFixture();
 
     const actions = fixture.nativeElement.querySelectorAll('.trade-user-action');

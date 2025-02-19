@@ -5,3 +5,9 @@ export interface Wantlist {
   name: string,
   cards: Card[]
 }
+
+export interface WantlistMin {
+  id: string;
+  name: string;
+  cards: string[];
+}

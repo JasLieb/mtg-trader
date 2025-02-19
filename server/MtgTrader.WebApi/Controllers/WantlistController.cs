@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MtgTrader.Core.Entities.Business.Requests;
+using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Handlers.Wantlist;
 using ControllerExtensions = MtgTrader.WebApi.Extensions.ControllerExtensions;
 
@@ -17,7 +18,7 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult Get()
+    public ActionResult<WantlistsResponse> Get()
     {
         var userId = ControllerExtensions.GetUserIdFromToken(this);
         if (userId == null) return Problem("Unknown user");
@@ -30,7 +31,7 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult Post(
+    public ActionResult<WantlistsResponse> Post(
         [FromBody] CreateWantlistRequest request
     )
     {
@@ -46,7 +47,7 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult Put(
+    public ActionResult<WantlistsResponse> Put(
         [FromBody] UpdateWantlistRequest request
     )
     {
@@ -61,7 +62,7 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult Delete(
+    public ActionResult<WantlistsResponse> Delete(
         [FromQuery] string wantlistId
     )
     {

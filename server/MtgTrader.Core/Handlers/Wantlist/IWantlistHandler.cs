@@ -6,6 +6,6 @@ public interface IWantlistHandler
 {
     Entities.General.Wantlist? UpdateWantlist(UpdateWantlistRequest wantlistRequest);
     Entities.General.Wantlist CreateWantlist(CreateWantlistRequest request, string userId);
-    IEnumerable<Entities.Business.Responses.WantlistResponse> GetWantlists(string userId);
+    Entities.Business.Responses.WantlistsResponse GetWantlists(string userId);
     void DeleteWantlist(string wantlistId);
 }

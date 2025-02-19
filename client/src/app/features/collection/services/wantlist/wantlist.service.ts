@@ -14,6 +14,10 @@ import { CardService } from '../../../common/services/card/card.service';
 import { Card } from '../../../common/models/card';
 import { UserWantlists } from '../../models/user-wantlists';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
+import {
+  PopulatedWantlistResponse,
+  WantlistsResponse,
+} from '../../models/wantlist-response';
 
 @Injectable({
   providedIn: 'root',
@@ -33,13 +37,13 @@ export class WantlistService {
 
   create(wantlistName: string) {
     this.subscribeWantlistResponse(
-      this.http.post(this.apiWantlistUrl, { wantlistName })
+      this.http.post<WantlistsResponse>(this.apiWantlistUrl, { wantlistName })
     );
   }
 
   updateWantlist(wantlist: Wantlist) {
     this.subscribeWantlistResponse(
-      this.http.put('api/wantlist', {
+      this.http.put<WantlistsResponse>('api/wantlist', {
         wantlistId: wantlist.id,
         cards: wantlist.cards.map((c) => c.id),
       })
@@ -48,36 +52,48 @@ export class WantlistService {
 
   delete(wantlistId: string) {
     this.subscribeWantlistResponse(
-      this.http.delete(`${this.apiWantlistUrl}?wantlistId=${wantlistId}`)
+      this.http.delete<WantlistsResponse>(
+        `${this.apiWantlistUrl}?wantlistId=${wantlistId}`
+      )
     );
   }
 
   private refreshWantlists() {
-    this.subscribeWantlistResponse(this.http.get('api/wantlist'));
+    this.subscribeWantlistResponse(
+      this.http.get<WantlistsResponse>('api/wantlist')
+    );
   }
 
-  private subscribeWantlistResponse(response: Observable<Object>) {
-    subscribeOnce(this.populateWantlistsWithFetchedCards(response), (wl) => {
-      const userWantlists = this.parseWantlistResponse(wl.wantlists, wl.cards);
-      this.wantlistsBehavior.next(userWantlists.wantlists);
-      this.doublesBehavior.next(userWantlists.doubles);
-    });
+  private subscribeWantlistResponse(response: Observable<WantlistsResponse>) {
+    subscribeOnce(
+      this.populateWantlistsWithFetchedCards(response),
+      (cardsAndWantlistsMins) => {
+        const userWantlists = this.makeUserWantlists(cardsAndWantlistsMins);
+        this.wantlistsBehavior.next(userWantlists.wantlists);
+        this.doublesBehavior.next(userWantlists.doubles);
+      }
+    );
   }
 
   private populateWantlistsWithFetchedCards(
-    response: Observable<Object>
-  ): Observable<any> {
-    return response.pipe(
+    wantlistResponse: Observable<WantlistsResponse>
+  ): Observable<PopulatedWantlistResponse> {
+    return wantlistResponse.pipe(
       switchMap((response) => {
-        const cardsObs: Observable<Card>[] = (response as any[]).flatMap(
-          (wantlist: any) =>
-            wantlist.cardIds.map((c: any) => this.cardService.fetch(c))
+        const cardsObs: Observable<Card>[] = response.wantlists.flatMap(
+          (wantlist) => wantlist.cards.map((c) => this.cardService.fetch(c))
         );
         return cardsObs.length == 0
-          ? of({ cards: [], wantlists: response })
+          ? of({
+              cards: [],
+              originalResponse: response,
+            } as PopulatedWantlistResponse)
           : forkJoin(cardsObs).pipe(
               map((cards) => {
-                return { cards: cards, wantlists: response };
+                return {
+                  cards,
+                  originalResponse: response,
+                } as PopulatedWantlistResponse;
               })
             );
       }),
@@ -90,19 +106,20 @@ export class WantlistService {
     return of(new Error(error.message));
   }
 
-  private parseWantlistResponse(
-    wantlists: any[],
-    cards: Card[]
+  private makeUserWantlists(
+    populatedWantlists: PopulatedWantlistResponse
   ): UserWantlists {
-    const parsedWl = wantlists.map((wantlist: any) => {
-      return {
-        id: wantlist.id,
-        name: wantlist.name,
-        cards: wantlist.cardIds.map((cardId: any) =>
-          cards.find((c) => c.id == cardId)
-        ),
-      } as Wantlist;
-    });
+    const parsedWl = populatedWantlists.originalResponse.wantlists.map(
+      (wantlist) => {
+        return {
+          id: wantlist.id,
+          name: wantlist.name,
+          cards: wantlist.cards.map((card) =>
+            populatedWantlists.cards.find((c) => c.id == card)
+          ),
+        } as Wantlist;
+      }
+    );
 
     return {
       wantlists: parsedWl.filter((wl) => !wl.id.includes('double')),

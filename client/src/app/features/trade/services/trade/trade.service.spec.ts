@@ -2,12 +2,14 @@ import { TestBed } from '@angular/core/testing';
 
 import { TradeService } from './trade.service';
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
+  TestRequest,
 } from '@angular/common/http/testing';
 import { Card } from '../../../common/models/card';
 import { CardService } from '../../../common/services/card/card.service';
 import { of } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('TradeService', () => {
   let service: TradeService;
@@ -18,15 +20,16 @@ describe('TradeService', () => {
     const cardSpy = jasmine.createSpyObj('CardService', ['fetch']);
 
     TestBed.configureTestingModule({
-      providers: [{ provide: CardService, useValue: cardSpy }],
-      imports: [HttpClientTestingModule],
+      providers: [
+        { provide: CardService, useValue: cardSpy },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     httpTestingController = TestBed.inject(HttpTestingController);
     cardService = TestBed.inject(CardService) as jasmine.SpyObj<CardService>;
-    cardService.fetch.and.callFake(() =>
-      of({ id: 'card' } as Card)
-    );
+    cardService.fetch.and.callFake(() => of({ id: 'card' } as Card));
     service = TestBed.inject(TradeService);
   });
 
@@ -42,26 +45,15 @@ describe('TradeService', () => {
     expect(request.request.method).toBe('GET');
   });
 
-  it('should fetch card when receive trade response', () => {
+  it('should fetch doubles and wanted cards when receive trade response', () => {
     service.find().subscribe();
     const request = httpTestingController.match(
       (request) => request.url == 'api/trade'
     )[0];
 
-    request.flush(
-      {
-        users: [
-          {
-            id: 'toto',
-            name: 'jas',
-            doubles: ['card']
-          },
-        ],
-      },
-      { status: 200, statusText: 'ok' }
-    );
+    flushRequest200(request);
 
-    expect(cardService.fetch.calls.count()).toBe(1);
+    expect(cardService.fetch.calls.count()).toBe(2);
     expect(cardService.fetch).toHaveBeenCalledWith('card');
   });
 
@@ -75,17 +67,22 @@ describe('TradeService', () => {
     });
     const request = httpTestingController.expectOne('api/trade');
 
-    request.flush(
-      {
-        users: [
-          {
-            id: 'toto',
-            name: 'jas',
-            doubles: ['card']
-          },
-        ],
-      },
-      { status: 200, statusText: 'ok' }
-    );
+    flushRequest200(request);
   });
 });
+
+function flushRequest200(request: TestRequest) {
+  request.flush(
+    {
+      users: [
+        {
+          id: 'toto',
+          name: 'jas',
+          doubles: ['card'],
+          wanted: ['card'],
+        },
+      ],
+    },
+    { status: 200, statusText: 'ok' }
+  );
+}

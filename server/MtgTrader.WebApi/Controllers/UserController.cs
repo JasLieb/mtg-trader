@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using MtgTrader.Core.Entities.Business.Requests;
+using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Handlers.Auth;
 using MtgTrader.Infrastructure.Services.JwtToken;
 
@@ -33,7 +34,7 @@ public class UserController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult Post(
+    public ActionResult<AuthResponse> Post(
         [FromBody] AuthRequest authRequest
     )
     {
@@ -43,6 +44,6 @@ public class UserController(
             return Problem("Unable to create user");
         }
         var token = _jwtTokenService.CreateToken(user);
-        return Ok(new { usrToken = token });
+        return Ok(new AuthResponse(token));
     }
 }

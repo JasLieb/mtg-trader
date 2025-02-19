@@ -1,10 +1,11 @@
 import { AfterContentInit, Component, signal } from '@angular/core';
 import { TradeService } from '../../services/trade/trade.service';
-import { UserDoubles } from '../../models/user-doubles';
+import { TradeableResponse } from '../../models/tradeable-response';
 import { TradeCardListComponent } from '../trade-card-list/trade-card-list.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
+import { UserTrader } from '../../models/user-trader';
 
 @Component({
   selector: 'app-trade-home',
@@ -14,7 +15,7 @@ import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
   styleUrl: './trade-home.component.scss',
 })
 export class TradeHomeComponent implements AfterContentInit {
-  users = signal<UserDoubles[]>([]);
+  users = signal<UserTrader[]>([]);
 
   constructor(private tradeService: TradeService) {}
 

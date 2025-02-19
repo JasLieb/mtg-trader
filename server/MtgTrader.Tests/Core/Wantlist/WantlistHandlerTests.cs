@@ -25,9 +25,9 @@ public class WantlistHandlerTests
             ]
         );
         
-        var wantlists = _handler.GetWantlists("user");
+        var response = _handler.GetWantlists("user");
     
-        wantlists.First().Should().BeEquivalentTo(
+        response.Wantlists.First().Should().BeEquivalentTo(
             new WantlistResponse(
                 "test", "name", ["card"]
             )            

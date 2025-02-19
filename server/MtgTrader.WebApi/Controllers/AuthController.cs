@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MtgTrader.Core.Entities.Business.Requests;
+using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Handlers.Auth;
 using MtgTrader.Infrastructure.Services.JwtToken;
 
@@ -18,7 +19,7 @@ public class AuthController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult Post(
+    public ActionResult<AuthResponse> Post(
         [FromBody] AuthRequest authRequest
     )
     {
@@ -28,6 +29,6 @@ public class AuthController(
             return Unauthorized("Incorect auth informations");
         }
         var token = _jwtTokenService.CreateToken(user);
-        return Ok(new { usrToken = token });
+        return Ok(new AuthResponse(token));
     }
 }
