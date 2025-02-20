@@ -7,19 +7,19 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from './core/services/auth/auth.service';
 import { NavigationService } from './core/services/navigation/navigation.service';
-import { Subject, takeUntil } from 'rxjs';
+import { map, Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
-    selector: 'app-root',
-    imports: [
-        RouterOutlet,
-        MatSidenavModule,
-        MatListModule,
-        MatButtonModule,
-        MatIconModule,
-    ],
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss'
+  selector: 'app-root',
+  imports: [
+    RouterOutlet,
+    MatSidenavModule,
+    MatListModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit, OnDestroy {
   private unsubscribe = new Subject();
@@ -35,9 +35,12 @@ export class AppComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private navigationService: NavigationService
   ) {
-    this.isConnected = toSignal(authService.isConnected$, {
-      initialValue: false,
-    });
+    this.isConnected = toSignal(
+      this.getIsConnectedStream(authService.connectedUserToken$),
+      {
+        initialValue: false,
+      }
+    );
     this.currentRoute = toSignal(navigationService.currentRoute$, {
       initialValue: '',
     });
@@ -53,7 +56,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.authService.isConnected$
+    this.authService.connectedUserToken$
       .pipe(takeUntil(this.unsubscribe))
       .subscribe((isConnected) => {
         if (isConnected) this.resumeNavigation();
@@ -70,14 +73,6 @@ export class AppComponent implements OnInit, OnDestroy {
     return window.innerWidth < 480;
   }
 
-  private navigateAuth() {
-    this.navigationService.navigateAuth();
-  }
-
-  private resumeNavigation() {
-    this.navigationService.resumeLastRoute();
-  }
-
   navigateTrade() {
     this.navigationService.navigateTrade();
   }
@@ -88,5 +83,21 @@ export class AppComponent implements OnInit, OnDestroy {
 
   navigateDoubles() {
     this.navigationService.navigateDoubles();
+  }
+
+  private navigateAuth() {
+    this.navigationService.navigateAuth();
+  }
+
+  private resumeNavigation() {
+    this.navigationService.resumeLastRoute();
+  }
+
+  private getIsConnectedStream(
+    connectedUser$: Observable<string>
+  ): Observable<boolean> {
+    return connectedUser$.pipe(
+      map((connectedUser) => !!connectedUser && connectedUser.length > 0)
+    );
   }
 }

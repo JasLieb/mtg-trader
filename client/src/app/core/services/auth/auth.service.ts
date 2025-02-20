@@ -13,15 +13,15 @@ export class AuthService {
   private readonly userApiUrl = `api/user`;
   private readonly userTokenKey = `usr-token`;
 
-  private isConnectedBehavior = new BehaviorSubject<boolean>(false);
-  isConnected$ = this.isConnectedBehavior.asObservable();
+  private connectedUserBehavior = new BehaviorSubject<string>('');
+  connectedUserToken$ = this.connectedUserBehavior.asObservable();
 
   constructor(private http: HttpClient) {
     if (this.hasToken()) {
       subscribeOnce(
-        this.http.get(this.userApiUrl),
-        (_) => this.isConnectedBehavior.next(true),
-        (err) => this.handleError()
+        this.http.get<AuthResponse>(this.userApiUrl),
+        (response) => this.connectedUserBehavior.next(response.usrToken),
+        (_) => this.handleError()
       );
     }
   }
@@ -38,7 +38,7 @@ export class AuthService {
     subscribeOnce(
       this.http.post<AuthResponse>(route, body),
       (response) => {
-        this.isConnectedBehavior.next(true);
+        this.connectedUserBehavior.next(response.usrToken);
           window.localStorage.setItem(
             this.userTokenKey,
             `Bearer ${response.usrToken}`
@@ -50,7 +50,7 @@ export class AuthService {
 
   private handleError() {
     window.localStorage.setItem(this.userTokenKey, ``);
-    this.isConnectedBehavior.next(false);
+    this.connectedUserBehavior.next('');
   }
 
   private hasToken(): boolean {

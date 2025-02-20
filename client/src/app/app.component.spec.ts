@@ -35,7 +35,7 @@ describe('AppComponent', () => {
   });
 
   it('should create the app', () => {
-    authService.isConnected$ = of(true);
+    authService.connectedUserToken$ = of('usr-token');
     navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
@@ -43,7 +43,7 @@ describe('AppComponent', () => {
   });
 
   it(`should have the 'MTG Trader' title`, () => {
-    authService.isConnected$ = of(true);
+    authService.connectedUserToken$ = of('usr-token');
     navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
@@ -51,7 +51,7 @@ describe('AppComponent', () => {
   });
 
   it('should have nav bar when user is connected', () => {
-    authService.isConnected$ = of(true);
+    authService.connectedUserToken$ = of('usr-token');
     navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
 
@@ -68,7 +68,7 @@ describe('AppComponent', () => {
   });
 
   it('should resume navigation when user is connected', () => {
-    authService.isConnected$ = of(true);
+    authService.connectedUserToken$ = of('usr-token');
     navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
@@ -76,7 +76,7 @@ describe('AppComponent', () => {
   });
 
   it('should navigate to Wantlists when My collection wantlists item is clicked', () => {
-    authService.isConnected$ = of(true);
+    authService.connectedUserToken$ = of('usr-token');
     navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
@@ -90,7 +90,7 @@ describe('AppComponent', () => {
   });
 
   it('should navigate to Trade when Trade nav item is clicked', () => {
-    authService.isConnected$ = of(true);
+    authService.connectedUserToken$ = of('usr-token');
     navService.currentRoute$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
@@ -102,7 +102,7 @@ describe('AppComponent', () => {
 
   it('should navigate to user home component when user is not connected', () => {
     navService.currentRoute$ = of('');
-    authService.isConnected$ = of(false);
+    authService.connectedUserToken$ = of('');
     const fixture = TestBed.createComponent(AppComponent);
 
     fixture.detectChanges();
@@ -112,7 +112,7 @@ describe('AppComponent', () => {
 
   it('should have wantlist underlined when is wantlists url', () => {
     navService.currentRoute$ = of(navService.wantlistsUrl);
-    authService.isConnected$ = of(true);
+    authService.connectedUserToken$ = of('usr-token');
     const fixture = TestBed.createComponent(AppComponent);
 
     fixture.detectChanges();
@@ -124,7 +124,7 @@ describe('AppComponent', () => {
   });
 
   it('should have doubles underlined when is doubles url', () => {
-    authService.isConnected$ = of(true);
+    authService.connectedUserToken$ = of('usr-token');
     navService.currentRoute$ = of(navService.doublesUrl);
     const fixture = TestBed.createComponent(AppComponent);
 
@@ -135,7 +135,7 @@ describe('AppComponent', () => {
 
   it('should have trade underlined when is trade url', () => {
     navService.currentRoute$ = of(navService.tradeUrl);
-    authService.isConnected$ = of(true);
+    authService.connectedUserToken$ = of('usr-token');
     const fixture = TestBed.createComponent(AppComponent);
 
     fixture.detectChanges();
