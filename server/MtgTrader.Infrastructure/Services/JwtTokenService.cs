@@ -4,11 +4,12 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MtgTrader.Core.Entities.General;
+using MtgTrader.Core.Services;
 using Config = MtgTrader.Infrastructure.Configuration;
 
-namespace MtgTrader.Infrastructure.Services.JwtToken;
+namespace MtgTrader.Infrastructure.Services;
 
-public class JwtTokenService(IConfiguration configuration) : IJwtTokenService
+public class JwtTokenService(IConfiguration configuration) : ITokenService
 {
     private readonly IConfiguration _configuration = configuration;
 

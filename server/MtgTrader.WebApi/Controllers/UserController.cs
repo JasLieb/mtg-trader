@@ -4,19 +4,14 @@ using Microsoft.Net.Http.Headers;
 using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Handlers.Auth;
-using MtgTrader.Infrastructure.Services.JwtToken;
 
 namespace MtgTrader.WebApi.Controllers;
 
 [ApiController]
 [Route("api/user")]
-public class UserController(
-    IAuthHandler authHandler,
-    IJwtTokenService jwtTokenService
-) : ControllerBase
+public class UserController(IAuthHandler authHandler) : ControllerBase
 {
     private readonly IAuthHandler _authHandler = authHandler;
-    private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
 
     [HttpGet]
     [Authorize]
@@ -27,7 +22,7 @@ public class UserController(
     {
         var accessToken = Request.Headers[HeaderNames.Authorization];
 
-        var isValidToken = _jwtTokenService.CheckToken(accessToken.ToString());
+        var isValidToken = _authHandler.CheckTokenValidity(accessToken.ToString());
         return isValidToken ? Ok() : Problem("Invalid token");
     }
 
@@ -38,12 +33,11 @@ public class UserController(
         [FromBody] AuthRequest authRequest
     )
     {
-        var user = _authHandler.CreateUser(authRequest);
-        if (user is null)
+        var authResponse = _authHandler.CreateUser(authRequest);
+        if (authResponse is null)
         {
             return Problem("Unable to create user");
         }
-        var token = _jwtTokenService.CreateToken(user);
-        return Ok(new AuthResponse(token));
+        return Ok(authResponse);
     }
 }

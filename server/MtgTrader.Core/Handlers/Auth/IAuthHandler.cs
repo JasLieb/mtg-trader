@@ -1,10 +1,11 @@
 using MtgTrader.Core.Entities.Business.Requests;
-using MtgTrader.Core.Entities.General;
+using MtgTrader.Core.Entities.Business.Responses;
 
 namespace MtgTrader.Core.Handlers.Auth;
 
 public interface IAuthHandler
 {
-    User? Connect(AuthRequest authRequest);
-    User? CreateUser(AuthRequest value);
+    AuthResponse? Connect(AuthRequest authRequest);
+    AuthResponse? CreateUser(AuthRequest value);
+    bool CheckTokenValidity(string invalidToken);
 }

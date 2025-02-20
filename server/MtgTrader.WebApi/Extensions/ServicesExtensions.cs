@@ -7,10 +7,11 @@ using MtgTrader.Core.Handlers.Auth;
 using MtgTrader.Core.Handlers.Trade;
 using MtgTrader.Core.Handlers.Wantlist;
 using MtgTrader.Core.Repositories;
+using MtgTrader.Core.Services;
 using MtgTrader.Infrastructure.Configuration;
 using MtgTrader.Infrastructure.Contexts;
 using MtgTrader.Infrastructure.Repositories;
-using MtgTrader.Infrastructure.Services.JwtToken;
+using MtgTrader.Infrastructure.Services;
 
 namespace MtgTrader.WebApi.Extensions;
 
@@ -18,7 +19,7 @@ public static class ServicesExtensions
 {
     public static IServiceCollection RegisterServices(this IServiceCollection services) =>
         services
-            .AddTransient<IJwtTokenService, JwtTokenService>()
+            .AddTransient<ITokenService, JwtTokenService>()
             .AddTransient<IUserRepository, UserRepository>()
             .AddTransient<IWantlistRepository, WantlistRepository>()
             .AddTransient<IWantlistCardsRepository, WantlistCardsRepository>()

@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Entities/Business/Requests/" />
+    <Folder Include="Services/" />
   </ItemGroup>
 
 </Project>

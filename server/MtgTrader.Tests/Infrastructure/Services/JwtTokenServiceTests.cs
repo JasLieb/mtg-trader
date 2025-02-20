@@ -1,3 +1,4 @@
+using MtgTrader.Core.Services;
 using MtgTrader.Infrastructure.Configuration;
 
 namespace MtgTrader.Tests.Infrastructure.Services;
@@ -5,7 +6,7 @@ namespace MtgTrader.Tests.Infrastructure.Services;
 public class JwtTokenServiceTests
 {
     private readonly IConfiguration _configuration;
-    private readonly IJwtTokenService _jwtToken;
+    private readonly ITokenService _jwtToken;
 
     public JwtTokenServiceTests()
     {

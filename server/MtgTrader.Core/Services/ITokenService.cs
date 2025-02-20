@@ -1,8 +1,8 @@
 using MtgTrader.Core.Entities.General;
 
-namespace MtgTrader.Infrastructure.Services.JwtToken;
+namespace MtgTrader.Core.Services;
 
-public interface IJwtTokenService
+public interface ITokenService
 {
     string CreateToken(User user);
     bool CheckToken(string token);

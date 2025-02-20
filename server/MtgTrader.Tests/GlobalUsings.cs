@@ -9,7 +9,7 @@ global using MtgTrader.Tests.Extensions;
 
 global using MtgTrader.Infrastructure.Contexts;
 global using MtgTrader.Infrastructure.Repositories;
-global using MtgTrader.Infrastructure.Services.JwtToken;
+global using MtgTrader.Infrastructure.Services;
 
 global using MtgTrader.Core.Entities.Business.Requests;
 global using MtgTrader.Core.Entities.Business.Responses;
