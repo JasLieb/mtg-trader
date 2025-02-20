@@ -44,6 +44,8 @@ public class AuthHandler(
         return null;
     }
 
-    public bool CheckTokenValidity(string token) =>
-        _tokenService.CheckToken(token);
+    public AuthResponse? CheckTokenValidity(string token) =>
+        _tokenService.CheckToken(token)
+        ? new (token)
+        : null;
 }

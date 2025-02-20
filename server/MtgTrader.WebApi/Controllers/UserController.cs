@@ -18,12 +18,14 @@ public class UserController(IAuthHandler authHandler) : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult Get()
+    public ActionResult<AuthResponse> Get()
     {
         var accessToken = Request.Headers[HeaderNames.Authorization];
 
-        var isValidToken = _authHandler.CheckTokenValidity(accessToken.ToString());
-        return isValidToken ? Ok() : Problem("Invalid token");
+        var authResponse = _authHandler.CheckTokenValidity(accessToken.ToString());
+        return authResponse is null 
+            ? Problem("Invalid token")
+            : Ok(authResponse);
     }
 
     [HttpPost]

@@ -7,5 +7,5 @@ public interface IAuthHandler
 {
     AuthResponse? Connect(AuthRequest authRequest);
     AuthResponse? CreateUser(AuthRequest value);
-    bool CheckTokenValidity(string invalidToken);
+    AuthResponse? CheckTokenValidity(string invalidToken);
 }

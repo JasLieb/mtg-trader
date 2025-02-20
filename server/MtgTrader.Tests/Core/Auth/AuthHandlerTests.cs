@@ -83,7 +83,7 @@ public class AuthHandlerTests
         
         _tokenService.CheckToken(invalidToken).Returns(true);
 
-        _handler.CheckTokenValidity(invalidToken).Should().BeTrue();
+        _handler.CheckTokenValidity(invalidToken).Should().NotBeNull();
     }
     
     [Fact]
@@ -93,6 +93,6 @@ public class AuthHandlerTests
         
         _tokenService.CheckToken(invalidToken).Returns(false);
 
-        _handler.CheckTokenValidity(invalidToken).Should().BeFalse();
+        _handler.CheckTokenValidity(invalidToken).Should().BeNull();
     }
 }
