@@ -5,9 +5,9 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from './core/services/auth/auth.service';
 import { NavigationService } from './core/services/navigation/navigation.service';
 import { map, Observable, Subject, takeUntil } from 'rxjs';
+import { AuthService } from './core/services/auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'MTG Trader';
   currentRoute: Signal<string>;
   isTradeTab: Signal<boolean>;
+  isChatTab: Signal<boolean>;
   isWantlistsTab: Signal<boolean>;
   isDoublesTab: Signal<boolean>;
   isConnected: Signal<boolean>;
@@ -52,6 +53,9 @@ export class AppComponent implements OnInit, OnDestroy {
     );
     this.isTradeTab = computed(
       () => this.currentRoute() === navigationService.tradeUrl
+    );
+    this.isChatTab = computed(
+      () => this.currentRoute() === navigationService.chatUrl
     );
   }
 
@@ -83,6 +87,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   navigateDoubles() {
     this.navigationService.navigateDoubles();
+  }
+
+  navigateChat() {
+    this.navigationService.navigateChat();
   }
 
   private navigateAuth() {

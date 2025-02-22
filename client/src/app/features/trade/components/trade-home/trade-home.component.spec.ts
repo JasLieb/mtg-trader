@@ -1,31 +1,36 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TradeHomeComponent } from './trade-home.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TradeService } from '../../services/trade/trade.service';
 import { of } from 'rxjs';
-import { TradeableResponse } from '../../models/tradeable-response';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { NavigationService } from '../../../../core/services/navigation/navigation.service';
 import { UserTrader } from '../../models/user-trader';
 
 describe('TradeHomeComponent', () => {
   let component: TradeHomeComponent;
   let fixture: ComponentFixture<TradeHomeComponent>;
-  let service: jasmine.SpyObj<TradeService>;
+  let tradeService: jasmine.SpyObj<TradeService>;
+  let navigationService: jasmine.SpyObj<NavigationService>;
 
   beforeEach(async () => {
     const tradeSpy = jasmine.createSpyObj('TradeService', ['find']);
+    const navigationSpy = jasmine.createSpyObj('NavigationService', ['navigateChat']);
     await TestBed.configureTestingModule({
-      providers: [{ provide: TradeService, useValue: tradeSpy }],
-      imports: [
-        TradeHomeComponent,
-        HttpClientTestingModule,
-        NoopAnimationsModule,
+      providers: [
+        { provide: TradeService, useValue: tradeSpy },
+        { provide: NavigationService, useValue: navigationSpy },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
+      imports: [TradeHomeComponent, NoopAnimationsModule],
     }).compileComponents();
 
-    service = TestBed.inject(TradeService) as jasmine.SpyObj<TradeService>;
-    service.find.and.callFake(() => of([]));
+    tradeService = TestBed.inject(TradeService) as jasmine.SpyObj<TradeService>;
+    tradeService.find.and.callFake(() => of([]));
+
+    navigationService = TestBed.inject(NavigationService) as jasmine.SpyObj<NavigationService>;
   });
 
   function initFixture() {
@@ -41,11 +46,11 @@ describe('TradeHomeComponent', () => {
 
   it('should find trade after content init', () => {
     initFixture();
-    expect(service.find.calls.count()).toBe(1);
+    expect(tradeService.find.calls.count()).toBe(1);
   });
 
   it('should display user with tradeable doubles when some', () => {
-    service.find.and.callFake(() => of([{id: '1'} as UserTrader]));
+    tradeService.find.and.callFake(() => of([{ id: '1' } as UserTrader]));
 
     initFixture();
 
@@ -57,10 +62,22 @@ describe('TradeHomeComponent', () => {
   });
 
   it('should have trade actions', () => {
-    service.find.and.callFake(() => of([{id: '1'} as UserTrader]));
+    tradeService.find.and.callFake(() => of([{ id: '1' } as UserTrader]));
     initFixture();
 
-    const actions = fixture.nativeElement.querySelectorAll('.trade-user-action');
+    const actions =
+      fixture.nativeElement.querySelectorAll('.trade-user-action');
     expect(actions.length).toBe(1);
+  });
+
+  it('should navigate to chat home component on send message button click', () => {
+    tradeService.find.and.callFake(() => of([{ id: '1' } as UserTrader]));
+    initFixture();
+
+    const actions =
+      fixture.nativeElement.querySelectorAll('.trade-user-action');
+    actions[0].click();
+
+    expect(navigationService.navigateChat).toHaveBeenCalledOnceWith('1');
   });
 });

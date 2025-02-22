@@ -9,7 +9,6 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../../../core/services/auth/auth.service';
-import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 
 @Component({
     selector: 'app-login',

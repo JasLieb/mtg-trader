@@ -80,7 +80,6 @@ describe('CardSearcherComponent', () => {
       fixture.detectChanges();
 
       const results = document.querySelectorAll('mat-option');
-      console.log(results);
       expect(results.length).toBe(1);
       done();
     });

@@ -6,10 +6,10 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../../../../core/services/auth/auth.service';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
+import { AuthService } from '../../../../core/services/auth/auth.service';
 
 @Component({
     selector: 'app-register',

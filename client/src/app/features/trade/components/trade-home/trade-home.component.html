@@ -1,15 +1,21 @@
 <div class="trade-home-container">
   <mat-accordion>
     @for (user of users(); track user.id) {
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title class="trade-user">{{ user.name }}</mat-panel-title>
-        </mat-expansion-panel-header>
-        <app-trade-card-list [cards]="user.doubles"></app-trade-card-list>
-        <app-trade-card-list [cards]="user.wanted"></app-trade-card-list>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title class="trade-user">{{ user.name }}</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>You're looking for :</div>
+      <app-trade-card-list [cards]="user.doubles"></app-trade-card-list>
+      <div>{{ user.name }} is looking for :</div>
+      <app-trade-card-list [cards]="user.wanted"></app-trade-card-list>
       <mat-action-row>
-        <button mat-button class="trade-user-action">
-          action
+        <button
+          mat-button
+          class="trade-user-action"
+          (click)="startWritingMessage(user)"
+        >
+          Send a message
         </button>
       </mat-action-row>
     </mat-expansion-panel>

@@ -30,6 +30,13 @@
           (click)="navigateTrade()"
           >Trade</mat-list-item
         >
+        <mat-list-item
+          class="app-nav-item"
+          role="listitem"
+          [class.app-a-selected]="isChatTab()"
+          (click)="navigateChat()"
+          >Chat</mat-list-item
+        >
       </mat-list>
     </mat-drawer>
 

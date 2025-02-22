@@ -1,0 +1,17 @@
+<div class="chat-home-container">
+  <div class="chat-home-conversation-list">
+    @for (chat of chats(); track chat.id) {
+    <div class="chat-home-conversation-tab">{{ chat.recipient.name }}</div>
+    <!-- @for (message of chat.messages; track $index) {
+    <div>{{ message }}</div>
+    } -->
+    }
+  </div>
+  <mat-card class="chat-home-conversation-card">
+    <mat-card-content>
+      @for (message of chats()[0].messages; track $index) {
+      <div>{{ message }}</div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

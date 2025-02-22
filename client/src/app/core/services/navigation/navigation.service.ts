@@ -9,6 +9,7 @@ export class NavigationService {
   authUrl = '/auth';
   doublesUrl = '/doubles';
   tradeUrl = '/trade';
+  chatUrl = '/chat';
   wantlistsUrl = '/wantlists';
 
   private currentRouteBehavior = new Subject<string>();
@@ -32,6 +33,16 @@ export class NavigationService {
     this.navigate(this.doublesUrl);
   }
 
+  navigateChat(recipientId?: string) {
+    if(recipientId) {
+      this.router.navigate([this.chatUrl, recipientId]).then(() => {
+        this.onNavigationSuccess(this.chatUrl, true);
+      });
+      return;
+    }
+    this.navigate(this.chatUrl);
+  }
+
   resumeLastRoute() {
     const lastRoute = window.localStorage.getItem('last-route');
     this.navigate(
@@ -41,13 +52,17 @@ export class NavigationService {
 
   private navigate(route: string, shouldSave = true) {
     this.router.navigate([route]).then(() => {
-      if(shouldSave) {
-        window.localStorage.setItem(
-          'last-route',
-          route
-        );
-      }
-      this.currentRouteBehavior.next(route);
+      this.onNavigationSuccess(route, shouldSave);
     });
+  }
+
+  private onNavigationSuccess(route: string, shouldSave: boolean) {
+    if(shouldSave) {
+      window.localStorage.setItem(
+        'last-route',
+        route
+      );
+    }
+    this.currentRouteBehavior.next(route);
   }
 }

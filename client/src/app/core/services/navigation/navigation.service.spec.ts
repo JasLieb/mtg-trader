@@ -67,6 +67,19 @@ describe('NavigationService', () => {
     });
   });
 
+  it('should call router with chat url on chat trade', (done) => {
+    service.navigateChat();
+    expect(router.navigate).toHaveBeenCalledWith([service.chatUrl]);
+    service.currentRoute$.subscribe((route) => {
+      expect(route).toBe(service.chatUrl);
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'last-route',
+        service.chatUrl
+      );
+      done();
+    });
+  });
+
   it('should save last route on navigation', (done) => {
     service.navigateTrade();
     service.currentRoute$.subscribe((_) => {
@@ -95,7 +108,7 @@ describe('NavigationService', () => {
     });
   });
 
-  it('should call router with wantlist urlwhen no saved route on resume', (done) => {
+  it('should call router with wantlist url when no saved route on resume', (done) => {
     service.resumeLastRoute();
     service.currentRoute$.subscribe((route) => {
       expect(route).toBe(service.wantlistsUrl);

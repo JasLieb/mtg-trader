@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { AuthService } from './core/services/auth/auth.service';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationService } from './core/services/navigation/navigation.service';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { AuthService } from './core/services/auth/auth.service';
 
 describe('AppComponent', () => {
   let authService: jasmine.SpyObj<AuthService>;
@@ -18,14 +19,17 @@ describe('AppComponent', () => {
       'navigateTrade',
       'navigateWantlists',
       'navigateDoubles',
+      'navigateChat',
     ]);
 
     await TestBed.configureTestingModule({
       providers: [
         { provide: AuthService, useValue: authSpy },
         { provide: NavigationService, useValue: navSpy },
+        provideHttpClient(),
+        provideHttpClientTesting()
       ],
-      imports: [AppComponent, HttpClientTestingModule, NoopAnimationsModule],
+      imports: [AppComponent, NoopAnimationsModule],
     }).compileComponents();
 
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
@@ -61,10 +65,11 @@ describe('AppComponent', () => {
     expect(nav).toBeTruthy();
 
     const navElements = fixture.nativeElement.querySelectorAll('.app-nav-item');
-    expect(navElements.length).toBe(3);
+    expect(navElements.length).toBe(4);
     expect(navElements[0].innerText).toBe('Wantlists');
     expect(navElements[1].innerText).toBe('Doubles');
     expect(navElements[2].innerText).toBe('Trade');
+    expect(navElements[3].innerText).toBe('Chat');
   });
 
   it('should resume navigation when user is connected', () => {
@@ -98,6 +103,17 @@ describe('AppComponent', () => {
     fixture.nativeElement.querySelectorAll('.app-nav-item')[2].click();
 
     expect(navService.navigateTrade).toHaveBeenCalled();
+  });
+
+  it('should navigate to chat home component when Chat tab is clicked', () => {
+    authService.connectedUserToken$ = of('usr-token');
+    navService.currentRoute$ = of('');
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    fixture.nativeElement.querySelectorAll('.app-nav-item')[3].click();
+
+    expect(navService.navigateChat).toHaveBeenCalled();
   });
 
   it('should navigate to user home component when user is not connected', () => {
@@ -141,5 +157,15 @@ describe('AppComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.isTradeTab()).toBeTrue();
+  });
+
+  it('should have chat underlined when is chat url', () => {
+    navService.currentRoute$ = of(navService.chatUrl);
+    authService.connectedUserToken$ = of('usr-token');
+    const fixture = TestBed.createComponent(AppComponent);
+
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.isChatTab()).toBeTrue();
   });
 });
