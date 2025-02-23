@@ -20,7 +20,7 @@ export class AuthService {
     if (this.hasToken()) {
       subscribeOnce(
         this.http.get<AuthResponse>(this.userApiUrl),
-        (response) => this.connectedUserBehavior.next(response.usrToken),
+        (response) => this.updateConnectedUser(response),
         (_) => this.handleError()
       );
     }
@@ -37,15 +37,15 @@ export class AuthService {
   private handleAuth(route: string, body: AuthRequest) {
     subscribeOnce(
       this.http.post<AuthResponse>(route, body),
-      (response) => {
-        this.connectedUserBehavior.next(response.usrToken);
-          window.localStorage.setItem(
-            this.userTokenKey,
-            `Bearer ${response.usrToken}`
-          );
-      },
+      (response) => this.updateConnectedUser(response),
       (err) => this.handleError()
     );
+  }
+
+  private updateConnectedUser(response: AuthResponse) {
+    const token = response.usrToken.replaceAll('Bearer ', '');
+    this.connectedUserBehavior.next(token);
+    window.localStorage.setItem(this.userTokenKey, token);
   }
 
   private handleError() {

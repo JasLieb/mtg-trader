@@ -1,8 +1,10 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { filter, Observable, of } from 'rxjs';
 import { Chat } from '../../models/chat';
 import { UserTrader } from '../../models/user-trader';
 import * as signalR from '@microsoft/signalr';
+import { AuthService } from '../../../../core/services/auth/auth.service';
+import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 
 @Injectable({
   providedIn: 'root',
@@ -10,30 +12,44 @@ import * as signalR from '@microsoft/signalr';
 export class ChatService {
   private hubConnection: signalR.HubConnection | null = null;
   private connectionId: string | undefined;
+
   static shouldInitHubConnection: boolean = true;
+
   messages = signal<string[]>([]);
 
-  constructor() {
+  constructor(private authService: AuthService) {
     if (ChatService.shouldInitHubConnection) {
-      this.hubConnection = new signalR.HubConnectionBuilder()
-        .withUrl(
-          '/chathub',
-          signalR.HttpTransportType.WebSockets |
-            signalR.HttpTransportType.LongPolling
-        )
-        .build();
-
-      this.hubConnection
-        .start()
-        .then(() => {
-          console.log('Connection started');
-        })
-        .catch((err) => console.error(err));
-
-      this.hubConnection.on('ReceiveMessage', (message: string) => {
-        this.messages.set([...this.messages(), message]);
-      });
+      subscribeOnce(
+        this.authService.connectedUserToken$.pipe(filter((token) => !!token)),
+        (userToken) => {
+          this.initHubConnection(userToken);
+        }
+      );
     }
+  }
+
+  private initHubConnection(userToken: string) {
+    const options: signalR.IHttpConnectionOptions = {
+      accessTokenFactory: () => userToken,
+      transport:
+        signalR.HttpTransportType.WebSockets |
+        signalR.HttpTransportType.LongPolling,
+    };
+
+    this.hubConnection = new signalR.HubConnectionBuilder()
+      .withUrl('/chathub', options)
+      .build();
+
+    this.hubConnection
+      .start()
+      .then(() => {
+        console.log('Connection started');
+      })
+      .catch((err) => console.error(err));
+
+    this.hubConnection.on('ReceiveMessage', (message: string) => {
+      this.messages.set([...this.messages(), message]);
+    });
   }
 
   sendMessage(message: string, senderId: string, recipientId: string) {

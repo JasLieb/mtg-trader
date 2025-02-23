@@ -45,7 +45,7 @@ public class AuthHandler(
     }
 
     public AuthResponse? CheckTokenValidity(string token) =>
-        _tokenService.CheckToken(token)
+        !string.IsNullOrEmpty(_tokenService.CheckToken(token))
         ? new (token)
         : null;
 }

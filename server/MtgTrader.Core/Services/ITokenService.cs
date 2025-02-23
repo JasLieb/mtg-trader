@@ -5,5 +5,5 @@ namespace MtgTrader.Core.Services;
 public interface ITokenService
 {
     string CreateToken(User user);
-    bool CheckToken(string token);
+    string? CheckToken(string token);
 }

@@ -84,12 +84,12 @@ describe('AuthService', () => {
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/auth'
     );
-    reqs[0].flush({ usrToken: 'toto' }, { status: 200, statusText: 'ok' });
+    reqs[0].flush({ usrToken: 'Bearer toto' }, { status: 200, statusText: 'ok' });
 
     expect(window.localStorage.setItem).toHaveBeenCalledTimes(1);
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
       'usr-token',
-      'Bearer toto'
+      'toto'
     );
   });
 
@@ -113,7 +113,7 @@ describe('AuthService', () => {
       (req) => req.method == 'POST' && req.url == 'api/user'
     );
 
-    reqs[0].flush({ usrToken: 'token'}, { status: 200, statusText: 'ok' });
+    reqs[0].flush({ usrToken: 'Bearer token'}, { status: 200, statusText: 'ok' });
 
     service.connectedUserToken$.subscribe((connectedUser) => {
       expect(connectedUser).toBe('token');
@@ -128,12 +128,12 @@ describe('AuthService', () => {
       (req) => req.method == 'POST' && req.url == 'api/user'
     );
 
-    reqs[0].flush({ usrToken: 'toto' }, { status: 200, statusText: 'ok' });
+    reqs[0].flush({ usrToken: 'Bearer toto' }, { status: 200, statusText: 'ok' });
 
     expect(window.localStorage.setItem).toHaveBeenCalledTimes(1);
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
       'usr-token',
-      'Bearer toto'
+      'toto'
     );
   });
 

@@ -21,7 +21,7 @@ public class JwtTokenServiceTests
     
         var result = _jwtToken.CheckToken("nawak");
 
-        result.Should().BeFalse();
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class JwtTokenServiceTests
     
         var result = _jwtToken.CheckToken(validToken);
 
-        result.Should().BeTrue();
+        result.Should().NotBeNullOrEmpty();
     }
 
     [Fact]

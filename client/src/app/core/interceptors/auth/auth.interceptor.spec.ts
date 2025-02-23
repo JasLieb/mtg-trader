@@ -45,7 +45,7 @@ describe('authInterceptor', () => {
 
     expect(actualReq).toBeTruthy();
     expect(actualReq.headers.has('Authorization')).toEqual(true);
-    expect(actualReq.headers.get('Authorization')).toEqual(`toto`);
+    expect(actualReq.headers.get('Authorization')).toEqual(`Bearer toto`);
   });
 
   it('should not put bearer token in request when is not an api request', () => {

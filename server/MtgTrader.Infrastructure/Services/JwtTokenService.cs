@@ -13,7 +13,7 @@ public class JwtTokenService(IConfiguration configuration) : ITokenService
 {
     private readonly IConfiguration _configuration = configuration;
 
-    public bool CheckToken(string token)
+    public string? CheckToken(string token)
     {
         var key = Encoding.ASCII.GetBytes(GetConfiguration(Config.JwtConstants.Secret));
         var signingKeys = new SymmetricSecurityKey(key);
@@ -31,17 +31,17 @@ public class JwtTokenService(IConfiguration configuration) : ITokenService
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            tokenHandler.ValidateToken(
-                token.Replace("Bearer ", ""), 
-                validationParameters, 
+            var claimsPrincipal = tokenHandler.ValidateToken(
+                token.Replace("Bearer ", ""),
+                validationParameters,
                 out _
             );
-            return true;
+            return claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
-        catch (Exception e) 
-        when (e is  SecurityTokenValidationException or SecurityTokenMalformedException)
+        catch (Exception e)
+        when (e is SecurityTokenValidationException or SecurityTokenMalformedException)
         {
-            return false;
+            return null;
         }
     }
 
