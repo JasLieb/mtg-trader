@@ -52,10 +52,10 @@ export class ChatService {
     });
   }
 
-  sendMessage(message: string, senderId: string, recipientId: string) {
+  sendMessage(message: string, recipientId: string) {
     if (recipientId && this.hubConnection) {
       this.hubConnection
-        .invoke('SendMessage', senderId, recipientId, message)
+        .invoke('SendMessage', recipientId, message)
         .catch((err) => console.error(err));
     }
   }

@@ -1,4 +1,5 @@
 using MtgTrader.Core.Services;
+using NSubstitute.ReturnsExtensions;
 
 namespace MtgTrader.Tests.Core.Auth;
 
@@ -81,7 +82,7 @@ public class AuthHandlerTests
     {
         var invalidToken = "valid token";
         
-        _tokenService.CheckToken(invalidToken).Returns(true);
+        _tokenService.CheckToken(invalidToken).Returns("token");
 
         _handler.CheckTokenValidity(invalidToken).Should().NotBeNull();
     }
@@ -91,7 +92,7 @@ public class AuthHandlerTests
     {
         var invalidToken = "not valid token";
         
-        _tokenService.CheckToken(invalidToken).Returns(false);
+        _tokenService.CheckToken(invalidToken).ReturnsNull();
 
         _handler.CheckTokenValidity(invalidToken).Should().BeNull();
     }

@@ -25,10 +25,12 @@ public class ChatHub(IChatHandler chatHandler) : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task SendMessage(string senderId, string recipientId, string message)
+    public async Task SendMessage(string recipientId, string message)
     {
-        var authorId = Context.UserIdentifier ?? senderId;
+        var authorId = Context.UserIdentifier 
+            ?? throw new HubException("User not authenticated");
         chatHandler.AddMessage(authorId, recipientId, message);
-        await Clients.User(recipientId).SendAsync("ReceiveMessage", message);
+        // var connectionId = chatHandler.FindConnection(recipientId);
+        await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", message);
     }
 }

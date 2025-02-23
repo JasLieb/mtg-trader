@@ -1,5 +1,5 @@
 <div class="chat-home-container">
-  <div class="chat-home-conversation-list">
+  <div class="chat-home-conversation-list-preview">
     @for (chat of chats(); track chat.id) {
     <div class="chat-home-conversation-tab">{{ chat.recipient.name }}</div>
     <!-- @for (message of chat.messages; track $index) {
@@ -8,10 +8,28 @@
     }
   </div>
   <mat-card class="chat-home-conversation-card">
-    <mat-card-content>
+    <mat-card-content class="chat-home-conversation-messages">
       @for (message of chats()[0].messages; track $index) {
       <div>{{ message }}</div>
       }
     </mat-card-content>
+    <mat-card-actions class="chat-home-conversation-actions">
+      <mat-form-field class="chat-home-conversation-input">
+        <input
+          matInput
+          placeholder="Start writing your message..."
+          [formControl]="messageControl"
+          (keydown)="onKeyDown($event)"
+        />
+        <button
+          matSuffix
+          mat-button
+          (click)="sendMessage()"
+          aria-label="Send message"
+        >
+          <mat-icon>send</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-card-actions>
   </mat-card>
 </div>

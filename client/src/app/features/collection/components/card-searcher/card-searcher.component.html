@@ -5,7 +5,6 @@
       type="text"
       [formControl]="searchControl"
       placeholder="Exotic Orchard"
-      [formControl]="searchControl"
       [matAutocomplete]="auto"
       class="example-input"
     />
@@ -17,20 +16,3 @@
   </mat-form-field>
   <button mat-button (click)="onAddCard()">Add to wantlist</button>
 </form>
-
-<!-- <div>
-  <input
-    type="text"
-    [formControl]="searchControl"
-    placeholder="Exotic Orchard"
-  />
-  <button (click)="onAddCard()">Add to wantlist</button>
-</div>-->
-
-<!-- @if (results()) {
-<ul>
-  @for (result of results(); track result.id) {
-  <li (click)="onCardClicked(result)">{{ result.name }}</li>
-  }
-</ul>
-} -->
