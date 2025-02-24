@@ -6,5 +6,6 @@ public class User(string id, string username, string password)
     public string Username { get; set; } = username;
     public string Password { get; set; } = password;
 
-    public ICollection<ChatMessage> ChatMessages { get; set; } = [];
+    public ICollection<ChatMessage> SentMessages { get; set; } = [];
+    public ICollection<ChatMessage> ReceivedMessages { get; set; } = [];
 }

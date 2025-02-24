@@ -1,4 +1,11 @@
-import { Component, OnDestroy, Signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  OnDestroy,
+  signal,
+  Signal,
+  WritableSignal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
@@ -6,15 +13,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Subject, takeUntil } from 'rxjs';
+import { combineLatest, Subject, takeUntil } from 'rxjs';
 import { ChatService } from '../../services/chat/chat.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Chat } from '../../models/chat';
-import { AuthService } from '../../../../core/services/auth/auth.service';
+import { CommonModule } from '@angular/common';
+import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 
 @Component({
   selector: 'app-chat-home',
   imports: [
+    CommonModule,
     MatCardModule,
     FormsModule,
     ReactiveFormsModule,
@@ -28,31 +37,39 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
 })
 export class ChatHomeComponent implements OnDestroy {
   private unsubscribe = new Subject();
+  private selectedRecipientId: WritableSignal<string | undefined> =
+    signal(undefined);
 
-  connectedUser: Signal<string>;
   messageControl: FormControl;
   chats: Signal<Chat[]>;
+  selectedChat: Signal<Chat | undefined>;
 
   constructor(
-    authService: AuthService,
     private chatService: ChatService,
     private activatedRoute: ActivatedRoute
   ) {
     this.messageControl = new FormControl('');
-    this.chats = toSignal(chatService.fetchChats(), { initialValue: [] });
-    this.activatedRoute.params
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe((params) => {
-        // TODO go to chat with user given by activated route's params
-      });
-    this.connectedUser = toSignal(authService.connectedUserToken$, {
-      initialValue: '',
+    this.chats = toSignal(chatService.chats$, { initialValue: [] });
+    this.selectedChat = computed(() => {
+      const selectedRecipientId = this.selectedRecipientId();
+      return selectedRecipientId
+        ? this.findOrMakeAssociatedChat(selectedRecipientId)
+        : undefined;
+    });
+
+    subscribeOnce(this.activatedRoute.params, (params) => {
+      const recipientId = params['recipientId'];
+      this.selectedRecipientId.set(recipientId);
     });
   }
 
   ngOnDestroy(): void {
     this.unsubscribe.next(null);
     this.unsubscribe.complete();
+  }
+
+  selectChat(recipientId: string) {
+    if (recipientId) this.selectedRecipientId.set(recipientId);
   }
 
   onKeyDown($event: KeyboardEvent) {
@@ -62,10 +79,21 @@ export class ChatHomeComponent implements OnDestroy {
   }
 
   sendMessage(): void {
-    const connectedUser = this.connectedUser();
-    if (this.messageControl.value.trim() && connectedUser !== '') {
-      this.chatService.sendMessage(this.messageControl.value, connectedUser);
+    const recipientId = this.selectedRecipientId();
+    if (this.messageControl.value.trim() && recipientId) {
+      this.chatService.sendMessage(this.messageControl.value, recipientId);
       this.messageControl.reset();
     }
+  }
+
+  private findOrMakeAssociatedChat(recipientId: string): Chat {
+    let chat = this.chats().find((c) => c.recipientId === recipientId);
+    if (!chat) {
+      chat = {
+        recipientId,
+        chatMessages: [],
+      };
+    }
+    return chat;
   }
 }

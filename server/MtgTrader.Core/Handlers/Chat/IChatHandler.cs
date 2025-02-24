@@ -1,10 +1,14 @@
-using System;
+using MtgTrader.Core.Entities.Business.Responses;
+using MtgTrader.Core.Entities.General;
 
 namespace MtgTrader.Core.Handlers.Chat;
 
 public interface IChatHandler
 {
-    void AddConnection(string userId, string connectionId);
-    void AddMessage(string senderId, string recipientId, string message);
-    void RemoveConnection(string userId);
+    bool AddConnection(string userId, string connectionId);
+    string? TryFindConnection(string userId);
+    ChatMessage AddMessage(string senderId, string recipientId, string message);
+
+    ChatsResponse LoadMessageHistory(string userId);
+    bool RemoveConnection(string userId);
 }

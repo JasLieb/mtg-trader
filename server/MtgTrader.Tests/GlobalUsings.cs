@@ -1,6 +1,7 @@
 global using Xunit;
 global using Moq;
 global using NSubstitute;
+global using NSubstitute.ReturnsExtensions;
 global using FluentAssertions;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Configuration;
@@ -19,3 +20,5 @@ global using MtgTrader.Core.Handlers.Auth;
 global using MtgTrader.Core.Handlers.Wantlist;
 global using MtgTrader.Core.Handlers.Trade;
 global using MtgTrader.Core.Repositories;
+global using MtgTrader.Core.Handlers.Chat;
+global using MtgTrader.Core.Services;

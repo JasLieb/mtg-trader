@@ -27,6 +27,7 @@ public static class ServicesExtensions
             .AddTransient<IUserRepository, UserRepository>()
             .AddTransient<IWantlistRepository, WantlistRepository>()
             .AddTransient<IWantlistCardsRepository, WantlistCardsRepository>()
+            .AddTransient<IChatRepository, ChatRepository>()
             .AddScoped<IAuthHandler, AuthHandler>()
             .AddScoped<IWantlistHandler, WantlistHandler>()
             .AddScoped<ITradeHandler, TradeHandler>()
@@ -141,6 +142,7 @@ public static class ServicesExtensions
                     new List<string>()
                 }
             });
+            c.AddSignalRSwaggerGen();
         });
         return services;
     }

@@ -22,9 +22,18 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options) : 
 
         modelBuilder.Entity<ChatMessage>()
             .HasOne(e => e.Author)
-            .WithMany(e => e.ChatMessages)
+            .WithMany(e => e.SentMessages)
             .HasForeignKey(e => e.AuthorId);
         
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(e => e.Recipient)
+            .WithMany(e => e.ReceivedMessages)
+            .HasForeignKey(e => e.RecipientId);
+        
         modelBuilder.Entity<ChatMessage>().Ignore(e => e.Author);
+        modelBuilder.Entity<ChatMessage>().Ignore(e => e.Recipient);
+        
+        modelBuilder.Entity<User>().Ignore(e => e.SentMessages);
+        modelBuilder.Entity<User>().Ignore(e => e.ReceivedMessages);
     }
 }

@@ -6,5 +6,5 @@ namespace MtgTrader.Core.Repositories;
 public interface IChatRepository : IBaseRepository<ChatMessage>
 {
     IEnumerable<ChatMessage> FindChatMessages(string userId);
-    void AddMessage(ChatMessage chatMessage);
+    ChatMessage AddMessage(ChatMessage chatMessage);
 }

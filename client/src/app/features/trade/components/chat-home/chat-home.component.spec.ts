@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatHomeComponent } from './chat-home.component';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Params, RouterModule } from '@angular/router';
 import { ChatService } from '../../services/chat/chat.service';
 import { of } from 'rxjs';
 import { Chat } from '../../models/chat';
@@ -28,6 +28,12 @@ describe('ChatHomeComponent', () => {
       providers: [
         { provide: ChatService, useValue: chatSpy },
         { provide: AuthService, useValue: authSpy },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of<Params>({ recipientId: 'id' }),
+          },
+        },
         provideNoopAnimations(),
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -36,8 +42,7 @@ describe('ChatHomeComponent', () => {
     }).compileComponents();
 
     chatService = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
-    chatService.fetchChats.and.callFake(() => of(makChats()));
-
+    chatService.chats$ = of(makeChats());
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     authService.connectedUserToken$ = of('toto');
 
@@ -50,16 +55,12 @@ describe('ChatHomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should do fetch chats when is created', () => {
-    expect(chatService.fetchChats).toHaveBeenCalled();
-  });
-
   it('should send message on send message button click', () => {
     component.messageControl.setValue('hello');
 
     component.sendMessage();
 
-    expect(chatService.sendMessage).toHaveBeenCalledWith('hello', 'toto');
+    expect(chatService.sendMessage).toHaveBeenCalledWith('hello', 'id');
   });
 
   it('should send message on enter key down', () => {
@@ -67,7 +68,7 @@ describe('ChatHomeComponent', () => {
 
     component.onKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
 
-    expect(chatService.sendMessage).toHaveBeenCalledWith('hello', 'toto');
+    expect(chatService.sendMessage).toHaveBeenCalledWith('hello', 'id');
   });
 
   it('should not send message if control is empty', () => {
@@ -83,21 +84,21 @@ describe('ChatHomeComponent', () => {
 
     component.onKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
 
-    expect(component.messageControl.value).toBe(null);
+    expect(component.messageControl.value).toEqual(null);
   });
 });
 
-function makChats(): Chat[] {
+function makeChats(): Chat[] {
   return [
     {
-      id: '1',
-      recipient: {
-        id: 'toto',
-        name: 'jas',
-        doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
-        wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
-      },
-      messages: ['hello'],
+      recipientId: 'id',
+      // recipient: {
+      //   id: 'toto',
+      //   name: 'jas',
+      //   doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+      //   wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+      // },
+      chatMessages: [],
     },
   ];
 }

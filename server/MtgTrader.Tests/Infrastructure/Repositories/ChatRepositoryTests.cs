@@ -14,17 +14,23 @@ public class ChatRepositoryTests
     [Fact]
     public void Should_return_chats_when_find_user_chats()
     {
-        var newUser = new User("idk", "toto", "toto");
-        var chatsMessageDbSetMock = new List<ChatMessage> { new("", "hello", newUser.Id) }.AsDbSetMock();
+        var connectedUser = new User("idk", "toto", "toto");
+        var chatsMessageDbSetMock = 
+            new List<ChatMessage> 
+            { 
+                new("", "hello", connectedUser.Id, "recipient"),
+                new("", "hello", "recipientAsAuthor", connectedUser.Id),
+                new("", "hello", "recipientAsAuthor", "anotherRecipient"),
+            }.AsDbSetMock();
         _dbContextMock.Setup(db => db.Set<ChatMessage>())
             .Returns(chatsMessageDbSetMock.Object);
         var userDbSetMock = new Mock<DbSet<User>>();
         _dbContextMock.Setup(db => db.Set<User>())
             .Returns(userDbSetMock.Object);
 
-        var result = _chatRepository.FindChatMessages(newUser.Id);
+        var result = _chatRepository.FindChatMessages(connectedUser.Id);
 
-        result.Should().HaveCount(1);
+        result.Should().HaveCount(2);
     }
     
     [Fact]
@@ -35,7 +41,7 @@ public class ChatRepositoryTests
         _dbContextMock.Setup(db => db.Set<ChatMessage>())
             .Returns(chatsMessageDbSetMock.Object);
 
-        var newMessage = new ChatMessage("id", "hello world", "toto");
+        var newMessage = new ChatMessage("id", "hello world", "toto", "recipient");
         _chatRepository.AddMessage(newMessage);
 
         chatsMessageDbSetMock.Verify(m => m.Add(It.IsAny<ChatMessage>()), Times.Once());

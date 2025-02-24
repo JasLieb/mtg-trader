@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using MtgTrader.Core.Handlers.Chat;
+using SignalRSwaggerGen.Attributes;
 
 namespace MtgTrader.WebApi.Hubs;
 
+[SignalRHub]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class ChatHub(IChatHandler chatHandler) : Hub
 {
@@ -15,6 +17,9 @@ public class ChatHub(IChatHandler chatHandler) : Hub
             ?? throw new HubException("User not authenticated");
         chatHandler.AddConnection(userId, Context.ConnectionId);
         await base.OnConnectedAsync();
+        
+        var history = chatHandler.LoadMessageHistory(userId);
+        await Clients.Client(Context.ConnectionId).SendAsync("LoadHistory", history);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
@@ -29,8 +34,12 @@ public class ChatHub(IChatHandler chatHandler) : Hub
     {
         var authorId = Context.UserIdentifier 
             ?? throw new HubException("User not authenticated");
-        chatHandler.AddMessage(authorId, recipientId, message);
-        // var connectionId = chatHandler.FindConnection(recipientId);
-        await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", message);
+
+        var chatMessage = chatHandler.AddMessage(authorId, recipientId, message);
+        await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", chatMessage);
+        
+        var connectionId = chatHandler.TryFindConnection(recipientId);
+        if(!string.IsNullOrEmpty(connectionId))
+            await Clients.Client(connectionId).SendAsync("ReceiveMessage", message);
     }
 }

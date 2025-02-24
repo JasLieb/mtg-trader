@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Net.Http.Headers;
 using MtgTrader.Core.Entities.General;
 using MtgTrader.Core.Repositories;
 using MtgTrader.Infrastructure.Contexts;
@@ -10,10 +8,10 @@ public class ChatRepository(ApplicationContext dbContext)
     : BaseRepository<ChatMessage>(dbContext), IChatRepository
 {
     public IEnumerable<ChatMessage> FindChatMessages(string userId) =>
-        DbSet.Where(chat => chat.AuthorId == userId);
+        [.. DbSet.Where(chat => chat.AuthorId == userId || chat.RecipientId == userId)];
 
-    public void AddMessage(ChatMessage chatMessage)
+    public ChatMessage AddMessage(ChatMessage chatMessage)
     {
-        DbSet.Add(chatMessage);
+        return Create(chatMessage);
     }
 }
