@@ -30,9 +30,6 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options) : 
             .WithMany(e => e.ReceivedMessages)
             .HasForeignKey(e => e.RecipientId);
         
-        modelBuilder.Entity<ChatMessage>().Ignore(e => e.Author);
-        modelBuilder.Entity<ChatMessage>().Ignore(e => e.Recipient);
-        
         modelBuilder.Entity<User>().Ignore(e => e.SentMessages);
         modelBuilder.Entity<User>().Ignore(e => e.ReceivedMessages);
     }
