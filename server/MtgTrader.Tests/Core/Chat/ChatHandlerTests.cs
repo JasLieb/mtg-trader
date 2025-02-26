@@ -15,7 +15,7 @@ public class ChatHandlerTests
     public void Should_return_true_when_add_connection_and_not_exists()
     {
         _handler.AddConnection("userID", "connectionId").Should().BeTrue();
-        
+
         // Clean
         // TODO Remove next line by injecting connection manager to handler
         _handler.RemoveConnection("userID");
@@ -49,16 +49,16 @@ public class ChatHandlerTests
     public void Should_return_connectionId_when_connection_exists()
     {
         _handler.AddConnection("userId", "connectionId");
-    
+
         var connectionId = _handler.TryFindConnection("userId");
 
         connectionId.Should().Be("connectionId");
-        
+
         // Clean
         // TODO Remove next line by injecting connection manager to handler
         _handler.RemoveConnection("userId");
     }
-    
+
     [Fact]
     public void Should_return_null_when_connection_not_exists()
     {
@@ -87,17 +87,17 @@ public class ChatHandlerTests
     public void Should_return_grouped_chats_when_load_message_history()
     {
         var connectedUserId = "userId";
-        var messageHistory = new List<ChatMessage> 
-        { 
+        var messageHistory = new List<ChatMessage>
+        {
             new("1", "hello", connectedUserId, "recipient"),
             new("2", "hello", "recipient", connectedUserId)
         };
         _chatRepository.FindChatMessages(connectedUserId).Returns(
             messageHistory
         );
-    
+
         var chatResponse = _handler.LoadMessageHistory(connectedUserId);
-    
+
         chatResponse.Chats.Should().HaveCount(1);
         chatResponse.Chats.ElementAt(0).ChatMessages.Should().BeEquivalentTo(messageHistory);
     }

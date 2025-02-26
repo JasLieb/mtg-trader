@@ -4,7 +4,7 @@ import * as signalR from '@microsoft/signalr';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { ChatMessage } from '../../models/chat-message';
-import { Chat, Chats } from '../../models/chat';
+import { Chat, ChatDto, Chats } from '../../models/chat';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,7 @@ import { Chat, Chats } from '../../models/chat';
 export class ChathubProxy {
   private readonly chatHubUrl = '/chathub';
   private hubConnection: signalR.HubConnection | null = null;
-  private receivedChatsBehavior = new BehaviorSubject<Chat[]>([]);
+  private receivedChatsBehavior = new BehaviorSubject<ChatDto[]>([]);
 
   chats$ = this.receivedChatsBehavior.asObservable();
 
@@ -49,7 +49,7 @@ export class ChathubProxy {
     );
 
     this.hubConnection.on('LoadHistory', (messages: Chats) => {
-      this.receivedChatsBehavior.next(messages.chats as Chat[]);
+      this.receivedChatsBehavior.next(messages.chats as ChatDto[]);
     });
   }
 

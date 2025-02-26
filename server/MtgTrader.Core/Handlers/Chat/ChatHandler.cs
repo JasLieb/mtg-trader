@@ -1,15 +1,17 @@
 using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Entities.General;
+using MtgTrader.Core.Handlers.Trade;
 using MtgTrader.Core.Repositories;
 
 namespace MtgTrader.Core.Handlers.Chat;
 
-public class ChatHandler(IChatRepository chatRepository) : IChatHandler
+public class ChatHandler(
+    IChatRepository chatRepository
+) : IChatHandler
 {
     private static readonly Dictionary<string, string> _connections = [];
 
     private readonly IChatRepository _chatRepository = chatRepository;
-
     public bool AddConnection(string userId, string connectionId) =>
         _connections.TryAdd(userId, connectionId);
 
@@ -35,6 +37,19 @@ public class ChatHandler(IChatRepository chatRepository) : IChatHandler
     public ChatsResponse LoadMessageHistory(string userId)
     {
         var chatMessages = _chatRepository.FindChatMessages(userId).ToList();
+        var chatsDict = GroupByUniqueRecipient(userId, chatMessages);
+
+        return new(chatsDict.Values);
+    }
+
+    public bool RemoveConnection(string userId) =>
+        _connections.Remove(userId);
+
+    private IDictionary<string, Entities.General.Chat> GroupByUniqueRecipient(
+        string userId,
+        List<ChatMessage> chatMessages
+    )
+    {
         Dictionary<string, Entities.General.Chat> chatsMap = [];
         chatMessages.ForEach(
             message =>
@@ -48,9 +63,6 @@ public class ChatHandler(IChatRepository chatRepository) : IChatHandler
                 chatsMap[otherUserId] = associatedChat;
             }
         );
-        return new (chatsMap.Values);
+        return chatsMap;
     }
-
-    public bool RemoveConnection(string userId) =>
-        _connections.Remove(userId);
 }
