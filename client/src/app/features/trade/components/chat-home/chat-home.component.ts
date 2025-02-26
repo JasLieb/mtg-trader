@@ -19,7 +19,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Chat } from '../../models/chat';
 import { CommonModule } from '@angular/common';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
-import { UserTrader } from '../../models/user-trader';
 
 @Component({
   selector: 'app-chat-home',
@@ -51,13 +50,9 @@ export class ChatHomeComponent implements OnDestroy {
   ) {
     this.messageControl = new FormControl('');
     this.chats = toSignal(chatService.chats$, { initialValue: [] });
-    this.selectedChat = computed(() => {
-      const selectedRecipientId = this.selectedRecipientId();
-      return selectedRecipientId
-        // TODO FIX NEXT LINE
-        ? this.findOrMakeAssociatedChat({id: selectedRecipientId} as UserTrader)
-        : undefined;
-    });
+    this.selectedChat = computed(() =>
+      this.findOrMakeAssociatedChat(this.selectedRecipientId())
+    );
 
     subscribeOnce(this.activatedRoute.params, (params) => {
       const recipientId = params['recipientId'];
@@ -89,14 +84,9 @@ export class ChatHomeComponent implements OnDestroy {
     }
   }
 
-  private findOrMakeAssociatedChat(recipient: UserTrader): Chat {
-    let chat = this.chats().find((c) => c.recipient.id === recipient.id);
-      if (!chat) {
-      chat = {
-        recipient,
-        chatMessages: [],
-      };
-    }
-    return chat;
+  private findOrMakeAssociatedChat(
+    recipientId: string | undefined
+  ): Chat | undefined {
+    return this.chats().find((c) => c.recipient.id === recipientId);
   }
 }

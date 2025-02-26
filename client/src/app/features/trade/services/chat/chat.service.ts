@@ -1,20 +1,55 @@
 import { Injectable } from '@angular/core';
 import { ChathubProxy } from './chathub.proxy';
-import { combineLatest, forkJoin, map, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  zip,
+} from 'rxjs';
 import { Chat } from '../../models/chat';
 import { TradeService } from '../trade/trade.service';
+import { UserTrader } from '../../models/user-trader';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
+  private newChatBehavior = new BehaviorSubject<Chat[]>([]);
   chats$: Observable<Chat[]>;
 
   constructor(
     private tradeService: TradeService,
     private chathubProxy: ChathubProxy
   ) {
-    this.chats$ = combineLatest([
+    const fetchedChats = this.mergeChatsWithUserTraders();
+
+    this.chats$ = zip(
+      [fetchedChats, this.newChatBehavior],
+      (chats, newChats) => {
+        return newChats.length > 0 &&
+          chats.some((c) => c.recipient.id == newChats[0].recipient.id)
+          ? chats
+          : chats.concat(newChats);
+      }
+    );
+  }
+
+  initChat(recipient: UserTrader) {
+    this.newChatBehavior.next([
+      {
+        recipient,
+        chatMessages: [],
+      },
+    ]);
+  }
+
+  sendMessage(message: string, recipientId: string) {
+    this.chathubProxy.sendMessage(message, recipientId);
+  }
+
+  private mergeChatsWithUserTraders() {
+    return combineLatest([
       this.chathubProxy.chats$,
       this.tradeService.find(),
     ]).pipe(
@@ -32,9 +67,5 @@ export class ChatService {
         });
       })
     );
-  }
-
-  sendMessage(message: string, recipientId: string) {
-    this.chathubProxy.sendMessage(message, recipientId);
   }
 }

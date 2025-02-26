@@ -12,13 +12,23 @@ describe('ChatService', () => {
   let tradeService: jasmine.SpyObj<TradeService>;
   let chathubProxy: jasmine.SpyObj<ChathubProxy>;
 
+  const oneUser = {
+    id: 'toto',
+    name: 'jas',
+    doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+    wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+  };
+
+  const anotherUser = {
+    id: 'another',
+    name: 'another',
+    doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+    wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+  };
+
   const userTrades = [
-    {
-      id: 'toto',
-      name: 'jas',
-      doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
-      wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
-    },
+    oneUser,
+    anotherUser,
   ];
 
   const receivedChats = [
@@ -66,6 +76,26 @@ describe('ChatService', () => {
       expect(chats[0].chatMessages).toBe(receivedChats[0].chatMessages);
       done();
     });
+  });
+
+  it('should add new chat in chats$ when init chat', (done) => {
+    service.initChat(anotherUser);
+    service.chats$.subscribe(
+      chats => {
+        expect(chats.length).toBe(2);
+        done();
+      }
+    );
+  });
+
+  it('should not add new chat in chats$ when init chat and already exists', (done) => {
+    service.initChat(oneUser);
+    service.chats$.subscribe(
+      chats => {
+        expect(chats.length).toBe(1);
+        done();
+      }
+    );
   });
 
   it('should send message via proxy when send message', () => {

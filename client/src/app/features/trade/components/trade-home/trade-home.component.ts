@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { NavigationService } from '../../../../core/services/navigation/navigation.service';
 import { UserTrader } from '../../models/user-trader';
+import { ChatService } from '../../services/chat/chat.service';
 
 @Component({
   selector: 'app-trade-home',
@@ -17,6 +18,7 @@ export class TradeHomeComponent implements AfterContentInit {
   users = signal<UserTrader[]>([]);
 
   constructor(
+    private chatService: ChatService,
     private tradeService: TradeService,
     private navigationService: NavigationService
   ) {}
@@ -25,7 +27,8 @@ export class TradeHomeComponent implements AfterContentInit {
     subscribeOnce(this.tradeService.find(), (users) => this.users.set(users));
   }
 
-  startWritingMessage(recipient: UserTrader) {
+  startChat(recipient: UserTrader) {
+    this.chatService.initChat(recipient);
     this.navigationService.navigateChat(recipient.id);
   }
 }
