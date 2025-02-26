@@ -13,12 +13,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { combineLatest, Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ChatService } from '../../services/chat/chat.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Chat } from '../../models/chat';
 import { CommonModule } from '@angular/common';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
+import { UserTrader } from '../../models/user-trader';
 
 @Component({
   selector: 'app-chat-home',
@@ -53,7 +54,8 @@ export class ChatHomeComponent implements OnDestroy {
     this.selectedChat = computed(() => {
       const selectedRecipientId = this.selectedRecipientId();
       return selectedRecipientId
-        ? this.findOrMakeAssociatedChat(selectedRecipientId)
+        // TODO FIX NEXT LINE
+        ? this.findOrMakeAssociatedChat({id: selectedRecipientId} as UserTrader)
         : undefined;
     });
 
@@ -80,17 +82,18 @@ export class ChatHomeComponent implements OnDestroy {
 
   sendMessage(): void {
     const recipientId = this.selectedRecipientId();
-    if (this.messageControl.value.trim() && recipientId) {
-      this.chatService.sendMessage(this.messageControl.value, recipientId);
+    const message = this.messageControl.value.trim();
+    if (message && recipientId) {
+      this.chatService.sendMessage(message, recipientId);
       this.messageControl.reset();
     }
   }
 
-  private findOrMakeAssociatedChat(recipientId: string): Chat {
-    let chat = this.chats().find((c) => c.recipientId === recipientId);
-    if (!chat) {
+  private findOrMakeAssociatedChat(recipient: UserTrader): Chat {
+    let chat = this.chats().find((c) => c.recipient.id === recipient.id);
+      if (!chat) {
       chat = {
-        recipientId,
+        recipient,
         chatMessages: [],
       };
     }

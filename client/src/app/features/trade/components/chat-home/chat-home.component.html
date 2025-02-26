@@ -3,14 +3,17 @@
     @for (chat of chats(); track $index) {
     <div
       class="chat-home-conversation-tab"
-      (click)="selectChat(chat.recipientId)"
+      [class.chat-home-conversation-tab-selected]="
+        selectedChat()?.recipient?.id == chat.recipient.id
+      "
+      (click)="selectChat(chat.recipient.id)"
     >
-      {{ chat.recipientId }}
+      {{ chat.recipient.name }}
     </div>
     }
   </div>
   <mat-card class="chat-home-conversation-card">
-    @if (selectedChat()) {
+    @if (!!selectedChat()) {
     <mat-card-content class="chat-home-conversation-messages">
       @for (chatMessage of selectedChat()?.chatMessages; track chatMessage.id) {
       <div>{{ chatMessage.message }}</div>

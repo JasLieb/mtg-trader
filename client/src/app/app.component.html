@@ -6,7 +6,8 @@
       mode="side"
       [opened]="!isSmallScreen() && isConnected()"
     >
-      <mat-list role="list">
+    <mat-list role="list">
+        <h1 matSubheader>{{ title }}</h1>
         <h2 matSubheader>My Collection</h2>
         <mat-list-item
           class="app-nav-item"
@@ -47,7 +48,6 @@
           <mat-icon>menu</mat-icon>
         </button>
         }
-        <div class="app-title">{{ title }}</div>
       </div>
 
       <div class="app-body">

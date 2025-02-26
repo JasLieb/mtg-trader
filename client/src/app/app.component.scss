@@ -6,13 +6,6 @@
   background-color: #f5f5f5;
 }
 
-.app-title {
-  font-size: 20px;
-  font-weight: bold;
-  white-space: nowrap;
-  margin: 1%;
-}
-
 .app-nav-bar {
   display: flex;
   justify-content: flex-start;
@@ -33,7 +26,12 @@
 }
 
 .app-drawer-sidenav {
-  padding: 1%;
+  padding: 2%;
+  display: flex;
+}
+
+.app-title {
+  margin: auto;
 }
 
 .app-nav-item {

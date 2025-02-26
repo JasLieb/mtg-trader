@@ -91,13 +91,12 @@ describe('ChatHomeComponent', () => {
 function makeChats(): Chat[] {
   return [
     {
-      recipientId: 'id',
-      // recipient: {
-      //   id: 'toto',
-      //   name: 'jas',
-      //   doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
-      //   wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
-      // },
+      recipient: {
+        id: 'toto',
+        name: 'jas',
+        doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+        wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+      },
       chatMessages: [],
     },
   ];
