@@ -14,6 +14,22 @@
   </div>
   <mat-card class="chat-home-conversation-card">
     @if (!!selectedChat()) {
+    <mat-card-header class="chat-home-conversation-card-header">
+      {{selectedChat()?.recipient?.name}}
+      <div class="chat-home-conversation-reminder">
+        you want :
+        @for (card of selectedChat()?.recipient?.doubles; track $index) {
+          {{card.name}}
+        }
+      </div>
+
+      <div class="chat-home-conversation-reminder">
+        you can exchange :
+        @for (card of selectedChat()?.recipient?.wanted; track $index) {
+          {{card.name}}
+        }
+      </div>
+    </mat-card-header>
     <mat-card-content class="chat-home-conversation-messages">
       @for (chatMessage of selectedChat()?.chatMessages; track chatMessage.id) {
       <div>{{ chatMessage.message }}</div>

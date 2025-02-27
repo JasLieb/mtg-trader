@@ -32,7 +32,21 @@
   margin: 1%;
 }
 
+.chat-home-conversation-card-header {
+  display: flex;
+  flex-direction: column;
+  padding: 2%;
+  border-bottom : 2px solid grey;
+}
+
+.chat-home-conversation-reminder {
+  display: flex;
+  flex-direction: row;
+}
+
 .chat-home-conversation-messages {
+  height: 100%;
+  margin: 4%;
   overflow-y: scroll;
 }
 

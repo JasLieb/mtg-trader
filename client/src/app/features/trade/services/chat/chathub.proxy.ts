@@ -4,7 +4,7 @@ import * as signalR from '@microsoft/signalr';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { ChatMessage } from '../../models/chat-message';
-import { Chat, ChatDto, Chats } from '../../models/chat';
+import { ChatDto, Chats } from '../../models/chat';
 
 @Injectable({
   providedIn: 'root',
@@ -54,15 +54,17 @@ export class ChathubProxy {
   }
 
   private receiveMessage(message: ChatMessage) {
-    this.receivedChatsBehavior.value.map((chat) => {
-      if (
-        chat.recipientId == message.authorId ||
-        chat.recipientId == message.recipientId
-      ) {
-        chat.chatMessages.push(message);
-      }
-      return chat;
-    });
+    this.receivedChatsBehavior.next(
+      this.receivedChatsBehavior.value.map((chat) => {
+        if (
+          chat.recipientId == message.authorId ||
+          chat.recipientId == message.recipientId
+        ) {
+          chat.chatMessages.push(message);
+        }
+        return chat;
+      })
+    );
   }
 
   sendMessage(message: string, recipientId: string) {
