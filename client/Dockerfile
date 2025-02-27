@@ -8,8 +8,6 @@ COPY . /usr/src/app
 
 RUN npm install
 
-RUN npm audit fix
-
 RUN npm run build --prod
 
 FROM nginx:latest AS ngi
