@@ -1,12 +1,14 @@
 services:
   web:
     type: web
+    plan: free
     dockerfilePath: ./client/Dockerfile 
     dockerContext: ./client
     autoDeploy: true
 
   api:
     type: web
+    plan: free
     dockerfilePath: ./server/Dockerfile 
     dockerContext: ./server
     envVars:
@@ -16,7 +18,6 @@ services:
 
 databases:
   - name: mtgtrader-db
-    engine: postgresql
-    version: 13
-    initialScript: database/database.sql
-    autoDeploy: true
+    plan: free
+    databaseName: mtgtrader-db
+    user: mtgtrader-user
