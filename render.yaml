@@ -1,15 +1,15 @@
 services:
-  web:
-    type: web
+  - type: web
     plan: free
-    dockerfilePath: ./client/Dockerfile 
+    name: front
+    dockerfilePath: ./client/Dockerfile
     dockerContext: ./client
     autoDeploy: true
 
-  api:
-    type: web
+  - type: web
     plan: free
-    dockerfilePath: ./server/Dockerfile 
+    name: api
+    dockerfilePath: ./server/Dockerfile
     dockerContext: ./server
     envVars:
       - key: PG_HOST
