@@ -13,6 +13,9 @@ services:
       - key: PG_HOST
         value: MtgTrader
     autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 7175
 
   - type: web
     plan: free
@@ -21,8 +24,10 @@ services:
     dockerfilePath: ./client/Dockerfile
     dockerContext: ./client
     autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 443
 
 databases:
   - name: mtgtrader-db
     plan: free
-    
