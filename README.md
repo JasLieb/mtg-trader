@@ -1,13 +1,14 @@
 # MtgTrader
 
-MtgTrader is a comprehensive solution for managing Magic: The Gathering card wishlists, tradeable doubles, for connecting players between and allows trades, card exchanges.
-This project consists of both client and server components.
+MtgTrader is a comprehensive solution for managing Magic: The Gathering card wishlists and tradeable doubles, connecting players, and facilitating trades and card exchanges. This project consists of both client and server components, providing a full-stack application for Magic: The Gathering enthusiasts.
 
 ## Folders
 
-- **client**: Contains the frontend code for the application, built with Angulat.
+- `client`: Contains the frontend code for the application, built with Angular. It includes all the necessary configurations, components, services, and styles to provide a responsive and interactive user interface.
 
-- **server**: Contains the Web API solution, written in C#/.NET with core business logic, infrastructure and tests
+- `server`: Contains the Web API solution, written in C#/.NET, which includes core business logic, infrastructure, and tests. It is responsible for handling requests, processing data, and interacting with the database.
+
+- `database`: Contains database initialization scripts, written in SQL, which are used by the PosgreSQL container through a volume.
 
 ## Prerequisites
 

@@ -1,0 +1,22 @@
+services:
+  web:
+    type: web
+    dockerfilePath: ./client/Dockerfile 
+    dockerContext: ./client
+    autoDeploy: true
+
+  api:
+    type: web
+    dockerfilePath: ./server/Dockerfile 
+    dockerContext: ./server
+    envVars:
+      - key: PG_HOST
+        value: mtgtrader-db
+    autoDeploy: true
+
+databases:
+  - name: mtgtrader-db
+    engine: postgresql
+    version: 13
+    initialScript: database/database.sql
+    autoDeploy: true
