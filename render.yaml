@@ -2,22 +2,27 @@ services:
   - type: web
     plan: free
     runtime: docker
-    name: front
-    dockerfilePath: ./client/Dockerfile
-    dockerContext: ./client
-    autoDeploy: true
-
-  - type: web
-    plan: free
-    runtime: docker
     name: api
     dockerfilePath: ./server/Dockerfile
     dockerContext: ./server
     envVars:
       - key: PG_HOST
         value: MtgTrader
+      - key: PG_HOST
+        value: MtgTrader
+      - key: PG_HOST
+        value: MtgTrader
+    autoDeploy: true
+
+  - type: web
+    plan: free
+    runtime: docker
+    name: front
+    dockerfilePath: ./client/Dockerfile
+    dockerContext: ./client
     autoDeploy: true
 
 databases:
   - name: mtgtrader-db
     plan: free
+    
