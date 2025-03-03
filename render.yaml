@@ -19,13 +19,13 @@ services:
   - type: web
     plan: free
     runtime: docker
-    name: front
+    name: client
     dockerfilePath: ./client/Dockerfile.render
     dockerContext: ./client
     autoDeploy: true
     envVars:
       - key: PORT
-        value: 443
+        value: 80
 
 databases:
   - name: mtgtrader-db

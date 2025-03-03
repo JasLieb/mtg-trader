@@ -8,8 +8,8 @@ var builder =
     .RegisterWebAppListening();
 
 builder.Services
-    .RegisterSwagger()
     .RegisterInfrastructure(builder.Configuration)
+    .RegisterSwagger()
     .RegisterAuthentification(builder.Configuration)
     .RegisterServices();
 
@@ -23,13 +23,15 @@ if (app.Environment.IsDevelopment())
 else if (Convert.ToBoolean(app.Configuration[EnvConstants.EnvUseHttps]))
 {
     app.UseHsts();
-    app.UseHttpsRedirection();
 }
 
+// app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors(ServicesExtensions.CorsPolicyName);
 app.UseAuthorization();
 
 app.MapHub<ChatHub>("/chathub");
 app.MapControllers();
+
 
 app.Run();

@@ -26,4 +26,10 @@ public class AuthController(IAuthHandler authHandler) : ControllerBase
         }
         return Ok(authResponse);
     }
+
+    // [HttpOptions]
+    // public IActionResult PreflightRoute()
+    // {
+    //     return NoContent();
+    // }
 }

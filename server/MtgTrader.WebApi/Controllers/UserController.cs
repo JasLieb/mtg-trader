@@ -42,4 +42,10 @@ public class UserController(IAuthHandler authHandler) : ControllerBase
         }
         return Ok(authResponse);
     }
+
+    // [HttpOptions]
+    // public IActionResult PreflightRoute()
+    // {
+    //     return NoContent();
+    // }
 }

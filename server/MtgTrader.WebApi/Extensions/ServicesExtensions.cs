@@ -18,7 +18,7 @@ namespace MtgTrader.WebApi.Extensions;
 
 public static class ServicesExtensions
 {
-    public const string CorsPolicyName = "SignalRCorsPolicy";
+    public const string CorsPolicyName = "ServerCorsPolicy";
 
     public static IServiceCollection RegisterServices(this IServiceCollection services) =>
         services
@@ -37,12 +37,25 @@ public static class ServicesExtensions
         ConfigurationManager configuration
     )
     {
+        // services.AddCors();
         services.AddCors(options =>
             options.AddPolicy(
-                name: CorsPolicyName,
-                policy => policy.AllowAnyOrigin()
+                CorsPolicyName,
+                policy => policy
+                    .WithOrigins(
+                        "http://localhost:4200",
+                        "http://localhost",
+                        "https://localhost",
+                        "http://client-tek5.onrender.com",
+                        "https://client-tek5.onrender.com"
+                    )
                     .AllowAnyMethod()
                     .AllowAnyHeader()
+                    .AllowCredentials()
+                    .SetPreflightMaxAge(TimeSpan.FromMinutes(2))
+                    .SetIsOriginAllowed(_ => { 
+                        return true;
+                    })
             )
         );
         services.AddSignalR();
@@ -92,7 +105,7 @@ public static class ServicesExtensions
 
                         var path = context.HttpContext.Request.Path;
                         if (
-                            !string.IsNullOrEmpty(accessToken) 
+                            !string.IsNullOrEmpty(accessToken)
                             && path.StartsWithSegments("/chatHub")
                         )
                         {
