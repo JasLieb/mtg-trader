@@ -13,25 +13,30 @@ import { TradeableResponse } from '../../models/tradeable-response';
 import { CardService } from '../../../common/services/card/card.service';
 import { Card } from '../../../common/models/card';
 import { UserTrader, UserTraderMin } from '../../models/user-trader';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TradeService {
+  private readonly apiWantlistUrl = `${environment.apiURl}api/trade`;
+
   private readonly tradeData: Observable<UserTrader[]>;
 
   constructor(
     private httpClient: HttpClient,
     private cardService: CardService
   ) {
-    this.tradeData = this.httpClient.get<TradeableResponse>('api/trade').pipe(
-      mergeMap((response) => {
-        return forkJoin(
-          response.users.map((userMin) => this.populateUser(userMin))
-        );
-      }),
-      shareReplay()
-    );
+    this.tradeData = this.httpClient
+      .get<TradeableResponse>(this.apiWantlistUrl)
+      .pipe(
+        mergeMap((response) => {
+          return forkJoin(
+            response.users.map((userMin) => this.populateUser(userMin))
+          );
+        }),
+        shareReplay()
+      );
   }
 
   find(): Observable<UserTrader[]> {

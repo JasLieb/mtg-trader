@@ -3,7 +3,7 @@ services:
     plan: free
     runtime: docker
     name: api
-    dockerfilePath: ./server/Dockerfile
+    dockerfilePath: ./server/Dockerfile.render
     dockerContext: ./server
     envVars:
       - key: PG_HOST
@@ -13,14 +13,14 @@ services:
       - key: PG_HOST
         value: MtgTrader
       - key: PORT
-        value: 7175
+        value: 10000
     autoDeploy: true
 
   - type: web
     plan: free
     runtime: docker
     name: front
-    dockerfilePath: ./client/Dockerfile
+    dockerfilePath: ./client/Dockerfile.render
     dockerContext: ./client
     autoDeploy: true
     envVars:

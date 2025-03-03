@@ -18,12 +18,13 @@ import {
   PopulatedWantlistResponse,
   WantlistsResponse,
 } from '../../models/wantlist-response';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WantlistService {
-  private readonly apiWantlistUrl = 'api/wantlist';
+  private readonly apiWantlistUrl = `${environment.apiURl}api/wantlist`;
 
   private wantlistsBehavior = new BehaviorSubject<Wantlist[]>([]);
   wantlists$ = this.wantlistsBehavior.asObservable();

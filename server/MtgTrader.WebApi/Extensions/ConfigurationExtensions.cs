@@ -17,27 +17,59 @@ public static class ConfigurationExtensions
         builder.Configuration[PgConstants.Host] =
             Environment.GetEnvironmentVariable(PgConstants.EnvHost)
             ?? builder.Configuration[PgConstants.Host];
+
+        builder.Configuration[EnvConstants.UseHttps] =
+            Environment.GetEnvironmentVariable(EnvConstants.EnvUseHttps)
+            ?? builder.Configuration[EnvConstants.UseHttps];
+        
+        builder.Configuration[EnvConstants.Port] =
+            Environment.GetEnvironmentVariable(EnvConstants.EnvPort)
+            ?? builder.Configuration[EnvConstants.Port];
         return builder;
     }
 
-    public static WebApplicationBuilder RegisterHttpsRedirection(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder RegisterWebAppListening(this WebApplicationBuilder builder)
     {
         if (!builder.Environment.IsDevelopment())
         {
-            builder.Services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                options.HttpsPort = 7175;
-            });
-            builder.WebHost.UseKestrel(
-                options =>
-                options.Listen(IPAddress.Any, 7175, listenOptions => 
-                    listenOptions.UseHttps(
-                        X509Certificate2.CreateFromPemFile(_certPath, _keyPath)
-                    )
-                )
-            );
+            var useHttps = Convert.ToBoolean(builder.Configuration[EnvConstants.UseHttps]);
+            if(useHttps) 
+                InitHttpsListening(builder);
+            else
+                InitHttpListening(builder);
         }
         return builder;
+    }
+
+    private static void InitHttpsListening(WebApplicationBuilder builder)
+    {
+        var listeningPort = Convert.ToInt32(builder.Configuration[EnvConstants.Port]);
+
+        builder.Services.AddHttpsRedirection(options =>
+        {
+            options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+            options.HttpsPort = listeningPort;
+        });
+
+        builder.WebHost.UseKestrel(
+            options =>
+            options.Listen(
+                IPAddress.Parse("0.0.0.0"), 
+                listeningPort,
+                listenOptions => listenOptions.UseHttps(
+                    X509Certificate2.CreateFromPemFile(_certPath, _keyPath)
+                )
+            )
+        );
+    }
+
+    private static void InitHttpListening(WebApplicationBuilder builder)
+    {
+        builder.WebHost.UseKestrel(
+            options => options.Listen(
+                IPAddress.Parse("0.0.0.0"), 
+                Convert.ToInt32(builder.Configuration[EnvConstants.Port])
+            )
+        );
     }
 }

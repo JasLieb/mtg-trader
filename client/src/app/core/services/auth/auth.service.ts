@@ -4,13 +4,14 @@ import { BehaviorSubject } from 'rxjs';
 import { subscribeOnce } from '../../utils/subscribeExtensions';
 import { AuthResponse } from '../../models/auth-response';
 import { AuthRequest } from '../../models/auth-request';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly authApiUrl = `api/auth`;
-  private readonly userApiUrl = `api/user`;
+  private readonly authApiUrl = `${environment.apiURl}api/auth`;
+  private readonly userApiUrl = `${environment.apiURl}api/user`;
   private readonly userTokenKey = `usr-token`;
 
   private connectedUserBehavior = new BehaviorSubject<string>('');
