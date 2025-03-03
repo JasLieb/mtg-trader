@@ -18,7 +18,7 @@ namespace MtgTrader.WebApi.Extensions;
 
 public static class ServicesExtensions
 {
-    public const string CorsPolicyName = "SignalRCorsPolicy";
+    public const string CorsPolicyName = "ServerCorsPolicy";
 
     public static IServiceCollection RegisterServices(this IServiceCollection services) =>
         services
@@ -37,14 +37,15 @@ public static class ServicesExtensions
         ConfigurationManager configuration
     )
     {
-        services.AddCors(options =>
-            options.AddPolicy(
-                name: CorsPolicyName,
-                policy => policy.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-            )
-        );
+        services.AddCors();
+        // services.AddCors(options =>
+        //     options.AddPolicy(
+        //         name: CorsPolicyName,
+        //         policy => policy.AllowAnyOrigin()
+        //             .AllowAnyMethod()
+        //             .AllowAnyHeader()
+        //     )
+        // );
         services.AddSignalR();
         services.AddControllers();
         services.AddDbContext<ApplicationContext>(

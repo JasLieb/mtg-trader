@@ -54,7 +54,7 @@ public static class ConfigurationExtensions
         builder.WebHost.UseKestrel(
             options =>
             options.Listen(
-                IPAddress.Parse("0.0.0.0"), 
+                IPAddress.Any, 
                 listeningPort,
                 listenOptions => listenOptions.UseHttps(
                     X509Certificate2.CreateFromPemFile(_certPath, _keyPath)
