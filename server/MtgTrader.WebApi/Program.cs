@@ -22,11 +22,11 @@ if (app.Environment.IsDevelopment())
 }
 else if (Convert.ToBoolean(app.Configuration[EnvConstants.EnvUseHttps]))
 {
+    app.UseCors(ServicesExtensions.CorsPolicyName);
     app.UseHsts();
     app.UseHttpsRedirection();
 }
 
-app.UseCors(options => options.AllowAnyOrigin());
 app.UseAuthorization();
 
 app.MapHub<ChatHub>("/chathub");

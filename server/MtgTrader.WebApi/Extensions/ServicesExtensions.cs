@@ -38,8 +38,10 @@ public static class ServicesExtensions
     )
     {
         services.AddCors(options =>
-            options.AddDefaultPolicy(
-                policy => policy.AllowAnyOrigin()
+            options.AddPolicy(
+                CorsPolicyName,
+                policy => policy
+                    .AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
             )
