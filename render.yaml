@@ -13,7 +13,7 @@ services:
       - key: PG_HOST
         value: MtgTrader
       - key: PORT
-        value: 7175
+        value: 10000
     autoDeploy: true
 
   - type: web

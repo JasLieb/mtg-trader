@@ -22,3 +22,4 @@ COPY --from=build /source/ssl/. /app/ssl/
 ENTRYPOINT ["dotnet", "MtgTrader.WebApi.dll"]
 
 EXPOSE 7175
+EXPOSE 10000

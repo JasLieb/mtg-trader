@@ -1,5 +1,11 @@
 namespace MtgTrader.Infrastructure.Configuration;
 
+public static class EnvConstants
+{
+    public const string EnvPort = "PORT";
+    public const string Port = "ENV:Port";
+}
+
 public static class PgConstants
 {
     public const string EnvHost = "PG_HOST";

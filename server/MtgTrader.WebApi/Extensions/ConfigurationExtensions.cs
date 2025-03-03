@@ -17,6 +17,10 @@ public static class ConfigurationExtensions
         builder.Configuration[PgConstants.Host] =
             Environment.GetEnvironmentVariable(PgConstants.EnvHost)
             ?? builder.Configuration[PgConstants.Host];
+        
+        builder.Configuration[EnvConstants.EnvPort] =
+            Environment.GetEnvironmentVariable(EnvConstants.EnvPort)
+            ?? builder.Configuration[EnvConstants.Port];
         return builder;
     }
 
@@ -24,14 +28,17 @@ public static class ConfigurationExtensions
     {
         if (!builder.Environment.IsDevelopment())
         {
+            var httpsPort = Convert.ToInt32(builder.Configuration[EnvConstants.EnvPort]);
+
             builder.Services.AddHttpsRedirection(options =>
             {
                 options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                options.HttpsPort = 7175;
+                options.HttpsPort = httpsPort;
             });
+
             builder.WebHost.UseKestrel(
                 options =>
-                options.Listen(IPAddress.Any, 7175, listenOptions => 
+                options.Listen(IPAddress.Any, httpsPort, listenOptions => 
                     listenOptions.UseHttps(
                         X509Certificate2.CreateFromPemFile(_certPath, _keyPath)
                     )
