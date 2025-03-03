@@ -5,4 +5,5 @@
 /e2e
 /docs
 .gitignore
+/dist
 *.zip

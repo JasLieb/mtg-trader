@@ -4,6 +4,8 @@ public static class EnvConstants
 {
     public const string EnvPort = "PORT";
     public const string Port = "ENV:Port";
+    public const string EnvUseHttps = "USE_HTTPS";
+    public const string UseHttps = "ENV:UseHttps";
 }
 
 public static class PgConstants

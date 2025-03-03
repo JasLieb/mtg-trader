@@ -15,6 +15,7 @@ services:
     environment:
       - PG_HOST=db
       - PORT=7175
+      - USE_HTTPS=TRUE
     networks:
       - main
     depends_on:

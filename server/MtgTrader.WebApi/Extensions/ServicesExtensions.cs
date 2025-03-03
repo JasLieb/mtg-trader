@@ -40,10 +40,9 @@ public static class ServicesExtensions
         services.AddCors(options =>
             options.AddPolicy(
                 name: CorsPolicyName,
-                policy => policy.WithOrigins("http://localhost:4200")
+                policy => policy.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials()
             )
         );
         services.AddSignalR();
