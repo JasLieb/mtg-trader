@@ -30,19 +30,20 @@ public static class ConfigurationExtensions
         {
             var httpsPort = Convert.ToInt32(builder.Configuration[EnvConstants.EnvPort]);
 
-            builder.Services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                options.HttpsPort = httpsPort;
-            });
+            // builder.Services.AddHttpsRedirection(options =>
+            // {
+            //     options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+            //     options.HttpsPort = httpsPort;
+            // });
 
             builder.WebHost.UseKestrel(
                 options =>
-                options.Listen(IPAddress.Parse("0.0.0.0"), httpsPort, listenOptions => 
-                    listenOptions.UseHttps(
-                        X509Certificate2.CreateFromPemFile(_certPath, _keyPath)
-                    )
-                )
+                options.Listen(IPAddress.Parse("0.0.0.0"), httpsPort)
+                // , listenOptions => 
+                //     listenOptions.UseHttps(
+                //         X509Certificate2.CreateFromPemFile(_certPath, _keyPath)
+                //     )
+                // )
             );
         }
         return builder;
