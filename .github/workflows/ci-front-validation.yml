@@ -1,4 +1,4 @@
-name: CI Front Validation
+name: CI Client Validation
 
 on: [push]
 

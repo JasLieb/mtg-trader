@@ -41,9 +41,14 @@ public static class ServicesExtensions
             options.AddPolicy(
                 CorsPolicyName,
                 policy => policy
-                    .AllowAnyOrigin()
+                    .WithOrigins(
+                        "http://localhost:4200",
+                        "https://localhost",
+                        "https://client-tek5.onrender.com"
+                    )
                     .AllowAnyMethod()
                     .AllowAnyHeader()
+                    .AllowCredentials()
             )
         );
         services.AddSignalR();
