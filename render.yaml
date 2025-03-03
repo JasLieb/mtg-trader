@@ -12,10 +12,9 @@ services:
         value: MtgTrader
       - key: PG_HOST
         value: MtgTrader
-    autoDeploy: true
-    envVars:
       - key: PORT
         value: 7175
+    autoDeploy: true
 
   - type: web
     plan: free
