@@ -37,7 +37,13 @@ public static class ServicesExtensions
         ConfigurationManager configuration
     )
     {
-        services.AddCors();
+        services.AddCors(options =>
+            options.AddDefaultPolicy(
+                policy => policy.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+            )
+        );
         services.AddSignalR();
         services.AddControllers();
         services.AddDbContext<ApplicationContext>(

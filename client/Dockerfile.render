@@ -13,6 +13,7 @@ RUN npm run build -- --configuration=render
 FROM nginx:latest AS ngi
 
 COPY --from=build /usr/src/app/dist/mtg-trader/browser /usr/share/nginx/html
+COPY /nginx/nginx.render.conf  /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
