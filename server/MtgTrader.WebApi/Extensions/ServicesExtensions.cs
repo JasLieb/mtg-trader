@@ -37,21 +37,21 @@ public static class ServicesExtensions
         ConfigurationManager configuration
     )
     {
-        services.AddCors();
-        // services.AddCors(options =>
-        //     options.AddPolicy(
-        //         CorsPolicyName,
-        //         policy => policy
-        //             .WithOrigins(
-        //                 "http://localhost:4200",
-        //                 "https://localhost",
-        //                 "https://client-tek5.onrender.com"
-        //             )
-        //             .AllowAnyMethod()
-        //             .AllowAnyHeader()
-        //             .AllowCredentials()
-        //     )
-        // );
+        // services.AddCors();
+        services.AddCors(options =>
+            options.AddPolicy(
+                CorsPolicyName,
+                policy => policy
+                    .WithOrigins(
+                        "http://localhost:4200/",
+                        "https://localhost/",
+                        "https://client-tek5.onrender.com/"
+                    )
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+            )
+        );
         services.AddSignalR();
         services.AddControllers();
         services.AddDbContext<ApplicationContext>(
@@ -99,7 +99,7 @@ public static class ServicesExtensions
 
                         var path = context.HttpContext.Request.Path;
                         if (
-                            !string.IsNullOrEmpty(accessToken) 
+                            !string.IsNullOrEmpty(accessToken)
                             && path.StartsWithSegments("/chatHub")
                         )
                         {

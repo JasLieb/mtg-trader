@@ -8,8 +8,8 @@ var builder =
     .RegisterWebAppListening();
 
 builder.Services
-    .RegisterSwagger()
     .RegisterInfrastructure(builder.Configuration)
+    .RegisterSwagger()
     .RegisterAuthentification(builder.Configuration)
     .RegisterServices();
 
@@ -22,14 +22,13 @@ if (app.Environment.IsDevelopment())
 }
 else if (Convert.ToBoolean(app.Configuration[EnvConstants.EnvUseHttps]))
 {
-    // app.UseCors(ServicesExtensions.CorsPolicyName);
-    app.UseCors(options => 
-        options.WithOrigins(
-            "http://localhost:4200/",
-            "https://localhost/",
-            "https://client-tek5.onrender.com/"
-        )
-    );
+    // app.UseCors(options => 
+    //     options.WithOrigins(
+    //         "http://localhost:4200/",
+    //         "https://localhost/",
+    //         "https://client-tek5.onrender.com/"
+    //     )
+    // );
     app.UseHsts();
     app.UseHttpsRedirection();
 }
@@ -38,5 +37,7 @@ app.UseAuthorization();
 
 app.MapHub<ChatHub>("/chathub");
 app.MapControllers();
+
+app.UseCors(ServicesExtensions.CorsPolicyName);
 
 app.Run();
