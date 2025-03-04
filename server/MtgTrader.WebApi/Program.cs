@@ -25,9 +25,9 @@ else if (Convert.ToBoolean(app.Configuration[EnvConstants.EnvUseHttps]))
     // app.UseCors(ServicesExtensions.CorsPolicyName);
     app.UseCors(options => 
         options.WithOrigins(
-            "http://localhost:4200",
-            "https://localhost",
-            "https://client-tek5.onrender.com"
+            "http://localhost:4200/",
+            "https://localhost/",
+            "https://client-tek5.onrender.com/"
         )
     );
     app.UseHsts();
