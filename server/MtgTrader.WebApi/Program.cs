@@ -30,14 +30,14 @@ else if (Convert.ToBoolean(app.Configuration[EnvConstants.EnvUseHttps]))
     //     )
     // );
     app.UseHsts();
-    app.UseHttpsRedirection();
 }
 
+app.UseHttpsRedirection();
+app.UseCors(ServicesExtensions.CorsPolicyName);
 app.UseAuthorization();
 
 app.MapHub<ChatHub>("/chathub");
 app.MapControllers();
 
-app.UseCors(ServicesExtensions.CorsPolicyName);
 
 app.Run();
