@@ -37,7 +37,6 @@ public static class ServicesExtensions
         ConfigurationManager configuration
     )
     {
-        // services.AddCors();
         services.AddCors(options =>
             options.AddPolicy(
                 CorsPolicyName,
@@ -53,7 +52,8 @@ public static class ServicesExtensions
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .SetPreflightMaxAge(TimeSpan.FromMinutes(2))
-                    .SetIsOriginAllowed(_ => { 
+                    .SetIsOriginAllowed(_ =>
+                    {
                         return true;
                     })
             )
@@ -160,7 +160,6 @@ public static class ServicesExtensions
 
     private static string GetConnectionString(ConfigurationManager configuration)
     {
-        var str = $"Server={configuration[PgConstants.Host]};Port={configuration[PgConstants.Port]};Database={configuration[PgConstants.Db]};UserName={configuration[PgConstants.User]};Password={configuration[PgConstants.Password]}";
-        return str;
+        return $"Server={configuration[PgConstants.Host]};Port={configuration[PgConstants.Port]};Database={configuration[PgConstants.DbName]};UserName={configuration[PgConstants.User]};Password={configuration[PgConstants.Password]}";
     }
 }

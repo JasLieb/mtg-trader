@@ -7,11 +7,25 @@ services:
     dockerContext: ./server
     envVars:
       - key: PG_HOST
-        value: MtgTrader
-      - key: PG_HOST
-        value: MtgTrader
-      - key: PG_HOST
-        value: MtgTrader
+        fromDatabase:
+          name: mtgtrader-db
+          property: host
+      - key: PG_DATABASE
+        fromDatabase:
+          name: mtgtrader-db
+          property: database
+      - key: PG_USER
+        fromDatabase:
+          name: mtgtrader-db
+          property: user
+      - key: PG_PORT
+        fromDatabase:
+          name: mtgtrader-db
+          property: port
+      - key: PG_PASSWORD
+        fromDatabase:
+          name: mtgtrader-db
+          property: password
       - key: PORT
         value: 10000
     autoDeploy: true

@@ -1,4 +1,3 @@
-using MtgTrader.Core.Services;
 using MtgTrader.Infrastructure.Configuration;
 
 namespace MtgTrader.Tests.Infrastructure.Services;

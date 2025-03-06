@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Handlers.Auth;
-using MtgTrader.Core.Services;
 
 namespace MtgTrader.WebApi.Controllers;
 

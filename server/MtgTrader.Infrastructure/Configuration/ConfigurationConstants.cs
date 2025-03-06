@@ -12,9 +12,13 @@ public static class PgConstants
 {
     public const string EnvHost = "PG_HOST";
     public const string Host = "PG:Host";
+    public const string EnvPort = "PG_PORT";
     public const string Port = "PG:Port";
-    public const string Db = "PG:Db";
+    public const string EnvDbName = "PG_DATABASE";
+    public const string DbName = "PG:Db";
+    public const string EnvUser = "PG_USER";
     public const string User = "PG:User";
+    public const string EnvPassword = "PG_PASSWORD";
     public const string Password = "PG:Password";
 }
 

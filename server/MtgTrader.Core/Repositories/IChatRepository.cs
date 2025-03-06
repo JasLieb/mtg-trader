@@ -1,4 +1,3 @@
-using System;
 using MtgTrader.Core.Entities.General;
 
 namespace MtgTrader.Core.Repositories;

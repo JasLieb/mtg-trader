@@ -1,6 +1,3 @@
-using MtgTrader.Core.Services;
-using NSubstitute.ReturnsExtensions;
-
 namespace MtgTrader.Tests.Core.Auth;
 
 public class AuthHandlerTests

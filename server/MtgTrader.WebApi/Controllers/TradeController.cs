@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Expressions;
 using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Handlers.Trade;
 using MtgTrader.WebApi.Extensions;

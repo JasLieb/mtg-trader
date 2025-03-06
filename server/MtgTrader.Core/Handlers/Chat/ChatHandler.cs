@@ -1,6 +1,5 @@
 using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Entities.General;
-using MtgTrader.Core.Handlers.Trade;
 using MtgTrader.Core.Repositories;
 
 namespace MtgTrader.Core.Handlers.Chat;

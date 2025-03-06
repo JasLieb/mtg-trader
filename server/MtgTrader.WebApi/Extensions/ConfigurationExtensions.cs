@@ -18,6 +18,22 @@ public static class ConfigurationExtensions
             Environment.GetEnvironmentVariable(PgConstants.EnvHost)
             ?? builder.Configuration[PgConstants.Host];
 
+        builder.Configuration[PgConstants.Port] =
+            Environment.GetEnvironmentVariable(PgConstants.EnvPort)
+            ?? builder.Configuration[PgConstants.Port];
+
+        builder.Configuration[PgConstants.DbName] =
+            Environment.GetEnvironmentVariable(PgConstants.EnvDbName)
+            ?? builder.Configuration[PgConstants.DbName];
+
+        builder.Configuration[PgConstants.User] =
+            Environment.GetEnvironmentVariable(PgConstants.EnvUser)
+            ?? builder.Configuration[PgConstants.User];
+
+        builder.Configuration[PgConstants.Password] =
+            Environment.GetEnvironmentVariable(PgConstants.EnvPassword)
+            ?? builder.Configuration[PgConstants.Password];
+
         builder.Configuration[EnvConstants.UseHttps] =
             Environment.GetEnvironmentVariable(EnvConstants.EnvUseHttps)
             ?? builder.Configuration[EnvConstants.UseHttps];
