@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RegisterComponent } from './register.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthService } from '../../../../core/services/auth/auth.service';
-import { of } from 'rxjs';
+import { delay, Observable, of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('RegisterComponent', () => {
@@ -20,20 +20,26 @@ describe('RegisterComponent', () => {
       ],
       imports: [RegisterComponent, NoopAnimationsModule],
     });
+  });
 
+  function initFixture(fakeCall: () => Observable<any>) {
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    authService.register.and.callFake(() => of(''));
+    authService.register.and.callFake(fakeCall);
 
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }
 
   it('should create', () => {
+    initFixture(() => of({ usrToken: 'token' }));
+
     expect(component).toBeTruthy();
   });
 
   it('should have register form', () => {
+    initFixture(() => of({ usrToken: 'token' }));
+
     const inputs = fixture.nativeElement.querySelectorAll('input');
     expect(inputs.length).toBe(2);
     expect(inputs[0].name).toBe('email');
@@ -41,6 +47,7 @@ describe('RegisterComponent', () => {
   });
 
   it('should try register when register button is clicked', () => {
+    initFixture(() => of({ usrToken: 'token' }));
     component.form.controls['email'].setValue('xyz@test.com');
     component.form.controls['password'].setValue('123456');
 
@@ -48,5 +55,15 @@ describe('RegisterComponent', () => {
     registerButton.click();
 
     expect(authService.register.calls.count()).toBe(1);
+  });
+
+  it('should have visible loader when register button is clicked', () => {
+    initFixture(() => of({ usrToken: 'token' }).pipe(delay(100)));
+    component.form.controls['email'].setValue('xyz@test.com');
+    component.form.controls['password'].setValue('123456');
+
+    component.register();
+
+    expect(component.isLoading()).toBeTrue();
   });
 });

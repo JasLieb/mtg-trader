@@ -1,22 +1,31 @@
-  <form [formGroup]="form" class="login-container">
-    <mat-form-field>
-      <input
-        matInput
-        name="email"
-        placeholder="email"
-        formControlName="email"
-        required
-      />
-    </mat-form-field>
-    <mat-form-field>
-      <input
-        matInput
-        name="password"
-        placeholder="password"
-        formControlName="password"
-        type="password"
-        required
-      />
-    </mat-form-field>
-    <button mat-button class="button button-primary" (click)="login()">Login</button>
-  </form>
+<form [formGroup]="form" class="login-container">
+  <mat-form-field>
+    <input
+      matInput
+      name="email"
+      placeholder="email"
+      formControlName="email"
+      required
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <input
+      matInput
+      name="password"
+      placeholder="password"
+      formControlName="password"
+      type="password"
+      required
+    />
+  </mat-form-field>
+  <button
+    mat-button
+    class="button button-primary"
+    (click)="login()"
+    [disabled]="isLoading()"
+    [hidden]="isLoading()"
+  >
+    Login
+  </button>
+  <app-loader [isVisible]="isLoading()"></app-loader>
+</form>

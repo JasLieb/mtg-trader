@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { subscribeOnce } from '../../utils/subscribeExtensions';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { subscribeOnce, tapOnce } from '../../utils/subscribeExtensions';
 import { AuthResponse } from '../../models/auth-response';
 import { AuthRequest } from '../../models/auth-request';
 import { makeApiUrl } from '../../utils/makeUrl';
@@ -27,16 +27,16 @@ export class AuthService {
     }
   }
 
-  login(email: string, password: string) {
-    this.handleAuth(this.authApiUrl, { email, password });
+  login(email: string, password: string): Observable<AuthResponse> {
+    return this.handleAuth(this.authApiUrl, { email, password });
   }
 
-  register(email: string, password: string) {
-    this.handleAuth(this.userApiUrl, { email, password });
+  register(email: string, password: string): Observable<AuthResponse> {
+    return this.handleAuth(this.userApiUrl, { email, password });
   }
 
-  private handleAuth(route: string, body: AuthRequest) {
-    subscribeOnce(
+  private handleAuth(route: string, body: AuthRequest): Observable<AuthResponse> {
+    return tapOnce(
       this.http.post<AuthResponse>(route, body),
       (response) => this.updateConnectedUser(response),
       (err) => this.handleError()
