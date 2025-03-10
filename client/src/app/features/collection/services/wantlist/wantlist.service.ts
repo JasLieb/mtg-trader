@@ -18,13 +18,13 @@ import {
   PopulatedWantlistResponse,
   WantlistsResponse,
 } from '../../models/wantlist-response';
-import { environment } from '../../../../../environments/environment';
+import { makeApiUrl } from '../../../../core/utils/makeUrl';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WantlistService {
-  private readonly apiWantlistUrl = `${environment.apiURl}api/wantlist`;
+  private readonly apiWantlistUrl = makeApiUrl('api/wantlist');
 
   private wantlistsBehavior = new BehaviorSubject<Wantlist[]>([]);
   wantlists$ = this.wantlistsBehavior.asObservable();
@@ -44,7 +44,7 @@ export class WantlistService {
 
   updateWantlist(wantlist: Wantlist) {
     this.subscribeWantlistResponse(
-      this.http.put<WantlistsResponse>('api/wantlist', {
+      this.http.put<WantlistsResponse>(this.apiWantlistUrl, {
         wantlistId: wantlist.id,
         cards: wantlist.cards.map((c) => c.id),
       })
@@ -61,7 +61,7 @@ export class WantlistService {
 
   private refreshWantlists() {
     this.subscribeWantlistResponse(
-      this.http.get<WantlistsResponse>('api/wantlist')
+      this.http.get<WantlistsResponse>(this.apiWantlistUrl)
     );
   }
 

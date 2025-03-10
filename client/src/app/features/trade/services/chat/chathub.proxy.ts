@@ -5,12 +5,13 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { ChatMessage } from '../../models/chat-message';
 import { ChatDto, Chats } from '../../models/chat';
+import { makeApiUrl } from '../../../../core/utils/makeUrl';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChathubProxy {
-  private readonly chatHubUrl = '/chathub';
+  private readonly chatHubUrl = makeApiUrl('chathub');
   private hubConnection: signalR.HubConnection | null = null;
   private receivedChatsBehavior = new BehaviorSubject<ChatDto[]>([]);
 

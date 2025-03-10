@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using MtgTrader.Infrastructure.Configuration;
 using MtgTrader.Infrastructure.Contexts;
 using MtgTrader.WebApi.Hubs;
