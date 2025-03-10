@@ -12,29 +12,31 @@ import { CollectionCardListComponent } from '../collection-card-list/collection-
     styleUrl: './wantlist.component.scss'
 })
 export class WantlistComponent {
-  wantlist = input({} as Wantlist);
-  name = computed(() => this.wantlist().name);
+  wantlist = input<Wantlist>();
+  name = computed(() => this.wantlist()?.name);
 
   constructor(private wantlistService: WantlistService) {}
 
   addCardToWantlist(card: Card) {
-    if (this.wantlist().id != undefined) {
-      const updatedCards = [...(this.wantlist().cards ?? []), card];
+    const wantlist = this.wantlist();
+    if (wantlist?.id != undefined) {
+      const updatedCards = [...(wantlist?.cards ?? []), card];
       this.updateWantlist({
-        id: this.wantlist().id,
-        name: this.wantlist().name,
+        id: wantlist?.id,
+        name: wantlist?.name,
         cards: updatedCards,
       } as Wantlist);
     }
   }
 
   deleteCard(card: Card) {
-    if (this.wantlist != undefined) {
+    const wantlist = this.wantlist();
+    if (wantlist) {
       this.updateWantlist({
-        id: this.wantlist().id,
-        name: this.wantlist().name,
-        cards: this.wantlist().cards.filter((c) => c.id !== card.id),
-      } as Wantlist);
+        id: wantlist.id,
+        name: wantlist.name,
+        cards: wantlist.cards.filter((c) => c.id !== card.id),
+      });
     }
   }
 

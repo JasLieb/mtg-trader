@@ -3,8 +3,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { WantlistComponent } from './wantlist.component';
 import { WantlistService } from '../../services/wantlist/wantlist.service';
 import { Card } from '../../../common/models/card';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
+import { signal } from '@angular/core';
 
 describe('WantlistComponent', () => {
   let component: WantlistComponent;
@@ -17,12 +22,12 @@ describe('WantlistComponent', () => {
       'delete',
     ]);
     await TestBed.configureTestingModule({
-      providers: [{ provide: WantlistService, useValue: wantlistSpy }],
-      imports: [
-        HttpClientTestingModule,
-        WantlistComponent,
-        NoopAnimationsModule,
+      providers: [
+        { provide: WantlistService, useValue: wantlistSpy },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
+      imports: [WantlistComponent, NoopAnimationsModule],
     }).compileComponents();
 
     wantlistService = TestBed.inject(
@@ -31,6 +36,10 @@ describe('WantlistComponent', () => {
 
     fixture = TestBed.createComponent(WantlistComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('wantlist', {
+      name: 'firstWantlist',
+      cards: [],
+    });
     fixture.detectChanges();
   });
 
@@ -40,6 +49,10 @@ describe('WantlistComponent', () => {
       'app-collection-card-list'
     );
     expect(cardList).toBeTruthy();
+  });
+
+  it('should have input wantlist name', () => {
+    expect(component.name()).toBe('firstWantlist');
   });
 
   it('should have card searcher', () => {

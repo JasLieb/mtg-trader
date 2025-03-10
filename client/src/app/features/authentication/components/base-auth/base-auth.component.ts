@@ -1,5 +1,6 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 import { AuthResponse } from '../../../../core/models/auth-response';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
@@ -11,18 +12,17 @@ import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
   styleUrl: './base-auth.component.scss',
 })
 export class BaseAuthComponent implements OnInit {
-  form: FormGroup;
+  private _snackBar = inject(MatSnackBar);
+  form: FormGroup = new FormGroup({});
   isLoading = signal(false);
 
-  constructor(formGroupModel: FormGroup) {
-    this.form = formGroupModel;
-  }
+  constructor() {}
 
   ngOnInit(): void {
     this.isLoading.set(false);
   }
 
-  handleSubmit(request: Observable<AuthResponse>) {
+  handleSubmit(request: Observable<AuthResponse>, errorMessage: string) {
     this.isLoading.set(true);
     subscribeOnce(
       request,
@@ -31,7 +31,12 @@ export class BaseAuthComponent implements OnInit {
       },
       () => {
         this.isLoading.set(false);
+        this._snackBar.open(errorMessage, 'Close');
       }
     );
+  }
+
+  protected initForm(formGroup: FormGroup) {
+    this.form = formGroup;
   }
 }

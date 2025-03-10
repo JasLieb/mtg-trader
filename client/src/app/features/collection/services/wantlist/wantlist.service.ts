@@ -81,7 +81,7 @@ export class WantlistService {
   ): Observable<PopulatedWantlistResponse> {
     return wantlistResponse.pipe(
       switchMap((response) => {
-        const cardsObs: Observable<Card>[] = response.wantlists.flatMap(
+        const cardsObs: Observable<Card | undefined>[] = response.wantlists.flatMap(
           (wantlist) => wantlist.cards.map((c) => this.cardService.fetch(c))
         );
         return cardsObs.length == 0

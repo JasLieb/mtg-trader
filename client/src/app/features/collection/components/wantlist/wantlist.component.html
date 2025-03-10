@@ -4,7 +4,7 @@
   ></app-card-searcher>
 
   <app-collection-card-list
-    [cards]="wantlist().cards"
+    [cards]="wantlist()?.cards ?? []"
     (onDeletedCard)="deleteCard($event)"
   ></app-collection-card-list>
 </div>

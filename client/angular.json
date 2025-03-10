@@ -114,12 +114,17 @@
               "src/styles.scss"
             ],
             "scripts": [],
+            "codeCoverage": true,
+            "codeCoverageExclude": [
+              "src/app/features/trade/services/chat/chathub.proxy.ts"
+            ],
             "fileReplacements": [
               {
                 "replace": "src/environments/environment.ts",
                 "with": "src/environments/environment.development.ts"
               }
-            ]
+            ],
+            "karmaConfig": "karma.conf.js"
           }
         }
       }

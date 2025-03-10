@@ -21,7 +21,8 @@ import { LoaderComponent } from "../../../common/components/loader/loader.compon
 })
 export class LoginComponent extends BaseAuthComponent {
   constructor(fb: FormBuilder, private authService: AuthService) {
-    super(
+    super();
+    this.initForm(
       fb.group({
         email: ['', Validators.required],
         password: ['', Validators.required],
@@ -34,7 +35,8 @@ export class LoginComponent extends BaseAuthComponent {
 
     if (val.email !== '') {
       this.handleSubmit(
-        this.authService.login(val.email, val.password)
+        this.authService.login(val.email, val.password),
+        'Unable to login, check your credentials and try again!'
       );
     }
   }

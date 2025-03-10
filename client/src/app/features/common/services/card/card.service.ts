@@ -14,21 +14,19 @@ export class CardService {
       .get(`https://api.scryfall.com/cards/search?q="${query}"`)
       .pipe(
         map((res: any) => res.data.map(this.parseCard)),
-        catchError((err) => {
-          console.log(err);
+        catchError((_) => {
           return of([]);
         })
       );
   }
 
-  fetch(cardId: string): Observable<Card> {
+  fetch(cardId: string): Observable<Card | undefined> {
     return this.httpClient
       .get<ScryfallCard>(`https://api.scryfall.com/cards/${cardId}`)
       .pipe(
         map((res) => this.parseCard(res)),
-        catchError((err) => {
-          console.log(err);
-          return of(err);
+        catchError((_) => {
+          return of(undefined);
         })
       );
   }

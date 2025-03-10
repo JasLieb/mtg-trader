@@ -80,6 +80,14 @@ describe('NavigationService', () => {
     });
   });
 
+  it('should call router with chat url and recipientId on chat trade with user', () => {
+    service.navigateChat('recipientId');
+    expect(router.navigate).toHaveBeenCalledWith([
+      service.chatUrl,
+      'recipientId',
+    ]);
+  });
+
   it('should save last route on navigation', (done) => {
     service.navigateTrade();
     service.currentRoute$.subscribe((_) => {

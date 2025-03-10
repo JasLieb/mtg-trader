@@ -20,7 +20,8 @@ import { LoaderComponent } from "../../../common/components/loader/loader.compon
 })
 export class RegisterComponent extends BaseAuthComponent {
   constructor(fb: FormBuilder, private authService: AuthService) {
-    super(
+    super();
+    this.initForm(
       fb.group({
         email: ['', Validators.required],
         password: ['', Validators.required],
@@ -33,7 +34,8 @@ export class RegisterComponent extends BaseAuthComponent {
 
     if (val.email !== '') {
       this.handleSubmit(
-        this.authService.register(val.email, val.password)
+        this.authService.register(val.email, val.password),
+        'Unable to register'
       );
     }
   }
