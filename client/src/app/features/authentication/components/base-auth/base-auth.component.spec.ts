@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 describe('BaseAuthComponent', () => {
-  const mockSnackbarMock = jasmine.createSpyObj(['open']);
+  const mockSnackbarMock = jasmine.createSpyObj(['open', 'dismiss']);
   let component: BaseAuthComponent;
   let fixture: ComponentFixture<BaseAuthComponent>;
 
@@ -29,6 +29,7 @@ describe('BaseAuthComponent', () => {
   it('should have isLoading true when handle submit ongoing', () => {
     component.handleSubmit(of({ usrToken: 'token' }).pipe(delay(100)), '');
 
+    expect(mockSnackbarMock.dismiss).toHaveBeenCalled();
     expect(component.isLoading()).toBeTrue();
   });
 
@@ -39,14 +40,24 @@ describe('BaseAuthComponent', () => {
   });
 
   it('should have isLoading false when handle submit error', () => {
-    component.handleSubmit(throwError(() => new Error('error')), '');
+    component.handleSubmit(
+      throwError(() => new Error('error')),
+      ''
+    );
 
     expect(component.isLoading()).toBeFalse();
   });
 
   it('should display snackbar when handle submit error', () => {
-    component.handleSubmit(throwError(() => new Error('error')), 'An error occurred');
+    component.handleSubmit(
+      throwError(() => new Error('error')),
+      'An error occurred'
+    );
 
-    expect(mockSnackbarMock.open).toHaveBeenCalledWith('An error occurred', 'Close');
+    expect(mockSnackbarMock.open).toHaveBeenCalledWith(
+      'An error occurred',
+      'Close',
+      { duration: 5000 }
+    );
   });
 });

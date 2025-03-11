@@ -23,6 +23,7 @@ export class BaseAuthComponent implements OnInit {
   }
 
   handleSubmit(request: Observable<AuthResponse>, errorMessage: string) {
+    this._snackBar.dismiss();
     this.isLoading.set(true);
     subscribeOnce(
       request,
@@ -31,7 +32,7 @@ export class BaseAuthComponent implements OnInit {
       },
       () => {
         this.isLoading.set(false);
-        this._snackBar.open(errorMessage, 'Close');
+        this._snackBar.open(errorMessage, 'Close', { duration: 5000 });
       }
     );
   }
