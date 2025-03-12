@@ -22,6 +22,7 @@ public static class ServicesExtensions
 
     public static IServiceCollection RegisterServices(this IServiceCollection services) =>
         services
+            .AddSingleton<IChatConnectionService, ChatConnectionService>()
             .AddTransient<ITokenService, JwtTokenService>()
             .AddTransient<IUserRepository, UserRepository>()
             .AddTransient<IWantlistRepository, WantlistRepository>()

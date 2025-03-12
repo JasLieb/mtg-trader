@@ -1,21 +1,23 @@
 using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Entities.General;
 using MtgTrader.Core.Repositories;
+using MtgTrader.Core.Services;
 
 namespace MtgTrader.Core.Handlers.Chat;
 
 public class ChatHandler(
-    IChatRepository chatRepository
+    IChatRepository chatRepository, 
+    IChatConnectionService chatConnection
 ) : IChatHandler
 {
-    private static readonly Dictionary<string, string> _connections = [];
-
     private readonly IChatRepository _chatRepository = chatRepository;
-    public bool AddConnection(string userId, string connectionId) =>
-        _connections.TryAdd(userId, connectionId);
+    private readonly IChatConnectionService _chatConnection = chatConnection;
 
-    public string? TryFindConnection(string userId) =>
-        _connections.GetValueOrDefault(userId);
+    public bool AddConnection(string userId, string connectionId) =>
+        _chatConnection.AddConnection(userId, connectionId);
+
+    public string? FindConnection(string userId) =>
+        _chatConnection.FindConnection(userId);
 
     public ChatMessage AddMessage(
         string senderId,
@@ -42,9 +44,9 @@ public class ChatHandler(
     }
 
     public bool RemoveConnection(string userId) =>
-        _connections.Remove(userId);
+        _chatConnection.RemoveConnection(userId);
 
-    private IDictionary<string, Entities.General.Chat> GroupByUniqueRecipient(
+    private static Dictionary<string, Entities.General.Chat> GroupByUniqueRecipient(
         string userId,
         List<ChatMessage> chatMessages
     )

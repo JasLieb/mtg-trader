@@ -6,7 +6,7 @@ namespace MtgTrader.Core.Handlers.Chat;
 public interface IChatHandler
 {
     bool AddConnection(string userId, string connectionId);
-    string? TryFindConnection(string userId);
+    string? FindConnection(string userId);
     ChatMessage AddMessage(string senderId, string recipientId, string message);
 
     ChatsResponse LoadMessageHistory(string userId);

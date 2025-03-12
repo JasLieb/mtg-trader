@@ -38,7 +38,7 @@ public class ChatHub(IChatHandler chatHandler) : Hub
         var chatMessage = chatHandler.AddMessage(authorId, recipientId, message);
         await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", chatMessage);
         
-        var connectionId = chatHandler.TryFindConnection(recipientId);
+        var connectionId = chatHandler.FindConnection(recipientId);
         if(!string.IsNullOrEmpty(connectionId))
             await Clients.Client(connectionId).SendAsync("ReceiveMessage", message);
     }
