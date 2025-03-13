@@ -1,15 +1,9 @@
 import { Injectable } from '@angular/core';
-import { ChathubProxy } from './chathub.proxy';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  zip,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, zip } from 'rxjs';
 import { Chat } from '../../models/chat';
-import { TradeService } from '../trade/trade.service';
 import { UserTrader } from '../../models/user-trader';
+import { TradeService } from '../trade/trade.service';
+import { ChathubProxy } from './chathub.proxy';
 
 @Injectable({
   providedIn: 'root',
@@ -28,9 +22,9 @@ export class ChatService {
       [fetchedChats, this.newChatBehavior],
       (chats, newChats) => {
         return newChats.length > 0 &&
-          chats.some((c) => c.recipient.id == newChats[0].recipient.id)
-          ? chats
-          : chats.concat(newChats);
+          !chats.some((c) => c.recipient.id == newChats[0].recipient.id)
+          ? chats.concat(newChats)
+          : chats;
       }
     );
   }

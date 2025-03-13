@@ -7,11 +7,13 @@ namespace MtgTrader.Core.Handlers.Chat;
 
 public class ChatHandler(
     IChatRepository chatRepository, 
-    IChatConnectionService chatConnection
+    IChatConnectionService chatConnection,
+    IDateTimeService dateTimeService
 ) : IChatHandler
 {
     private readonly IChatRepository _chatRepository = chatRepository;
     private readonly IChatConnectionService _chatConnection = chatConnection;
+    private readonly IDateTimeService _dateTimeService = dateTimeService;
 
     public bool AddConnection(string userId, string connectionId) =>
         _chatConnection.AddConnection(userId, connectionId);
@@ -30,7 +32,8 @@ public class ChatHandler(
                 Guid.NewGuid().ToString(),
                 message,
                 senderId,
-                recipientId
+                recipientId,
+                _dateTimeService.Now
             )
         );
     }

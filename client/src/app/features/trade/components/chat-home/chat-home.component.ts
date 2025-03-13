@@ -6,32 +6,17 @@ import {
   Signal,
   WritableSignal,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { ChatService } from '../../services/chat/chat.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { Chat } from '../../models/chat';
-import { CommonModule } from '@angular/common';
-import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
+import { ChatService } from '../../services/chat/chat.service';
+import { ChatUserComponent } from '../chat-user/chat-user.component';
 
 @Component({
   selector: 'app-chat-home',
-  imports: [
-    CommonModule,
-    MatCardModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule,
-    MatButtonModule,
-  ],
+  imports: [ChatUserComponent],
   templateUrl: './chat-home.component.html',
   styleUrl: './chat-home.component.scss',
 })
@@ -45,7 +30,7 @@ export class ChatHomeComponent implements OnDestroy {
   selectedChat: Signal<Chat | undefined>;
 
   constructor(
-    private chatService: ChatService,
+    chatService: ChatService,
     private activatedRoute: ActivatedRoute
   ) {
     this.messageControl = new FormControl('');
@@ -54,10 +39,12 @@ export class ChatHomeComponent implements OnDestroy {
       this.findOrMakeAssociatedChat(this.selectedRecipientId())
     );
 
-    subscribeOnce(this.activatedRoute.params, (params) => {
-      const recipientId = params['recipientId'];
-      this.selectedRecipientId.set(recipientId);
-    });
+    this.activatedRoute.params
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((params) => {
+        const recipientId = params['recipientId'];
+        this.selectedRecipientId.set(recipientId);
+      });
   }
 
   ngOnDestroy(): void {
@@ -67,21 +54,6 @@ export class ChatHomeComponent implements OnDestroy {
 
   selectChat(recipientId: string) {
     if (recipientId) this.selectedRecipientId.set(recipientId);
-  }
-
-  onKeyDown($event: KeyboardEvent) {
-    if ($event.key === 'Enter') {
-      this.sendMessage();
-    }
-  }
-
-  sendMessage(): void {
-    const recipientId = this.selectedRecipientId();
-    const message = this.messageControl.value.trim();
-    if (message && recipientId) {
-      this.chatService.sendMessage(message, recipientId);
-      this.messageControl.reset();
-    }
   }
 
   private findOrMakeAssociatedChat(

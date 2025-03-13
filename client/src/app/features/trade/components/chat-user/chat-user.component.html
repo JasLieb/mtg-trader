@@ -1,0 +1,42 @@
+<mat-card class="chat-user-conversation-card">
+  <mat-card-header class="chat-user-conversation-card-header">
+    {{ chat()?.recipient?.name }}
+    <div class="chat-user-conversation-reminder">
+      you want : @for (card of chat()?.recipient?.doubles; track $index) {
+      {{ card.name }}
+      }
+    </div>
+
+    <div class="chat-user-conversation-reminder">
+      you can exchange : @for (card of chat()?.recipient?.wanted; track $index)
+      {
+      {{ card.name }}
+      }
+    </div>
+  </mat-card-header>
+  <mat-card-content class="chat-user-conversation-messages">
+    @for (chatMessage of chat()?.chatMessages; track chatMessage.id) {
+    <div>
+      ({{ chatMessage.date | date : "short" }}) {{ chatMessage.message }}
+    </div>
+    }
+  </mat-card-content>
+  <mat-card-actions class="chat-user-conversation-actions">
+    <mat-form-field class="chat-user-conversation-input">
+      <input
+        matInput
+        placeholder="Start writing your message..."
+        [formControl]="messageControl"
+        (keydown)="onKeyDown($event)"
+      />
+      <button
+        matSuffix
+        mat-button
+        (click)="sendMessage()"
+        aria-label="Send message"
+      >
+        <mat-icon>send</mat-icon>
+      </button>
+    </mat-form-field>
+  </mat-card-actions>
+</mat-card>

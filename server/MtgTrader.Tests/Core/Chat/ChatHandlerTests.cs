@@ -2,15 +2,21 @@ namespace MtgTrader.Tests.Core.Chat;
 
 public class ChatHandlerTests
 {
+    private readonly DateTime _testedDateTime = new(2025, 3, 1);
+    private readonly IDateTimeService _dateTimeService;
     private readonly IChatConnectionService _chatConnection;
     private readonly IChatRepository _chatRepository;
     private readonly ChatHandler _handler;
 
     public ChatHandlerTests()
     {
+        _dateTimeService = Substitute.For<IDateTimeService>();
+        _dateTimeService.Now.Returns(_testedDateTime);
+
         _chatConnection = Substitute.For<IChatConnectionService>();
         _chatRepository = Substitute.For<IChatRepository>();
-        _handler = new ChatHandler(_chatRepository, _chatConnection);
+
+        _handler = new ChatHandler(_chatRepository, _chatConnection, _dateTimeService);
     }
 
     [Fact]
@@ -65,7 +71,7 @@ public class ChatHandlerTests
     [Fact]
     public void Should_add_message_repository_when_add_message()
     {
-        var message = new ChatMessage("id", "message", "author", "recipient");
+        var message = new ChatMessage("id", "message", "author", "recipient", _testedDateTime);
 
         _handler.AddMessage("author", "recipient", "message");
 
@@ -74,6 +80,7 @@ public class ChatHandlerTests
                 cm.AuthorId == "author"
                 && cm.RecipientId == "recipient"
                 && cm.Message == "message"
+                && cm.Date == _testedDateTime
             )
         );
     }
@@ -84,8 +91,8 @@ public class ChatHandlerTests
         var connectedUserId = "userId";
         var messageHistory = new List<ChatMessage>
         {
-            new("1", "hello", connectedUserId, "recipient"),
-            new("2", "hello", "recipient", connectedUserId)
+            new("1", "hello", connectedUserId, "recipient", _testedDateTime),
+            new("2", "hello", "recipient", connectedUserId, _testedDateTime)
         };
         _chatRepository.FindChatMessages(connectedUserId).Returns(
             messageHistory

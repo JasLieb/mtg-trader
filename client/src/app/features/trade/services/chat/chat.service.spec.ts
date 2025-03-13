@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ChatService } from './chat.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ChathubProxy } from './chathub.proxy';
 import { of } from 'rxjs';
 import { TradeService } from '../trade/trade.service';
+import { ChatService } from './chat.service';
+import { ChathubProxy } from './chathub.proxy';
 
 describe('ChatService', () => {
   let service: ChatService;
@@ -26,10 +26,7 @@ describe('ChatService', () => {
     wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
   };
 
-  const userTrades = [
-    oneUser,
-    anotherUser,
-  ];
+  const userTrades = [oneUser, anotherUser];
 
   const receivedChats = [
     {
@@ -40,6 +37,7 @@ describe('ChatService', () => {
           message: '',
           authorId: '',
           recipientId: '',
+          date: new Date(),
         },
       ],
     },
@@ -80,22 +78,18 @@ describe('ChatService', () => {
 
   it('should add new chat in chats$ when init chat', (done) => {
     service.initChat(anotherUser);
-    service.chats$.subscribe(
-      chats => {
-        expect(chats.length).toBe(2);
-        done();
-      }
-    );
+    service.chats$.subscribe((chats) => {
+      expect(chats.length).toBe(2);
+      done();
+    });
   });
 
   it('should not add new chat in chats$ when init chat and already exists', (done) => {
     service.initChat(oneUser);
-    service.chats$.subscribe(
-      chats => {
-        expect(chats.length).toBe(1);
-        done();
-      }
-    );
+    service.chats$.subscribe((chats) => {
+      expect(chats.length).toBe(1);
+      done();
+    });
   });
 
   it('should send message via proxy when send message', () => {

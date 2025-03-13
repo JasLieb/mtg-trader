@@ -1,37 +1,32 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ChatHomeComponent } from './chat-home.component';
-import { ActivatedRoute, Params, RouterModule } from '@angular/router';
-import { ChatService } from '../../services/chat/chat.service';
-import { of } from 'rxjs';
-import { Chat } from '../../models/chat';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { AuthService } from '../../../../core/services/auth/auth.service';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { ActivatedRoute, Params, RouterModule } from '@angular/router';
+import { BehaviorSubject, of } from 'rxjs';
+import { Chat } from '../../models/chat';
+import { ChatService } from '../../services/chat/chat.service';
+import { ChatHomeComponent } from './chat-home.component';
 
 describe('ChatHomeComponent', () => {
   let component: ChatHomeComponent;
   let fixture: ComponentFixture<ChatHomeComponent>;
+  let route: ActivatedRoute;
   let chatService: jasmine.SpyObj<ChatService>;
-  let authService: jasmine.SpyObj<AuthService>;
+  const routeParamsBehavior = new BehaviorSubject<Params>({});
 
   beforeEach(async () => {
     const chatSpy = jasmine.createSpyObj('ChatService', [
       'fetchChats',
       'sendMessage',
     ]);
-    const authSpy = jasmine.createSpyObj('AuthService', [
-      'fetchChats',
-      'sendMessage',
-    ]);
     await TestBed.configureTestingModule({
       providers: [
         { provide: ChatService, useValue: chatSpy },
-        { provide: AuthService, useValue: authSpy },
         {
           provide: ActivatedRoute,
           useValue: {
-            params: of<Params>({ recipientId: 'id' }),
+            params: routeParamsBehavior.asObservable(),
           },
         },
         provideNoopAnimations(),
@@ -43,9 +38,8 @@ describe('ChatHomeComponent', () => {
 
     chatService = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
     chatService.chats$ = of(makeChats());
-    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    authService.connectedUserToken$ = of('toto');
 
+    route = TestBed.inject(ActivatedRoute);
     fixture = TestBed.createComponent(ChatHomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -55,36 +49,18 @@ describe('ChatHomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should send message on send message button click', () => {
-    component.messageControl.setValue('hello');
+  it('should set selected chat on route params change', () => {
+    routeParamsBehavior.next({ recipientId: 'toto' });
 
-    component.sendMessage();
+    fixture.detectChanges();
 
-    expect(chatService.sendMessage).toHaveBeenCalledWith('hello', 'id');
+    expect(component.selectedChat()?.recipient.id).toEqual('toto');
   });
 
-  it('should send message on enter key down', () => {
-    component.messageControl.setValue('hello');
+  it('should set selected chat on select chat', () => {
+    component.selectChat('toto');
 
-    component.onKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
-
-    expect(chatService.sendMessage).toHaveBeenCalledWith('hello', 'id');
-  });
-
-  it('should not send message if control is empty', () => {
-    component.messageControl.setValue('');
-
-    component.onKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
-
-    expect(chatService.sendMessage).toHaveBeenCalledTimes(0);
-  });
-
-  it('should reset control when message is sent', () => {
-    component.messageControl.setValue('message');
-
-    component.onKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
-
-    expect(component.messageControl.value).toEqual(null);
+    expect(component.selectedChat()?.recipient.id).toEqual('toto');
   });
 });
 

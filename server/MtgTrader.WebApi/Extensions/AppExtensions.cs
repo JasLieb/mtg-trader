@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MtgTrader.Infrastructure.Configuration;
 using MtgTrader.Infrastructure.Contexts;
 using MtgTrader.WebApi.Hubs;
@@ -31,7 +32,8 @@ public static class AppExtensions
     {
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-        db.Database.EnsureCreated();
+        if(db.Database.GetPendingMigrations().Any())
+            db.Database.Migrate();
         return app;
     }
 }

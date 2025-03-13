@@ -1,9 +1,10 @@
-import { TestBed } from '@angular/core/testing';
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
+import { provideHttpClient } from '@angular/common/http';
 import { CardService } from './card.service';
 
 describe('CardService', () => {
@@ -11,7 +12,9 @@ describe('CardService', () => {
   let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     service = TestBed.inject(CardService);
     httpTestingController = TestBed.inject(HttpTestingController);
   });
@@ -23,10 +26,12 @@ describe('CardService', () => {
   it('should send GET request when search card', () => {
     service.search('anything').subscribe();
 
-    httpTestingController.expectOne(
+    var req = httpTestingController.expectOne(
       'https://api.scryfall.com/cards/search?q="anything"',
       'URL to scryfall endpoint to search some cards from a query'
     );
+
+    expect(req.request.method).toEqual('GET');
   });
 
   it('should parse scryfall cards when receive search response', (done) => {
@@ -93,10 +98,12 @@ describe('CardService', () => {
   it('should send GET request when fetch card', () => {
     service.fetch('anything').subscribe();
 
-    httpTestingController.expectOne(
+    const req = httpTestingController.expectOne(
       'https://api.scryfall.com/cards/anything',
       'URL to scryfall endpoint to fetch card from an id'
     );
+
+    expect(req.request.method).toEqual('GET');
   });
 
   it('should parse scryfall card when receive fetch response', (done) => {
@@ -139,9 +146,6 @@ describe('CardService', () => {
       'URL to scryfall endpoint to fetch card from an id'
     );
 
-    req.flush(
-      {},
-      { status: 500, statusText: 'error' }
-    );
+    req.flush({}, { status: 500, statusText: 'error' });
   });
 });
