@@ -1,32 +1,36 @@
-<mat-list role="list">
-  <h2 matSubheader>My Collection</h2>
-  <mat-list-item
-    class="app-nav-item"
-    role="listitem"
-    [class.app-a-selected]="isWantlistsTab()"
-    (click)="navigateWantlists()"
-    >Wantlists</mat-list-item
-  >
-  <mat-list-item
-    class="app-nav-item"
-    role="listitem"
-    [class.app-a-selected]="isDoublesTab()"
-    (click)="navigateDoubles()"
-    >Doubles</mat-list-item
-  >
-  <h2 matSubheader>Trade</h2>
-  <mat-list-item
-    class="app-nav-item"
-    role="listitem"
-    [class.app-a-selected]="isTradeTab()"
-    (click)="navigateTrade()"
-    >Trade</mat-list-item
-  >
-  <mat-list-item
-    class="app-nav-item"
-    role="listitem"
-    [class.app-a-selected]="isChatTab()"
-    (click)="navigateChat()"
-    >Chat</mat-list-item
-  >
-</mat-list>
+<div class="navigation-bar-container">
+  <mat-list role="list">
+    <h2 matSubheader>My Collection</h2>
+    <mat-list-item
+      class="app-nav-item"
+      role="listitem"
+      [class.app-a-selected]="isWantlistsTab()"
+      (click)="navigateWantlists()"
+      >Wantlists</mat-list-item
+    >
+    <mat-list-item
+      class="app-nav-item"
+      role="listitem"
+      [class.app-a-selected]="isDoublesTab()"
+      (click)="navigateDoubles()"
+      >Doubles</mat-list-item
+    >
+    <h2 matSubheader>Trade</h2>
+    <mat-list-item
+      class="app-nav-item"
+      role="listitem"
+      [class.app-a-selected]="isTradeTab()"
+      (click)="navigateTrade()"
+      >Trade</mat-list-item
+    >
+    <mat-list-item
+      class="app-nav-item"
+      role="listitem"
+      [class.app-a-selected]="isChatTab()"
+      (click)="navigateChat()"
+      >Chat</mat-list-item
+    >
+  </mat-list>
+
+  <button mat-button (click)="disconnectUser()">Logout</button>
+</div>

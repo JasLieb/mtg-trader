@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { subscribeOnce, tapOnce } from '../../utils/subscribeExtensions';
-import { AuthResponse } from '../../models/auth-response';
 import { AuthRequest } from '../../models/auth-request';
+import { AuthResponse } from '../../models/auth-response';
 import { makeApiUrl } from '../../utils/makeUrl';
+import { subscribeOnce, tapOnce } from '../../utils/subscribeExtensions';
 
 @Injectable({
   providedIn: 'root',
@@ -14,8 +14,8 @@ export class AuthService {
   private readonly userApiUrl = makeApiUrl('api/user');
   private readonly userTokenKey = `usr-token`;
 
-  private connectedUserBehavior = new BehaviorSubject<string>('');
-  connectedUserToken$ = this.connectedUserBehavior.asObservable();
+  private connectedUserTokenBehavior = new BehaviorSubject<string>('');
+  connectedUserToken$ = this.connectedUserTokenBehavior.asObservable();
 
   constructor(private http: HttpClient) {
     if (this.hasToken()) {
@@ -35,7 +35,15 @@ export class AuthService {
     return this.handleAuth(this.userApiUrl, { email, password });
   }
 
-  private handleAuth(route: string, body: AuthRequest): Observable<AuthResponse> {
+  disconnect() {
+    window.localStorage.clear();
+    this.connectedUserTokenBehavior.next('');
+  }
+
+  private handleAuth(
+    route: string,
+    body: AuthRequest
+  ): Observable<AuthResponse> {
     return tapOnce(
       this.http.post<AuthResponse>(route, body),
       (response) => this.updateConnectedUser(response),
@@ -45,13 +53,13 @@ export class AuthService {
 
   private updateConnectedUser(response: AuthResponse) {
     const token = response.usrToken.replaceAll('Bearer ', '');
-    this.connectedUserBehavior.next(token);
+    this.connectedUserTokenBehavior.next(token);
     window.localStorage.setItem(this.userTokenKey, token);
   }
 
   private handleError() {
     window.localStorage.setItem(this.userTokenKey, ``);
-    this.connectedUserBehavior.next('');
+    this.connectedUserTokenBehavior.next('');
   }
 
   private hasToken(): boolean {

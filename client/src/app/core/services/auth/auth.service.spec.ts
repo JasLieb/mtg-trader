@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AuthService } from './auth.service';
+import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { initLocalStorageForTests } from '../../utils/localStorage';
-import { provideHttpClient } from '@angular/common/http';
+import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -96,7 +96,7 @@ describe('AuthService', () => {
   });
 
   it('should update isConnected$ when fail login', (done) => {
-    service.login('anything@xyz.com', 'poep').subscribe({error: () => {} });
+    service.login('anything@xyz.com', 'poep').subscribe({ error: () => {} });
 
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/auth'
@@ -145,12 +145,27 @@ describe('AuthService', () => {
   });
 
   it('should update isConnected$ when fail register', (done) => {
-    service.register('anything@xyz.com', 'poep').subscribe({error: () => {} });
+    service.register('anything@xyz.com', 'poep').subscribe({ error: () => {} });
 
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/user'
     );
     reqs[0].flush({}, { status: 500, statusText: 'Error' });
+
+    service.connectedUserToken$.subscribe((connectedUser) => {
+      expect(connectedUser).toBe('');
+      done();
+    });
+  });
+
+  it('should clear local storage when disconnect user', () => {
+    service.disconnect();
+
+    expect(window.localStorage.clear).toHaveBeenCalled();
+  });
+
+  it('should clear connectedUserToken$ when disconnect user', (done) => {
+    service.disconnect();
 
     service.connectedUserToken$.subscribe((connectedUser) => {
       expect(connectedUser).toBe('');
