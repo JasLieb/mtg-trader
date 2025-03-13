@@ -5,3 +5,15 @@
   justify-content: space-between;
   height: 100%;
 }
+
+.navigation-bar-item {
+  white-space: nowrap;
+  cursor: pointer !important;
+  text-decoration: none;
+}
+
+.navigation-bar-item-selected {
+  text-decoration: underline !important;
+}
+
+
