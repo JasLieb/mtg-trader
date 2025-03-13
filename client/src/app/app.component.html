@@ -25,6 +25,16 @@
     </mat-drawer-content>
   </mat-drawer-container>
   <div class="app-footer">
-    <div>Created by JasLieb - {{ today | date : "yyyy" }}</div>
+    <div>
+      Created by
+      <a
+        class="app-footer-link"
+        href="https://jaslieb.github.io/"
+        target="_blank"
+        >JasLieb</a
+      >
+      -
+      {{ today | date : "yyyy" }}
+    </div>
   </div>
 </div>

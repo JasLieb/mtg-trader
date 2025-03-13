@@ -4,6 +4,7 @@
   align-items: flex-start;
   justify-content: space-between;
   height: 100%;
+  overflow: hidden;
 }
 
 .navigation-bar-item {
@@ -15,5 +16,3 @@
 .navigation-bar-item-selected {
   text-decoration: underline !important;
 }
-
-
