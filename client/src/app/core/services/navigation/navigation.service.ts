@@ -1,52 +1,47 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { Routes } from '../../models/routesEnum';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NavigationService {
-  authUrl = '/auth';
-  doublesUrl = '/doubles';
-  tradeUrl = '/trade';
-  chatUrl = '/chat';
-  wantlistsUrl = '/wantlists';
-
   private currentRouteBehavior = new Subject<string>();
   currentRoute$ = this.currentRouteBehavior.asObservable();
 
   constructor(private router: Router) {}
 
   navigateAuth() {
-    this.navigate(this.authUrl, false);
+    this.navigate(Routes.AuthUrl, false);
   }
 
   navigateTrade() {
-    this.navigate(this.tradeUrl);
+    this.navigate(Routes.TradeUrl);
   }
 
   navigateWantlists() {
-    this.navigate(this.wantlistsUrl);
+    this.navigate(Routes.WantlistsUrl);
   }
 
   navigateDoubles() {
-    this.navigate(this.doublesUrl);
+    this.navigate(Routes.DoublesUrl);
   }
 
   navigateChat(recipientId?: string) {
-    if(recipientId) {
-      this.router.navigate([this.chatUrl, recipientId]).then(() => {
-        this.onNavigationSuccess(this.chatUrl, true);
+    if (recipientId) {
+      this.router.navigate([Routes.ChatUrl, recipientId]).then(() => {
+        this.onNavigationSuccess(Routes.ChatUrl, true);
       });
       return;
     }
-    this.navigate(this.chatUrl);
+    this.navigate(Routes.ChatUrl);
   }
 
   resumeLastRoute() {
     const lastRoute = window.localStorage.getItem('last-route');
     this.navigate(
-      lastRoute && lastRoute !== '' ? lastRoute : this.wantlistsUrl
+      lastRoute && lastRoute !== '' ? lastRoute : Routes.WantlistsUrl
     );
   }
 
@@ -57,11 +52,8 @@ export class NavigationService {
   }
 
   private onNavigationSuccess(route: string, shouldSave: boolean) {
-    if(shouldSave) {
-      window.localStorage.setItem(
-        'last-route',
-        route
-      );
+    if (shouldSave) {
+      window.localStorage.setItem('last-route', route);
     }
     this.currentRouteBehavior.next(route);
   }

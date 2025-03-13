@@ -1,22 +1,24 @@
-import { Component, computed, OnDestroy, OnInit, Signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RouterOutlet } from '@angular/router';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { NavigationService } from './core/services/navigation/navigation.service';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { RouterOutlet } from '@angular/router';
 import { map, Observable, Subject, takeUntil } from 'rxjs';
+import { NavigationBarComponent } from './core/components/navigation-bar/navigation-bar.component';
 import { AuthService } from './core/services/auth/auth.service';
+import { NavigationService } from './core/services/navigation/navigation.service';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
+    CommonModule,
     MatSidenavModule,
-    MatListModule,
     MatButtonModule,
     MatIconModule,
+    NavigationBarComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -24,12 +26,8 @@ import { AuthService } from './core/services/auth/auth.service';
 export class AppComponent implements OnInit, OnDestroy {
   private unsubscribe = new Subject();
 
+  today = new Date();
   title = 'MTG Trader';
-  currentRoute: Signal<string>;
-  isTradeTab: Signal<boolean>;
-  isChatTab: Signal<boolean>;
-  isWantlistsTab: Signal<boolean>;
-  isDoublesTab: Signal<boolean>;
   isConnected: Signal<boolean>;
 
   constructor(
@@ -41,21 +39,6 @@ export class AppComponent implements OnInit, OnDestroy {
       {
         initialValue: false,
       }
-    );
-    this.currentRoute = toSignal(navigationService.currentRoute$, {
-      initialValue: '',
-    });
-    this.isWantlistsTab = computed(
-      () => this.currentRoute() === navigationService.wantlistsUrl
-    );
-    this.isDoublesTab = computed(
-      () => this.currentRoute() === navigationService.doublesUrl
-    );
-    this.isTradeTab = computed(
-      () => this.currentRoute() === navigationService.tradeUrl
-    );
-    this.isChatTab = computed(
-      () => this.currentRoute() === navigationService.chatUrl
     );
   }
 
@@ -75,22 +58,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   isSmallScreen(): boolean {
     return window.innerWidth < 480;
-  }
-
-  navigateTrade() {
-    this.navigationService.navigateTrade();
-  }
-
-  navigateWantlists() {
-    this.navigationService.navigateWantlists();
-  }
-
-  navigateDoubles() {
-    this.navigationService.navigateDoubles();
-  }
-
-  navigateChat() {
-    this.navigationService.navigateChat();
   }
 
   private navigateAuth() {

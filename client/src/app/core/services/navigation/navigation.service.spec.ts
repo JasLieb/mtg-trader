@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 
-import { NavigationService } from './navigation.service';
 import { Router, RouterModule } from '@angular/router';
+import { Routes } from '../../models/routesEnum';
 import { initLocalStorageForTests } from '../../utils/localStorage';
+import { NavigationService } from './navigation.service';
 
 describe('NavigationService', () => {
   let service: NavigationService;
@@ -30,8 +31,8 @@ describe('NavigationService', () => {
   it('should call router with auth url on navigate auth', (done) => {
     service.navigateAuth();
     service.currentRoute$.subscribe((route) => {
-      expect(router.navigate).toHaveBeenCalledWith([service.authUrl]);
-      expect(route).toBe(service.authUrl);
+      expect(router.navigate).toHaveBeenCalledWith([Routes.AuthUrl]);
+      expect(route).toBe(Routes.AuthUrl);
       done();
     });
   });
@@ -39,29 +40,29 @@ describe('NavigationService', () => {
   it('should call router with wantlists url on navigate wantlists', (done) => {
     service.navigateWantlists();
     service.currentRoute$.subscribe((route) => {
-      expect(router.navigate).toHaveBeenCalledWith([service.wantlistsUrl]);
-      expect(route).toBe(service.wantlistsUrl);
+      expect(router.navigate).toHaveBeenCalledWith([Routes.WantlistsUrl]);
+      expect(route).toBe(Routes.WantlistsUrl);
       done();
     });
   });
 
   it('should call router with doubles url on navigate doubles', (done) => {
     service.navigateDoubles();
-    expect(router.navigate).toHaveBeenCalledWith([service.doublesUrl]);
+    expect(router.navigate).toHaveBeenCalledWith([Routes.DoublesUrl]);
     service.currentRoute$.subscribe((route) => {
-      expect(route).toBe(service.doublesUrl);
+      expect(route).toBe(Routes.DoublesUrl);
       done();
     });
   });
 
   it('should call router with trade url on navigate trade', (done) => {
     service.navigateTrade();
-    expect(router.navigate).toHaveBeenCalledWith([service.tradeUrl]);
+    expect(router.navigate).toHaveBeenCalledWith([Routes.TradeUrl]);
     service.currentRoute$.subscribe((route) => {
-      expect(route).toBe(service.tradeUrl);
+      expect(route).toBe(Routes.TradeUrl);
       expect(localStorage.setItem).toHaveBeenCalledWith(
         'last-route',
-        service.tradeUrl
+        Routes.TradeUrl
       );
       done();
     });
@@ -69,12 +70,12 @@ describe('NavigationService', () => {
 
   it('should call router with chat url on chat trade', (done) => {
     service.navigateChat();
-    expect(router.navigate).toHaveBeenCalledWith([service.chatUrl]);
+    expect(router.navigate).toHaveBeenCalledWith([Routes.ChatUrl]);
     service.currentRoute$.subscribe((route) => {
-      expect(route).toBe(service.chatUrl);
+      expect(route).toBe(Routes.ChatUrl);
       expect(localStorage.setItem).toHaveBeenCalledWith(
         'last-route',
-        service.chatUrl
+        Routes.ChatUrl
       );
       done();
     });
@@ -83,7 +84,7 @@ describe('NavigationService', () => {
   it('should call router with chat url and recipientId on chat trade with user', () => {
     service.navigateChat('recipientId');
     expect(router.navigate).toHaveBeenCalledWith([
-      service.chatUrl,
+      Routes.ChatUrl,
       'recipientId',
     ]);
   });
@@ -93,7 +94,7 @@ describe('NavigationService', () => {
     service.currentRoute$.subscribe((_) => {
       expect(window.localStorage.setItem).toHaveBeenCalledWith(
         'last-route',
-        service.tradeUrl
+        Routes.TradeUrl
       );
       done();
     });
@@ -111,7 +112,7 @@ describe('NavigationService', () => {
     window.localStorage.setItem('last-route', '/trade');
     service.resumeLastRoute();
     service.currentRoute$.subscribe((route) => {
-      expect(route).toBe(service.tradeUrl);
+      expect(route).toBe(Routes.TradeUrl);
       done();
     });
   });
@@ -119,7 +120,7 @@ describe('NavigationService', () => {
   it('should call router with wantlist url when no saved route on resume', (done) => {
     service.resumeLastRoute();
     service.currentRoute$.subscribe((route) => {
-      expect(route).toBe(service.wantlistsUrl);
+      expect(route).toBe(Routes.WantlistsUrl);
       done();
     });
   });

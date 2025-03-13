@@ -6,39 +6,7 @@
       mode="side"
       [opened]="!isSmallScreen() && isConnected()"
     >
-    <mat-list role="list">
-        <h1 matSubheader>{{ title }}</h1>
-        <h2 matSubheader>My Collection</h2>
-        <mat-list-item
-          class="app-nav-item"
-          role="listitem"
-          [class.app-a-selected]="isWantlistsTab()"
-          (click)="navigateWantlists()"
-          >Wantlists</mat-list-item
-        >
-        <mat-list-item
-          class="app-nav-item"
-          role="listitem"
-          [class.app-a-selected]="isDoublesTab()"
-          (click)="navigateDoubles()"
-          >Doubles</mat-list-item
-        >
-        <h2 matSubheader>Trade</h2>
-        <mat-list-item
-          class="app-nav-item"
-          role="listitem"
-          [class.app-a-selected]="isTradeTab()"
-          (click)="navigateTrade()"
-          >Trade</mat-list-item
-        >
-        <mat-list-item
-          class="app-nav-item"
-          role="listitem"
-          [class.app-a-selected]="isChatTab()"
-          (click)="navigateChat()"
-          >Chat</mat-list-item
-        >
-      </mat-list>
+      <app-navigation-bar></app-navigation-bar>
     </mat-drawer>
 
     <mat-drawer-content class="app-drawer-content">
@@ -48,6 +16,7 @@
           <mat-icon>menu</mat-icon>
         </button>
         }
+        <h1 class="app-title">{{ title }}</h1>
       </div>
 
       <div class="app-body">
@@ -56,6 +25,6 @@
     </mat-drawer-content>
   </mat-drawer-container>
   <div class="app-footer">
-    <div>Created by JasLieb - 2024</div>
+    <div>Created by JasLieb - {{ today | date : "yyyy" }}</div>
   </div>
 </div>
