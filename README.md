@@ -30,7 +30,6 @@ At the project top level, you can start the whole app using Docker-Compose
 
 ### Docker Support
 
-
 To build and run the solution using Docker Compose, use the following commands:
 
 `docker-compose build`

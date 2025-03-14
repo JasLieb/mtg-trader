@@ -20,9 +20,11 @@ MtgTrader is a .NET solution for managing and trading Magic: The Gathering cards
 
 ### Setup the Database
 
-The solution use EntityFramework migration in order to update and mantains the database, run the following command in the `server` directory:
+Excepted have a PostgreSQL installed on your computer in the case of local development, you have nothing to do about creating the database relational model. Everything is done through migrations during the server startup.
 
-`dotnet ef migrations add <MigrationName> --project MtgTrader.Infrastructure --startup-project MtgTrader.WebApi`
+The solution use EntityFramework migration in order to update and mantains the database, run the following command in the `server` directory when you have modified the database model and you make a new migration:
+
+`dotnet ef migrations update <MigrationName> --project MtgTrader.Infrastructure --startup-project MtgTrader.WebApi`
 
 ### Building the Solution
 
