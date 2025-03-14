@@ -40,6 +40,11 @@ describe('ChatUserComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should order messages by date when set chat input', () => {
+    expect(component.messageHistory()[0].message).toEqual('hello1');
+    expect(component.messageHistory()[1].message).toEqual('hello2');
+  });
+
   it('should send message on send message button click', () => {
     component.messageControl.setValue('hello');
 
@@ -81,6 +86,21 @@ function makeChat(): Chat {
       doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
       wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
     },
-    chatMessages: [],
+    chatMessages: [
+      {
+        id: '1',
+        recipientId: 'toto',
+        authorId: 'jas',
+        message: 'hello2',
+        date: new Date('2021-01-01'),
+      },
+      {
+        id: '2',
+        recipientId: 'toto',
+        authorId: 'jas',
+        message: 'hello1',
+        date: new Date('2020-01-01'),
+      },
+    ],
   };
 }

@@ -34,7 +34,7 @@ export class ChatUserComponent {
     this.messageHistory = computed(
       () =>
         this.chat()?.chatMessages.sort(
-          (a, b) => b.date.getTime() - a.date.getTime()
+          (a, b) => a.date.getTime() - b.date.getTime()
         ) || []
     );
   }
