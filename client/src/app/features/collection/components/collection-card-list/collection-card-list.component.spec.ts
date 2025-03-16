@@ -1,14 +1,47 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Card } from '../../../common/models/card';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
+import { makeCard } from '../../../common/models/card';
 import { CollectionCardListComponent } from './collection-card-list.component';
 
 describe('CollectionCardListComponent', () => {
   let component: CollectionCardListComponent;
   let fixture: ComponentFixture<CollectionCardListComponent>;
+  let dialogSpy: jasmine.SpyObj<MatDialog>;
+
+  const expectedBaseCard = makeCard('toto', 'toto', '', '', 0, 'totoSet', '', [
+    { id: 'toto', set_name: 'totoSet', set_id: 'totoSet' },
+    { id: 'titi', set_name: 'titiSet', set_id: 'titiSet' },
+  ]);
+  const expectedModifiedCard = makeCard(
+    'titi',
+    'titi',
+    '',
+    '',
+    0,
+    'titiSet',
+    '',
+    [
+      { id: 'toto', set_name: 'totoSet', set_id: 'totoSet' },
+      { id: 'titi', set_name: 'titiSet', set_id: 'titiSet' },
+    ]
+  );
 
   beforeEach(async () => {
+    dialogSpy = jasmine.createSpyObj({
+      open: jasmine.createSpyObj({
+        afterClosed: of(expectedModifiedCard),
+      }),
+    }) as jasmine.SpyObj<MatDialog>;
+
     await TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: MatDialog,
+          useValue: dialogSpy,
+        },
+      ],
       imports: [CollectionCardListComponent],
     }).compileComponents();
 
@@ -18,14 +51,13 @@ describe('CollectionCardListComponent', () => {
   });
 
   function initInput() {
-    fixture.componentRef.setInput('cards', [
-      { id: 'toto', name: 'toto' } as Card,
-    ]);
+    fixture.componentRef.setInput('cards', [expectedBaseCard]);
     fixture.detectChanges();
   }
 
   function initOutput() {
     spyOn(component.onDeletedCard, 'emit');
+    spyOn(component.onUpdateSet, 'emit');
     fixture.detectChanges();
   }
 
@@ -45,11 +77,43 @@ describe('CollectionCardListComponent', () => {
     });
   });
 
-  it('should have delete card button when output is setted', () => {
+  it('should have modify set button', () => {
     initInput();
     initOutput();
 
-    const deleteButton = fixture.nativeElement.querySelector('button');
+    const modifySetButton = fixture.nativeElement.querySelectorAll('button')[0];
+    expect(modifySetButton.textContent).toBe('Modify set');
+  });
+
+  it('should open dialog with expected card when modify set button is clicked', () => {
+    initInput();
+    initOutput();
+
+    fixture.nativeElement.querySelectorAll('button')[0].click();
+
+    expect(dialogSpy.open).toHaveBeenCalled();
+    expect(dialogSpy.open.calls.mostRecent().args[1]?.data).toBe(
+      expectedBaseCard
+    );
+  });
+
+  it('should emit card from new set when modify set dialog is over with result', () => {
+    initInput();
+    initOutput();
+
+    component.openDialog(expectedBaseCard);
+
+    expect(component.onUpdateSet.emit).toHaveBeenCalledWith({
+      base: expectedBaseCard,
+      update: expectedModifiedCard,
+    });
+  });
+
+  it('should have delete card button', () => {
+    initInput();
+    initOutput();
+
+    const deleteButton = fixture.nativeElement.querySelectorAll('button')[1];
     expect(deleteButton.textContent).toBe('Delete');
   });
 
@@ -57,11 +121,8 @@ describe('CollectionCardListComponent', () => {
     initInput();
     initOutput();
 
-    fixture.nativeElement.querySelector('button').click();
+    fixture.nativeElement.querySelectorAll('button')[1].click();
 
-    expect(component.onDeletedCard.emit).toHaveBeenCalledWith({
-      id: 'toto',
-      name: 'toto',
-    } as Card);
+    expect(component.onDeletedCard.emit).toHaveBeenCalledWith(expectedBaseCard);
   });
 });

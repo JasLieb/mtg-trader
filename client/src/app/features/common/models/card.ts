@@ -6,7 +6,7 @@ export interface Card {
   price: number;
   set: string;
   set_uri: string;
-  sets: ScryfallSet[];
+  sets: CardSet[];
 }
 
 export function makeCard(
@@ -17,7 +17,7 @@ export function makeCard(
   price = 0,
   set = '',
   set_uri = '',
-  sets: ScryfallSet[] = []
+  sets: CardSet[] = []
 ): Card {
   return {
     id,
@@ -43,7 +43,7 @@ export interface ScryfallCard {
   };
 }
 
-export interface ScryfallSet {
+export interface CardSet {
   id: string; // card id following associated set
   set_name: string;
   set_id: string;

@@ -1,32 +1,38 @@
 import {
   Component,
-  EventEmitter,
   OnDestroy,
   OnInit,
-  Output,
+  output,
   signal,
   WritableSignal,
 } from '@angular/core';
-import { CardService } from '../../../common/services/card/card.service';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { CardService } from '../../../common/services/card/card.service';
 
-import { debounceTime, distinctUntilChanged, filter, mergeMap, Subject, takeUntil } from 'rxjs';
-import { Card } from '../../../common/models/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  mergeMap,
+  Subject,
+  takeUntil,
+} from 'rxjs';
+import { Card } from '../../../common/models/card';
 
 @Component({
-    selector: 'app-card-searcher',
-    imports: [
-        ReactiveFormsModule,
-        FormsModule,
-        MatInputModule,
-        MatAutocompleteModule,
-        MatButtonModule,
-    ],
-    templateUrl: './card-searcher.component.html',
-    styleUrl: './card-searcher.component.scss'
+  selector: 'app-card-searcher',
+  imports: [
+    ReactiveFormsModule,
+    FormsModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    MatButtonModule,
+  ],
+  templateUrl: './card-searcher.component.html',
+  styleUrl: './card-searcher.component.scss',
 })
 export class CardSearcherComponent implements OnInit, OnDestroy {
   private selectedCard: Card | undefined;
@@ -35,8 +41,7 @@ export class CardSearcherComponent implements OnInit, OnDestroy {
   results: WritableSignal<Card[] | undefined> = signal(undefined);
   searchControl: FormControl;
 
-  @Output()
-  onFoundCard = new EventEmitter<Card>();
+  onFoundCard = output<Card>();
 
   constructor(private cardService: CardService) {
     this.searchControl = new FormControl('');
@@ -44,16 +49,16 @@ export class CardSearcherComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.searchControl.valueChanges
-    .pipe(
-      debounceTime(400),
-      distinctUntilChanged(),
-      filter((query) => query != undefined),
-      mergeMap((query) => this.cardService.search(query)),
-      takeUntil(this.unsubscribe)
-    )
-    .subscribe((foundCards) => {
-      this.results.set(foundCards);
-    });
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        filter((query) => query != undefined),
+        mergeMap((query) => this.cardService.search(query)),
+        takeUntil(this.unsubscribe)
+      )
+      .subscribe((foundCards) => {
+        this.results.set(foundCards);
+      });
   }
 
   ngOnDestroy(): void {

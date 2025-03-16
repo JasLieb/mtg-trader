@@ -9,7 +9,7 @@ import {
   of,
   switchMap,
 } from 'rxjs';
-import { Card, ScryfallCard, ScryfallSet } from '../../models/card';
+import { Card, CardSet, ScryfallCard } from '../../models/card';
 
 @Injectable({
   providedIn: 'root',
@@ -51,7 +51,7 @@ export class CardService {
       )
       .pipe(
         map((res: any) => {
-          return this.populateCardSets(card, res.data as ScryfallSet[]);
+          return this.populateCardSets(card, res.data as CardSet[]);
         })
       );
   }
@@ -72,7 +72,7 @@ export class CardService {
     } as Card;
   }
 
-  private populateCardSets(originalCard: Card, sets: ScryfallSet[]): Card {
+  private populateCardSets(originalCard: Card, sets: CardSet[]): Card {
     return {
       ...originalCard,
       sets,

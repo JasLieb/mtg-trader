@@ -14,6 +14,7 @@
 
     <div class="collection-card-name">({{ card.price }}€)</div>
 
+    <button mat-button (click)="openDialog(card)">Modify set</button>
     <button mat-button (click)="deleteCard(card)">Delete</button>
   </div>
   }
