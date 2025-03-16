@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { makeCard } from '../../../common/models/card';
 import { Chat } from '../../models/chat';
 import { ChatService } from '../../services/chat/chat.service';
 import { ChatUserComponent } from './chat-user.component';
@@ -83,8 +84,8 @@ function makeChat(): Chat {
     recipient: {
       id: 'toto',
       name: 'jas',
-      doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
-      wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+      doubles: [makeCard()],
+      wanted: [makeCard()],
     },
     chatMessages: [
       {

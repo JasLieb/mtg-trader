@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
+import { makeCard } from '../../../common/models/card';
+import { UserTrader } from '../../models/user-trader';
 import { TradeService } from '../trade/trade.service';
 import { ChatService } from './chat.service';
 import { ChathubProxy } from './chathub.proxy';
@@ -12,18 +14,18 @@ describe('ChatService', () => {
   let tradeService: jasmine.SpyObj<TradeService>;
   let chathubProxy: jasmine.SpyObj<ChathubProxy>;
 
-  const oneUser = {
+  const oneUser: UserTrader = {
     id: 'toto',
     name: 'jas',
-    doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
-    wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+    doubles: [makeCard('a')],
+    wanted: [makeCard('a')],
   };
 
   const anotherUser = {
     id: 'another',
     name: 'another',
-    doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
-    wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+    doubles: [makeCard('a')],
+    wanted: [makeCard('a')],
   };
 
   const userTrades = [oneUser, anotherUser];

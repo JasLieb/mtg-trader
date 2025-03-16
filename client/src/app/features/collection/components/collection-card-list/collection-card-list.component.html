@@ -1,13 +1,20 @@
 <div class="collection-card-container">
   @for (card of cards(); track card.id) {
-    <div class="collection-card">
-      <div class="collection-card-name">{{card.name}}</div>
-      <img
-        class="collection-card-image"
-        [src]="card.image_uri"
-        [alt]="card.name"
-      />
-      <button mat-button (click)="deleteCard(card)">Delete</button>
+  <div class="collection-card">
+    <div class="collection-card-name">
+      {{ card.name }}
+      <img class="collection-card-set" [src]="card.set_uri" [alt]="card.set" />
     </div>
+
+    <img
+      class="collection-card-image"
+      [src]="card.image_uri"
+      [alt]="card.name"
+    />
+
+    <div class="collection-card-name">({{ card.price }}€)</div>
+
+    <button mat-button (click)="deleteCard(card)">Delete</button>
+  </div>
   }
 </div>

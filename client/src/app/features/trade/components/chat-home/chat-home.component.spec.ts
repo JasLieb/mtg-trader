@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Params, RouterModule } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
+import { makeCard } from '../../../common/models/card';
 import { Chat } from '../../models/chat';
 import { ChatService } from '../../services/chat/chat.service';
 import { ChatHomeComponent } from './chat-home.component';
@@ -70,8 +71,8 @@ function makeChats(): Chat[] {
       recipient: {
         id: 'toto',
         name: 'jas',
-        doubles: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
-        wanted: [{ id: 't', name: 'toto', uri: 'card', image_uri: 'd' }],
+        doubles: [makeCard()],
+        wanted: [makeCard()],
       },
       chatMessages: [],
     },

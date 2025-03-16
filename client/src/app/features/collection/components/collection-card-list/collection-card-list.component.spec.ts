@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CollectionCardListComponent } from './collection-card-list.component';
 import { Card } from '../../../common/models/card';
+import { CollectionCardListComponent } from './collection-card-list.component';
 
 describe('CollectionCardListComponent', () => {
   let component: CollectionCardListComponent;
@@ -37,8 +37,10 @@ describe('CollectionCardListComponent', () => {
     initInput();
 
     fixture.whenStable().then(() => {
-      const firstCard = fixture.nativeElement.querySelector('.collection-card-name');
-      expect(firstCard.textContent).toBe('toto');
+      const firstCard = fixture.nativeElement.querySelector(
+        '.collection-card-name'
+      );
+      expect(firstCard.textContent.trim()).toBe('toto');
       done();
     });
   });
