@@ -6,5 +6,6 @@
   <app-collection-card-list
     [cards]="wantlist()?.cards ?? []"
     (onDeletedCard)="deleteCard($event)"
+    (onUpdateCard)="updateCardSet($event)"
   ></app-collection-card-list>
 </div>

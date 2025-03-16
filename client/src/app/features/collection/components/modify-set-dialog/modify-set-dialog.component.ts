@@ -18,7 +18,7 @@ export class ModifySetDialogComponent {
     @Inject(MAT_DIALOG_DATA) public baseCard: Card
   ) {
     this.selectedSet = new FormControl(
-      baseCard.sets.find((s) => s.id === baseCard.id) ?? baseCard.sets[0]
+      baseCard.sets.find((s) => s.card_id === baseCard.id) ?? baseCard.sets[0]
     );
   }
 

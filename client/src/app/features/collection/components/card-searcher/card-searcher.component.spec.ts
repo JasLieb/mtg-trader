@@ -6,12 +6,12 @@ import {
   tick,
 } from '@angular/core/testing';
 
-import { CardSearcherComponent } from './card-searcher.component';
-import { CardService } from '../../../common/services/card/card.service';
-import { Card } from '../../../common/models/card';
-import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
+import { Card } from '../../../common/models/card';
+import { CardService } from '../../../common/services/card/card.service';
+import { CardSearcherComponent } from './card-searcher.component';
 
 describe('CardSearcherComponent', () => {
   let component: CardSearcherComponent;
@@ -70,7 +70,7 @@ describe('CardSearcherComponent', () => {
     cardService.search.and.returnValue(
       of([{ id: 't', name: 'toto' }] as Card[])
     );
-    const inputElement = fixture.debugElement.query(By.css('input')); // Returns DebugElement
+    const inputElement = fixture.debugElement.query(By.css('input'));
     inputElement.nativeElement.dispatchEvent(new Event('focusin'));
     inputElement.nativeElement.value = 'toto';
     inputElement.nativeElement.dispatchEvent(new Event('input'));
@@ -92,14 +92,13 @@ describe('CardSearcherComponent', () => {
     component.results.set([{ id: 't', name: 'toto' }] as Card[]);
     fixture.detectChanges();
 
-    const inputElement = fixture.debugElement.query(By.css('input')); // Returns DebugElement
+    const inputElement = fixture.debugElement.query(By.css('input'));
     inputElement.nativeElement.dispatchEvent(new Event('focusin'));
     inputElement.nativeElement.value = 'toto';
     inputElement.nativeElement.dispatchEvent(new Event('input'));
 
     fixture.detectChanges();
     fixture.whenStable().then(() => {
-
       fixture.detectChanges();
 
       const matOptions = document.querySelectorAll('mat-option');
@@ -117,7 +116,7 @@ describe('CardSearcherComponent', () => {
     );
     component.results.set([{ id: 't', name: 'toto' }] as Card[]);
 
-    const inputElement = fixture.debugElement.query(By.css('input')); // Returns DebugElement
+    const inputElement = fixture.debugElement.query(By.css('input'));
     inputElement.nativeElement.dispatchEvent(new Event('focusin'));
     inputElement.nativeElement.value = 'toto';
     inputElement.nativeElement.dispatchEvent(new Event('input'));

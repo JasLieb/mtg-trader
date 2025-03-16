@@ -9,7 +9,8 @@ import {
   of,
   switchMap,
 } from 'rxjs';
-import { Card, CardSet, ScryfallCard } from '../../models/card';
+import { Card, CardSet, makeCard } from '../../models/card';
+import { ScryfallCard, ScryfallCardSet } from '../../models/scryfall-card';
 
 @Injectable({
   providedIn: 'root',
@@ -46,12 +47,21 @@ export class CardService {
 
   private populateSets(card: Card): Observable<Card> {
     return this.httpClient
-      .get(
+      .get<{ data: ScryfallCardSet[] }>(
         `https://api.scryfall.com/cards/search?unique=prints&q=!%22${card.name}%22`
       )
       .pipe(
         map((res: any) => {
-          return this.populateCardSets(card, res.data as CardSet[]);
+          return this.populateCardSets(
+            card,
+            res.data.map((set: ScryfallCardSet) => {
+              return {
+                card_id: set.id,
+                set_name: set.set_name,
+                set_id: set.set_id,
+              };
+            })
+          );
         })
       );
   }
@@ -60,16 +70,16 @@ export class CardService {
     const image = raw.card_faces
       ? raw.card_faces[0].illustration_id
       : raw.image_uris.normal;
-    return {
-      id: raw.id,
-      name: raw.name,
-      uri: raw.scryfall_uri,
-      image_uri: image,
-      price: raw.prices.eur,
-      set: raw.set,
-      set_uri: `https://svgs.scryfall.io/sets/${raw.set}.svg`,
-      sets: [],
-    } as Card;
+    return makeCard(
+      raw.id,
+      raw.name,
+      raw.scryfall_uri,
+      image,
+      raw.prices.eur,
+      raw.set,
+      `https://svgs.scryfall.io/sets/${raw.set}.svg`,
+      []
+    );
   }
 
   private populateCardSets(originalCard: Card, sets: CardSet[]): Card {

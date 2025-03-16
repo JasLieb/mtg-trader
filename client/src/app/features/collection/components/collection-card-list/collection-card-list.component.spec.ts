@@ -1,8 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { makeCard } from '../../../common/models/card';
+import { CardService } from '../../../common/services/card/card.service';
 import { ModifySetDialogComponent } from '../modify-set-dialog/modify-set-dialog.component';
 import { CollectionCardListComponent } from './collection-card-list.component';
 
@@ -10,12 +13,26 @@ describe('CollectionCardListComponent', () => {
   let component: CollectionCardListComponent;
   let fixture: ComponentFixture<CollectionCardListComponent>;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
+  let cardServiceSpy: jasmine.SpyObj<CardService>;
 
   const expectedBaseCard = makeCard('toto', 'toto', '', '', 0, 'totoSet', '', [
-    { id: 'toto', set_name: 'totoSet', set_id: 'totoSet' },
-    { id: 'titi', set_name: 'titiSet', set_id: 'titiSet' },
+    { card_id: 'toto', set_name: 'totoSet', set_id: 'totoSet' },
+    { card_id: 'titi', set_name: 'titiSet', set_id: 'titiSet' },
   ]);
-  const expectedModifiedSet = {
+  const expectedUpdatedCard = makeCard(
+    'titi',
+    'titi',
+    '',
+    '',
+    0,
+    'titiSet',
+    '',
+    [
+      { card_id: 'toto', set_name: 'totoSet', set_id: 'totoSet' },
+      { card_id: 'titi', set_name: 'titiSet', set_id: 'titiSet' },
+    ]
+  );
+  const expectedUpdatedSet = {
     id: 'titi',
     set_name: 'titiSet',
     set_id: 'titiSet',
@@ -24,9 +41,14 @@ describe('CollectionCardListComponent', () => {
   beforeEach(async () => {
     dialogSpy = jasmine.createSpyObj({
       open: jasmine.createSpyObj({
-        afterClosed: of(expectedModifiedSet),
+        afterClosed: of(expectedUpdatedSet),
       }),
     }) as jasmine.SpyObj<MatDialog>;
+
+    cardServiceSpy = jasmine.createSpyObj([
+      'fetch',
+    ]) as jasmine.SpyObj<CardService>;
+    cardServiceSpy.fetch.and.callFake((_) => of(expectedUpdatedCard));
 
     await TestBed.configureTestingModule({
       providers: [
@@ -34,6 +56,12 @@ describe('CollectionCardListComponent', () => {
           provide: MatDialog,
           useValue: dialogSpy,
         },
+        {
+          provide: CardService,
+          useValue: cardServiceSpy,
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       imports: [CollectionCardListComponent],
     }).compileComponents();
@@ -50,7 +78,7 @@ describe('CollectionCardListComponent', () => {
 
   function initOutput() {
     spyOn(component.onDeletedCard, 'emit');
-    spyOn(component.onUpdateSet, 'emit');
+    spyOn(component.onUpdateCard, 'emit');
     fixture.detectChanges();
   }
 
@@ -95,9 +123,9 @@ describe('CollectionCardListComponent', () => {
 
     component.openDialog(expectedBaseCard);
 
-    expect(component.onUpdateSet.emit).toHaveBeenCalledWith({
+    expect(component.onUpdateCard.emit).toHaveBeenCalledWith({
       baseCard: expectedBaseCard,
-      updatedSet: expectedModifiedSet,
+      updatedCard: expectedUpdatedCard,
     });
   });
 

@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { Card, CardSet } from '../../../common/models/card';
+import { CardService } from '../../../common/services/card/card.service';
 import { ModifySetDialogComponent } from '../modify-set-dialog/modify-set-dialog.component';
 
 @Component({
@@ -17,15 +18,23 @@ export class CollectionCardListComponent {
   cards = input<Card[]>([]);
 
   onDeletedCard = output<Card>();
-  onUpdateSet = output<{ baseCard: Card; updatedSet: CardSet }>();
+  onUpdateCard = output<{ baseCard: Card; updatedCard: Card }>();
 
-  openDialog(card: Card) {
-    var dialogRef = this.dialog.open(ModifySetDialogComponent, {
-      data: card,
-    });
+  constructor(private cardService: CardService) {}
+
+  openDialog(baseCard: Card) {
+    const dialogRef = this.dialog.open<ModifySetDialogComponent, Card, CardSet>(
+      ModifySetDialogComponent,
+      {
+        data: baseCard,
+      }
+    );
     subscribeOnce(dialogRef.afterClosed(), (result) => {
-      if (result && card.id !== result.id)
-        this.onUpdateSet.emit({ baseCard: card, updatedSet: result });
+      if (result && baseCard.id !== result.card_id) {
+        subscribeOnce(this.cardService.fetch(result.card_id), (updatedCard) => {
+          if (updatedCard) this.onUpdateCard.emit({ baseCard, updatedCard });
+        });
+      }
     });
   }
 

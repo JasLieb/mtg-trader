@@ -8,8 +8,8 @@ describe('ModifySetDialogComponent', () => {
   let component: ModifySetDialogComponent;
   let fixture: ComponentFixture<ModifySetDialogComponent>;
   const expectedBaseCard = makeCard('toto', 'toto', '', '', 0, 'totoSet', '', [
-    { id: 'toto', set_name: 'totoSet', set_id: 'totoSet' },
-    { id: 'titi', set_name: 'titiSet', set_id: 'titiSet' },
+    { card_id: 'toto', set_name: 'totoSet', set_id: 'totoSet' },
+    { card_id: 'titi', set_name: 'titiSet', set_id: 'titiSet' },
   ]);
 
   beforeEach(async () => {

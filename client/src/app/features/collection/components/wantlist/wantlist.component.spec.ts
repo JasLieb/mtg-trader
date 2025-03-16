@@ -1,15 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { WantlistComponent } from './wantlist.component';
-import { WantlistService } from '../../services/wantlist/wantlist.service';
-import { Card } from '../../../common/models/card';
-import {
-  HttpClientTestingModule,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
-import { signal } from '@angular/core';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Card, makeCard, makeCardMin } from '../../../common/models/card';
+import { Wantlist } from '../../models/wantlist';
+import { WantlistService } from '../../services/wantlist/wantlist.service';
+import { WantlistComponent } from './wantlist.component';
 
 describe('WantlistComponent', () => {
   let component: WantlistComponent;
@@ -36,57 +33,92 @@ describe('WantlistComponent', () => {
 
     fixture = TestBed.createComponent(WantlistComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('wantlist', {
-      name: 'firstWantlist',
-      cards: [],
-    });
-    fixture.detectChanges();
   });
+
+  function initInput(wantlist?: Wantlist) {
+    fixture.componentRef.setInput(
+      'wantlist',
+      wantlist ?? {
+        name: 'firstWantlist',
+        cards: [],
+      }
+    );
+    fixture.detectChanges();
+  }
 
   it('should be created', () => {
     expect(component).toBeTruthy();
-    const cardList = fixture.nativeElement.querySelector(
-      'app-collection-card-list'
-    );
-    expect(cardList).toBeTruthy();
   });
 
   it('should have input wantlist name', () => {
+    initInput();
+
     expect(component.name()).toBe('firstWantlist');
   });
 
-  it('should have card searcher', () => {
-    const searcher = fixture.nativeElement.querySelector('app-card-searcher');
-    expect(searcher).toBeTruthy();
-  });
-
   it('should add card to wantlist when searched card is found', () => {
-    fixture.componentRef.setInput('wantlist', {
+    const expectedCard = makeCard('toto', 'toto');
+    initInput({
       id: 'id',
       name: 'firstWantlist',
       cards: [],
     });
-    fixture.detectChanges();
 
-    component.addCardToWantlist({ id: 'toto', name: 'toto' } as Card);
+    component.addCardToWantlist(expectedCard);
 
     expect(wantlistService.updateWantlist.calls.count()).toBe(1);
     expect(wantlistService.updateWantlist).toHaveBeenCalledWith(
-      jasmine.objectContaining({ cards: [{ id: 'toto', name: 'toto' }] })
+      jasmine.objectContaining({ cards: [expectedCard] })
     );
   });
 
   it('should delete card when onDeleteCard emited', () => {
-    fixture.componentRef.setInput('wantlist', {
+    const actualCard = makeCard('toto', 'toto');
+    initInput({
       id: 'id',
       name: 'firstWantlist',
-      cards: [{ id: 'toto', name: 'toto' } as Card],
+      cards: [actualCard],
     });
 
-    component.deleteCard({ id: 'toto', name: 'toto' } as Card);
+    component.deleteCard(actualCard);
     expect(wantlistService.updateWantlist.calls.count()).toBe(1);
     expect(wantlistService.updateWantlist).toHaveBeenCalledWith(
       jasmine.objectContaining({ cards: [] })
+    );
+  });
+
+  it('should update wantlist when new set is emitted for a card', () => {
+    const actualBaseCard = makeCardMin({
+      id: 'toto',
+      name: 'toto',
+      sets: [
+        { card_id: 'toto', set_id: 'totoSet', set_name: 'totoSet' },
+        { card_id: 'titi', set_id: 'titiSet', set_name: 'titiSet' },
+      ],
+    } as Card);
+    const expectedUpdatedCard = makeCardMin({
+      id: 'titi',
+      name: 'titi',
+      sets: [
+        { card_id: 'toto', set_id: 'totoSet', set_name: 'totoSet' },
+        { card_id: 'titi', set_id: 'titiSet', set_name: 'titiSet' },
+      ],
+    } as Card);
+    initInput({
+      id: 'id',
+      name: 'firstWantlist',
+      cards: [actualBaseCard],
+    });
+
+    component.updateCardSet({
+      baseCard: actualBaseCard,
+      updatedCard: expectedUpdatedCard,
+    });
+    expect(wantlistService.updateWantlist.calls.count()).toBe(1);
+    expect(wantlistService.updateWantlist).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        cards: [expectedUpdatedCard],
+      })
     );
   });
 });

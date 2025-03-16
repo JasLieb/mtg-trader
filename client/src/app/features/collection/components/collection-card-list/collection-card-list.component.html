@@ -9,13 +9,18 @@
     <img
       class="collection-card-image"
       [src]="card.image_uri"
-      [alt]="card.name"
+      [alt]="card.set"
+      [title]="card.set"
     />
 
+    @if(card.price) {
     <div class="collection-card-name">({{ card.price }}€)</div>
+    }
 
-    <button mat-button (click)="openDialog(card)">Modify set</button>
-    <button mat-button (click)="deleteCard(card)">Delete</button>
+    <div class="collection-card-actions">
+      <button mat-button (click)="openDialog(card)">Modify set</button>
+      <button mat-button (click)="deleteCard(card)">Delete</button>
+    </div>
   </div>
   }
 </div>

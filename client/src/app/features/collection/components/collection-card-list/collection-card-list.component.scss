@@ -1,13 +1,15 @@
 .collection-card-name {
-  margin: 1%;
+  margin: 2%;
+  width: 100%;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 }
 
-.collection-card-set {
-  height: fit-content;
-  width: 10%;
+.collection-card-actions {
+  margin: 2%;
+  display: flex;
+  justify-content: space-between;
 }
 
 @media screen and (min-width: 480px) {
@@ -31,8 +33,14 @@
     max-width: fit-content;
   }
 
+  .collection-card-set {
+    height: fit-content;
+    width: auto;
+  }
+
   .collection-card-image {
-    width: 33%;
+    margin: 2%;
+    width: 50%;
     height: auto;
   }
 }
@@ -51,9 +59,14 @@
     padding: 1%;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-evenly;
     background-color: #f5f5f5;
     border: 1px solid black;
+  }
+
+  .collection-card-set {
+    height: fit-content;
+    max-width: 15%;
   }
 
   .collection-card-image {

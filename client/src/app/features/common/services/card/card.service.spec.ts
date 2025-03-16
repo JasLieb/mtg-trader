@@ -20,7 +20,7 @@ describe('CardService', () => {
     0,
     'anythingSet',
     'https://svgs.scryfall.io/sets/anythingSet.svg',
-    [{ id: 'anythingId', set_name: 'anythingSet', set_id: 'anythingSet' }]
+    [{ card_id: 'anythingId', set_name: 'anythingSet', set_id: 'anythingSet' }]
   );
 
   const aCardResponse = {

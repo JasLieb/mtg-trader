@@ -9,6 +9,12 @@ export interface Card {
   sets: CardSet[];
 }
 
+export interface CardSet {
+  card_id: string;
+  set_name: string;
+  set_id: string;
+}
+
 export function makeCard(
   id = '',
   name = '',
@@ -31,28 +37,24 @@ export function makeCard(
   };
 }
 
-export interface ScryfallCard {
-  id: string;
-  set: string;
-  name: string;
-  scryfall_uri: string;
-  card_faces: CardFace[];
-  image_uris: CardImageUris;
-  prices: {
-    eur: number;
+export function makeCardMin({
+  id: card_id = '',
+  name = '',
+  uri = '',
+  image_uri = '',
+  price = 0,
+  set = '',
+  set_uri = '',
+  sets = [],
+}: Card): Card {
+  return {
+    id: card_id,
+    name,
+    uri,
+    image_uri,
+    price,
+    set,
+    set_uri,
+    sets,
   };
-}
-
-export interface CardSet {
-  id: string; // card id following associated set
-  set_name: string;
-  set_id: string;
-}
-
-interface CardImageUris {
-  normal: string;
-}
-
-interface CardFace {
-  illustration_id: string;
 }
