@@ -3,8 +3,8 @@
   <div class="collection-card">
     <div class="collection-card-name">
       {{ card.name }}
-      <img class="collection-card-set" [src]="card.set_uri" [alt]="card.set" />
     </div>
+    <img class="collection-card-set" [src]="card.set_uri" [alt]="card.set" />
 
     <img
       class="collection-card-image"
@@ -14,12 +14,16 @@
     />
 
     @if(card.price) {
-    <div class="collection-card-name">({{ card.price }}€)</div>
+    <div>({{ card.price }}€)</div>
     }
 
     <div class="collection-card-actions">
-      <button mat-button (click)="openDialog(card)">Modify set</button>
-      <button mat-button (click)="deleteCard(card)">Delete</button>
+      <button mat-icon-button (click)="openDialog(card)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button (click)="deleteCard(card)">
+        <mat-icon>delete</mat-icon>
+      </button>
     </div>
   </div>
   }

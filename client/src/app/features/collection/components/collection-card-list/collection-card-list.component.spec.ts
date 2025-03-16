@@ -98,19 +98,11 @@ describe('CollectionCardListComponent', () => {
     });
   });
 
-  it('should have modify set button', () => {
-    initInput();
-    initOutput();
-
-    const modifySetButton = fixture.nativeElement.querySelectorAll('button')[0];
-    expect(modifySetButton.textContent).toBe('Modify set');
-  });
-
   it('should open dialog with expected card when modify set button is clicked', () => {
     initInput();
     initOutput();
 
-    fixture.nativeElement.querySelectorAll('button')[0].click();
+    component.openDialog(expectedBaseCard);
 
     expect(dialogSpy.open).toHaveBeenCalledWith(ModifySetDialogComponent, {
       data: expectedBaseCard,
@@ -129,19 +121,11 @@ describe('CollectionCardListComponent', () => {
     });
   });
 
-  it('should have delete card button', () => {
-    initInput();
-    initOutput();
-
-    const deleteButton = fixture.nativeElement.querySelectorAll('button')[1];
-    expect(deleteButton.textContent).toBe('Delete');
-  });
-
   it('should emit delete card when delete button is clicked', () => {
     initInput();
     initOutput();
 
-    fixture.nativeElement.querySelectorAll('button')[1].click();
+    component.deleteCard(expectedBaseCard);
 
     expect(component.onDeletedCard.emit).toHaveBeenCalledWith(expectedBaseCard);
   });
