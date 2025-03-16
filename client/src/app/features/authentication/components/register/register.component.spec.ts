@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RegisterComponent } from './register.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { AuthService } from '../../../../core/services/auth/auth.service';
-import { delay, Observable, of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { delay, Observable, of } from 'rxjs';
+import { AuthService } from '../../../../core/services/auth/auth.service';
+import { RegisterComponent } from './register.component';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;

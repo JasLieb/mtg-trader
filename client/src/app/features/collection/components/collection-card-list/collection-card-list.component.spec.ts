@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { makeCard } from '../../../common/models/card';
+import { ModifySetDialogComponent } from '../modify-set-dialog/modify-set-dialog.component';
 import { CollectionCardListComponent } from './collection-card-list.component';
 
 describe('CollectionCardListComponent', () => {
@@ -14,24 +15,16 @@ describe('CollectionCardListComponent', () => {
     { id: 'toto', set_name: 'totoSet', set_id: 'totoSet' },
     { id: 'titi', set_name: 'titiSet', set_id: 'titiSet' },
   ]);
-  const expectedModifiedCard = makeCard(
-    'titi',
-    'titi',
-    '',
-    '',
-    0,
-    'titiSet',
-    '',
-    [
-      { id: 'toto', set_name: 'totoSet', set_id: 'totoSet' },
-      { id: 'titi', set_name: 'titiSet', set_id: 'titiSet' },
-    ]
-  );
+  const expectedModifiedSet = {
+    id: 'titi',
+    set_name: 'titiSet',
+    set_id: 'titiSet',
+  };
 
   beforeEach(async () => {
     dialogSpy = jasmine.createSpyObj({
       open: jasmine.createSpyObj({
-        afterClosed: of(expectedModifiedCard),
+        afterClosed: of(expectedModifiedSet),
       }),
     }) as jasmine.SpyObj<MatDialog>;
 
@@ -91,10 +84,9 @@ describe('CollectionCardListComponent', () => {
 
     fixture.nativeElement.querySelectorAll('button')[0].click();
 
-    expect(dialogSpy.open).toHaveBeenCalled();
-    expect(dialogSpy.open.calls.mostRecent().args[1]?.data).toBe(
-      expectedBaseCard
-    );
+    expect(dialogSpy.open).toHaveBeenCalledWith(ModifySetDialogComponent, {
+      data: expectedBaseCard,
+    });
   });
 
   it('should emit card from new set when modify set dialog is over with result', () => {
@@ -104,8 +96,8 @@ describe('CollectionCardListComponent', () => {
     component.openDialog(expectedBaseCard);
 
     expect(component.onUpdateSet.emit).toHaveBeenCalledWith({
-      base: expectedBaseCard,
-      update: expectedModifiedCard,
+      baseCard: expectedBaseCard,
+      updatedSet: expectedModifiedSet,
     });
   });
 

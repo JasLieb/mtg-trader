@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
-import { Card } from '../../../common/models/card';
+import { Card, CardSet } from '../../../common/models/card';
 import { ModifySetDialogComponent } from '../modify-set-dialog/modify-set-dialog.component';
 
 @Component({
@@ -17,16 +17,15 @@ export class CollectionCardListComponent {
   cards = input<Card[]>([]);
 
   onDeletedCard = output<Card>();
-  onUpdateSet = output<{ base: Card; update: Card }>();
+  onUpdateSet = output<{ baseCard: Card; updatedSet: CardSet }>();
 
   openDialog(card: Card) {
     var dialogRef = this.dialog.open(ModifySetDialogComponent, {
       data: card,
-      closeOnNavigation: true,
-      disableClose: true,
     });
     subscribeOnce(dialogRef.afterClosed(), (result) => {
-      if (result) this.onUpdateSet.emit({ base: card, update: result });
+      if (result && card.id !== result.id)
+        this.onUpdateSet.emit({ baseCard: card, updatedSet: result });
     });
   }
 

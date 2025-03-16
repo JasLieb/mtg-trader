@@ -1,10 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LoginComponent } from './login.component';
-import { AuthService } from '../../../../core/services/auth/auth.service';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { delay, Observable, of } from 'rxjs';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { delay, Observable, of } from 'rxjs';
+import { AuthService } from '../../../../core/services/auth/auth.service';
+import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;

@@ -1,1 +1,14 @@
-<p>modify-set-dialog works!</p>
+<div class="modify-set-dialog-container">
+  <p>Update {{ baseCard.name }}'s set</p>
+
+  <mat-form-field>
+    <mat-label>Choose one</mat-label>
+    <mat-select [formControl]="selectedSet">
+      @for (set of baseCard.sets; track $index) {
+      <mat-option [value]="set">{{ set.set_name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-button (click)="updateSet()">Update</button>
+</div>

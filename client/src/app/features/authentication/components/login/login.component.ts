@@ -5,17 +5,21 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { LoaderComponent } from '../../../common/components/loader/loader.component';
 import { BaseAuthComponent } from '../base-auth/base-auth.component';
-import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
-import { delay } from 'rxjs';
-import { LoaderComponent } from "../../../common/components/loader/loader.component";
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, MatButtonModule, FormsModule, MatInputModule, LoaderComponent],
+  imports: [
+    ReactiveFormsModule,
+    MatButtonModule,
+    FormsModule,
+    MatInputModule,
+    LoaderComponent,
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
