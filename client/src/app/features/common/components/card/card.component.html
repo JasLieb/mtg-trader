@@ -1,0 +1,22 @@
+@if(card(); as card) {
+
+<div class="app-card">
+  <div class="app-card-name">
+    {{ card.name }}
+  </div>
+  <img class="app-card-set" [src]="card.set_uri" [alt]="card.set" />
+
+  <img
+    class="app-card-image"
+    [src]="card.image_uri"
+    [alt]="card.set"
+    [title]="card.set"
+  />
+
+  @if(card.price) {
+  <div class="app-card-price">({{ card.price }}€)</div>
+  }
+
+  <ng-content />
+</div>
+}

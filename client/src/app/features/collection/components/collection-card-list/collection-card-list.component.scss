@@ -21,26 +21,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    background-color: #f5f5f5;
-    border: 1px solid black;
-    max-width: fit-content;
-  }
-
-  .collection-card-name {
-    margin: 2%;
-    width: 100%;
-    text-align: center;
-  }
-
-  .collection-card-set {
-    height: auto;
-    width: 18%;
-  }
-
-  .collection-card-image {
-    margin: 4%;
-    width: 50%;
-    height: auto;
   }
 }
 
@@ -59,25 +39,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #f5f5f5;
-    border: 1px solid black;
   }
 
-  .collection-card-name {
-    flex: 0 1 20%;
-    font-size: 1.25vh;
-    text-align: center;
-  }
-
-  .collection-card-set {
-    flex: 0 1 10%;
-    height: auto;
-    width: 5%;
-  }
-
-  .collection-card-image {
-    display: none;
-  }
   .collection-card-actions {
     flex: 0 1 20%;
     justify-content: flex-end;

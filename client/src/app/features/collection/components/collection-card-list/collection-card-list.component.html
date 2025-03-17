@@ -1,22 +1,6 @@
 <div class="collection-card-container">
   @for (card of cards(); track card.id) {
-  <div class="collection-card">
-    <div class="collection-card-name">
-      {{ card.name }}
-    </div>
-    <img class="collection-card-set" [src]="card.set_uri" [alt]="card.set" />
-
-    <img
-      class="collection-card-image"
-      [src]="card.image_uri"
-      [alt]="card.set"
-      [title]="card.set"
-    />
-
-    @if(card.price) {
-    <div>({{ card.price }}€)</div>
-    }
-
+  <app-card class="collection-card" [card]="card">
     <div class="collection-card-actions">
       <button mat-icon-button (click)="openDialog(card)">
         <mat-icon>edit</mat-icon>
@@ -25,6 +9,6 @@
         <mat-icon>delete</mat-icon>
       </button>
     </div>
-  </div>
+  </app-card>
   }
 </div>

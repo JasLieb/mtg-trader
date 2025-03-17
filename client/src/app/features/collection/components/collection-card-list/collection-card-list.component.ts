@@ -7,10 +7,11 @@ import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { Card, CardSet } from '../../../common/models/card';
 import { CardService } from '../../../common/services/card/card.service';
 import { ModifySetDialogComponent } from '../modify-set-dialog/modify-set-dialog.component';
+import { CardComponent } from "../../../common/components/card/card.component";
 
 @Component({
   selector: 'app-collection-card-list',
-  imports: [MatCardModule, MatButtonModule, MatIconModule],
+  imports: [MatCardModule, MatButtonModule, MatIconModule, CardComponent],
   templateUrl: './collection-card-list.component.html',
   styleUrl: './collection-card-list.component.scss',
 })

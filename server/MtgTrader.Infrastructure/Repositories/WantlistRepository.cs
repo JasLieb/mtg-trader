@@ -23,23 +23,24 @@ public class WantlistRepository(ApplicationContext dbContext)
         IEnumerable<Wantlist> wantedWantlists
     )
     {
-        var dbSet = DbSet.Where(wl => 
+        var dbSet = DbSet.Where(wl =>
             wl.OwnerId != ownerId
             && wl.Id.Contains("_doubles")
         )
         .Include(wl => wl.Cards)
         .ToList();
-        return wantedWantlists.SelectMany(
-            wantedWantlist =>
-                dbSet
-                .Where(
-                    targetWantlist => ContainsCardsFrom(
-                        targetWantlist,
-                        wantedWantlist
+        return [
+            .. wantedWantlists.SelectMany(
+                wantedWantlist =>
+                    dbSet
+                    .Where(
+                        targetWantlist => ContainsCardsFrom(
+                            targetWantlist,
+                            wantedWantlist
+                        )
                     )
-                )
-        )
-        .ToList();
+            )
+        ];
     }
 
     private bool ContainsCardsFrom(Wantlist targetWantlist, Wantlist originWantlist) =>

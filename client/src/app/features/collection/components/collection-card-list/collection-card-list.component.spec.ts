@@ -90,10 +90,8 @@ describe('CollectionCardListComponent', () => {
     initInput();
 
     fixture.whenStable().then(() => {
-      const firstCard = fixture.nativeElement.querySelector(
-        '.collection-card-name'
-      );
-      expect(firstCard.textContent.trim()).toBe('toto');
+      const firstCard = fixture.nativeElement.querySelector('app-card');
+      expect(firstCard.textContent.trim()).toContain('toto');
       done();
     });
   });
