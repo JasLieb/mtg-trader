@@ -115,5 +115,5 @@ When fixing:
 
 - Fix both sides of a contract together: the server record, the TypeScript interface, and the specs that build those objects.
 - Leave "Leave alone" files untouched. An "Ask first" change still needs an explicit yes.
-- For a schema change, generate a new migration with `dotnet ef migrations add <Name> --project MtgTrader.Infrastructure --startup-project MtgTrader.WebApi` instead of writing one by hand.
+- For a schema change or a missing migration, follow the `mtg-schema-change` skill (`.claude/skills/mtg-schema-change/SKILL.md`). It generates the migration with `dotnet ef` instead of writing one by hand, checks it for data loss, applies it to a running local database and carries the change to the client.
 - Afterwards, re-run the checks for the side you changed and report the result.
