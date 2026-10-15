@@ -7,6 +7,7 @@ namespace MtgTrader.Infrastructure.Repositories;
 public class BaseRepository<T>(DbContext dbContext) : IBaseRepository<T> where T : class
 {
     private readonly DbContext _dbContext = dbContext;
+    protected DbContext Context => _dbContext;
     protected DbSet<T> DbSet => _dbContext.Set<T>();
 
     public IEnumerable<T> GetAll()

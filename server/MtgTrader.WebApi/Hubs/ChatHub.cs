@@ -17,7 +17,7 @@ public class ChatHub(IChatHandler chatHandler) : Hub
             ?? throw new HubException("User not authenticated");
         chatHandler.AddConnection(userId, Context.ConnectionId);
         await base.OnConnectedAsync();
-        
+
         var history = chatHandler.LoadMessageHistory(userId);
         await Clients.Client(Context.ConnectionId).SendAsync("LoadHistory", history);
     }
@@ -26,20 +26,23 @@ public class ChatHub(IChatHandler chatHandler) : Hub
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
             ?? throw new HubException("User not authenticated");
-        chatHandler.RemoveConnection(userId);
+        chatHandler.RemoveConnection(userId, Context.ConnectionId);
         await base.OnDisconnectedAsync(exception);
     }
 
     public async Task SendMessage(string recipientId, string message)
     {
-        var authorId = Context.UserIdentifier 
+        var authorId = Context.UserIdentifier
             ?? throw new HubException("User not authenticated");
 
-        var chatMessage = chatHandler.AddMessage(authorId, recipientId, message);
+        var chatMessage = chatHandler.AddMessage(authorId, recipientId, message)
+            ?? throw new HubException(
+                $"Message rejected: the recipient is unknown, or the message is empty or longer than {ChatHandler.MaxMessageLength} characters"
+            );
         await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", chatMessage);
-        
+
         var connectionId = chatHandler.FindConnection(recipientId);
-        if(!string.IsNullOrEmpty(connectionId))
-            await Clients.Client(connectionId).SendAsync("ReceiveMessage", message);
+        if (!string.IsNullOrEmpty(connectionId))
+            await Clients.Client(connectionId).SendAsync("ReceiveMessage", chatMessage);
     }
 }

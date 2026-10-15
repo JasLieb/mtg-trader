@@ -32,8 +32,8 @@ Paths: `WebApi/Controllers/`, `WebApi/Hubs/`, `Core/Entities/Business/`
 - **Thin controllers and hub.** They read the user, call a handler and shape the response. Business logic found there belongs in a handler. *(server/CLAUDE.md)*
 - **Wantlist mutations return the full list.** POST, PUT, DELETE or any new mutating verb on `api/wantlist` answers with the caller's full, refreshed `WantlistsResponse`, because the client's `WantlistService` rebuilds all wantlist and doubles state from it. *(rules/api-contracts.md)*
 - **Return business records, not entities.** Endpoints and hub events send records from `Core/Entities/Business`. An entity from `Core/Entities/General` leaks fields (`User` carries `Password`) and drags its navigation properties into the JSON. *(code)*
-- **Status codes.** `Problem(...)` answers 500. A new endpoint should answer bad input with `BadRequest()`, an unknown id with `NotFound()`, and someone else's resource with `NotFound()` or `Forbid()`, so the client can tell these apart from a server fault. The existing endpoints use `Problem()` for all of these; report that under "Already there", not against the change. *(code)*
-- **Hub methods are public API.** Any connected client can invoke any public method on `ChatHub`, with any arguments. Validate them (the recipient exists, the message isn't empty or oversized), and never treat an id argument as the caller's identity. *(rules/chat.md; code)*
+- **Status codes.** `Problem(...)` answers 500 and is for server faults only. The controllers answer a missing user claim with `Unauthorized()`, an unknown or someone else's wantlist with `NotFound()`, and an email that's already registered with `Conflict()`. New endpoints follow suit, using `BadRequest()` for invalid input, so the client can tell these cases apart from a server fault. *(code)*
+- **Hub methods are public API.** Any connected client can invoke any public method on `ChatHub`, with any arguments. Validate them in the handler, as `ChatHandler.AddMessage` does (the recipient exists, the message isn't empty or longer than `MaxMessageLength`). Never treat an id argument as the caller's identity. *(rules/chat.md; code)*
 - **Request records.** With nullable reference types on and `[ApiController]`, the non-nullable properties of a `[FromBody]` record are required: the client gets a 400 if they're missing. Is a field the client may omit declared non-nullable? Is a required field declared nullable, so the handler must cope with null?
 
 ## Handlers and domain
@@ -43,7 +43,7 @@ Paths: `Core/`
 - **No framework dependencies in Core.** `MtgTrader.Core` has no EF Core or ASP.NET dependency: no `Microsoft.EntityFrameworkCore` or `Microsoft.AspNetCore.*` usings or package references. *(server/CLAUDE.md)*
 - **Logic behind interfaces.** New logic lives in a handler behind an interface in Core. Outside calls (HTTP, tokens, the clock) go through a Core interface implemented in Infrastructure, so handlers can be tested with substitutes. *(server/CLAUDE.md)*
 - **The clock.** Handlers read the time through `IDateTimeService`, as `ChatHandler` does, not through `DateTime.Now` or `UtcNow`, so tests can pin it. *(code)*
-- **Null means "not found or not allowed".** Several handlers return `null` for that (`UpdateWantlist`, `Connect`, `CreateUser`). Check that every caller of a changed or new handler method handles the null instead of dereferencing it. *(code)*
+- **Null means "not found or not allowed".** Several handlers and repositories return `null` for that (`UpdateWantlist`, `Connect`, `CreateUser`, `AddMessage`, `CreateWithDoubles`). Check that every caller of a changed or new handler method handles the null instead of dereferencing it. *(code)*
 - **Async.** No `.Result`, `.Wait()` or `GetAwaiter().GetResult()` on tasks; it blocks a request thread and invites deadlocks. No fire-and-forget calls without a stated reason.
 
 ## Data access and schema
@@ -51,8 +51,8 @@ Paths: `Core/`
 Paths: `Infrastructure/`, `Core/Entities/General/`, `database/`
 
 - **Query through `DbSet`.** Repositories derive from `BaseRepository<T>` and query through its `DbSet` property (`dbContext.Set<T>()`), not through `ApplicationContext`'s typed properties. The tests can only fake the former. *(rules/data-access.md)*
-- **Navigation properties are only there when the query includes them.** `BaseRepository.GetById` uses `Find`, which loads no related data, so `wantlist.Cards` is an empty list after it. `GetUserWantlists` and `FindTradeableDoubles` load the cards with `.Include(...)`. Before trusting a navigation property, check how the repository method loaded the entity. *(code)*
-- **Writes aren't atomic.** Every `BaseRepository` write saves immediately, so several writes in one handler are not atomic. Is that acceptable for this operation? Watch for one write per item inside a loop. *(rules/data-access.md)*
+- **Navigation properties are only there when the query includes them.** `BaseRepository.GetById` uses `Find`, which loads no related data, so `wantlist.Cards` is an empty list after it. `GetUserWantlists`, `GetUsersWantlists` and `FindTradeableDoubles` load the cards with `.Include(...)`. Before trusting a navigation property, check how the repository method loaded the entity. *(code)*
+- **Writes aren't atomic.** Every `BaseRepository` write saves immediately, so several writes in one handler are not atomic. Is that acceptable for this operation? When it isn't, add a repository method that saves everything at once, as `UserRepository.CreateWithDoubles` does. Watch for one write per item inside a loop. *(rules/data-access.md)*
 - **Schema changes need a migration.** If an entity in `Core/Entities/General/` or `ApplicationContext.OnModelCreating` changed, there must be a new migration in `Infrastructure/Migrations/`, generated with `dotnet ef migrations add`. Existing migration files and `database/database.sql` stay untouched. *(rules/data-access.md; CLAUDE.md, "Leave alone")*
 - **Read the new migration.** The API applies pending migrations when it starts (`AppExtensions.EnsureDatabaseExists`), so a migration runs on the next deploy without anyone looking at it. Check three things:
   - its `Up` matches the entity change;
@@ -79,8 +79,10 @@ Paths: `WebApi/Extensions/`, `WebApi/Program.cs`, `Infrastructure/Configuration/
 
 Paths: `Core/Handlers/Auth/`, `WebApi/Controllers/AuthController.cs`, `WebApi/Controllers/UserController.cs`, `Infrastructure/Services/JwtTokenService.cs`
 
-- **Passwords are hashed.** New code that stores or compares a password hashes it; it never compares plain text. Put the hashing behind a Core interface implemented in Infrastructure. A hashing library is a new package, so "Ask first".
-- **Registration keeps the doubles list.** `AuthHandler.CreateUser` creates the user's `{userId}_doubles` wantlist. A new way of creating users must do the same, or that user can never trade. *(CLAUDE.md, Domain)*
+- **Passwords go through `IPasswordHasher`.** `Pbkdf2PasswordHasher` hashes at registration, and `Verify` checks at login. New code never stores or compares a plain-text password. *(code)*
+- **Registration keeps the doubles list.** `AuthHandler.CreateUser` saves the user and their `{userId}_doubles` wantlist together through `IUserRepository.CreateWithDoubles`. A new way of creating users must do the same, or that user can never trade. *(CLAUDE.md, Domain)*
+- **Emails are normalized.** `AuthHandler` trims and lower-cases the email before every lookup or insert, `GetByUsername` compares case-insensitively, and `Users.Username` has a unique index. *(code)*
+- **The JWT secret comes from the environment.** Only `appsettings.Development.json` holds one; any other environment must set `JWT_SECRET`, and `RegisterConfiguration` refuses to start without it. A secret added to `appsettings.json` is a blocker. *(server/CLAUDE.md)*
 - **Token contents.** `JwtTokenService.CreateToken` puts only the user id (`NameIdentifier`) in the token, with a one-hour expiry. Code that reads another claim will get null unless the token is changed too, and that change is "Ask first". *(code)*
 
 ## Tests
@@ -95,10 +97,6 @@ Paths: `MtgTrader.Tests/`
 
 ## Known issues already in the code
 
-When a change touches the code around one of these, report it under "Already there", after confirming it's still present. Don't count it against the change.
+When a change touches the code around one of these, report it under "Already there", after confirming it's still present. Don't count it against the change. When a known problem is deliberately left in place, add it here.
 
-- `ChatHub.SendMessage` sends the sender a `ChatMessage`, but sends the recipient the raw message string, while the client reads every `ReceiveMessage` as a `ChatMessage`.
-- `AuthHandler` stores and compares passwords in plain text.
-- `WantlistController.Put` and `Delete` don't check that the wantlist belongs to the caller.
-- `WantlistRepository.FindTradeableDoubles` identifies doubles with `Contains("_doubles")` instead of the suffix. *(rules/wantlists.md)*
-- The existing endpoints answer client mistakes, like an unknown user or a missing wantlist, with `Problem()`, which is a 500.
+- Accounts that haven't logged in since password hashing was introduced still hold a plain-text password. `AuthHandler.Connect` hashes it at their next login.

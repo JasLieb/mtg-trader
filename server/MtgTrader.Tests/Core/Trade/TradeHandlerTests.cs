@@ -49,11 +49,13 @@ public class TradeHandlerTests
         var userWantlists = new List<GEntities.Wantlist>() { new("id", "name", "ownerId"), new("id_doubles", "name", "ownerId") };
         _wantlistRepository.GetUserWantlists(userId).Returns(userWantlists);
         var tradeableDoubles = new List<GEntities.Wantlist>() { new("id1_doubles", "name2", "owner2Id") };
-        _wantlistRepository.FindTradeableDoubles(null, null).ReturnsForAnyArgs(tradeableDoubles);
+        _wantlistRepository.FindTradeableDoubles(default!, default!).ReturnsForAnyArgs(tradeableDoubles);
 
         _tradeHandler.FindTrades(userId);
 
-        _userRepository.Received().GetByUserId("owner2Id");
+        _userRepository.Received().GetByUserIds(
+            Arg.Is<IEnumerable<string>>(ids => ids.Contains("owner2Id"))
+        );
     }
 
     [Fact]
@@ -63,9 +65,9 @@ public class TradeHandlerTests
         var userWantlists = new List<GEntities.Wantlist>() { new("id", "name", "ownerId") };
         _wantlistRepository.GetUserWantlists(userId).Returns(userWantlists);
         var tradeableDouble = new GEntities.Wantlist("id1_doubles", "name2", "owner2Id");
-        _wantlistRepository.FindTradeableDoubles(null, null).ReturnsForAnyArgs([tradeableDouble]);
+        _wantlistRepository.FindTradeableDoubles(default!, default!).ReturnsForAnyArgs([tradeableDouble]);
         var expectedUser = new User("owner2Id", "toto", "");
-        _userRepository.GetByUserId("owner2Id").Returns(expectedUser);
+        _userRepository.GetByUserIds(default!).ReturnsForAnyArgs([expectedUser]);
 
         var tradeableResponse = _tradeHandler.FindTrades(userId);
 
@@ -93,15 +95,15 @@ public class TradeHandlerTests
         _wantlistRepository.GetUserWantlists(userId).Returns(userWantlists);
         var tradeableDouble = new GEntities.Wantlist("id1_doubles", "name2", "owner2Id")
         {
-            Cards = 
+            Cards =
             [
                 new WantlistCards("id1_doubles", "toto"),
                 new WantlistCards("id1_doubles", "tata")
             ]
         };
-        _wantlistRepository.FindTradeableDoubles(null, null).ReturnsForAnyArgs([tradeableDouble]);
+        _wantlistRepository.FindTradeableDoubles(default!, default!).ReturnsForAnyArgs([tradeableDouble]);
         var expectedUser = new User("owner2Id", "toto", "");
-        _userRepository.GetByUserId("owner2Id").Returns(expectedUser);
+        _userRepository.GetByUserIds(default!).ReturnsForAnyArgs([expectedUser]);
 
         var tradeableResponse = _tradeHandler.FindTrades(userId);
 
@@ -124,15 +126,15 @@ public class TradeHandlerTests
         _wantlistRepository.GetUserWantlists(searcherId).Returns(tradeableWantlists);
         var searchedWantlists = new GEntities.Wantlist("id1", "name2", "owner2Id")
         {
-            Cards = 
+            Cards =
             [
                 new WantlistCards("id1", "toto")
             ]
         };
         var expectedUser = new User("owner2Id", "toto", "");
-        _userRepository.GetByUserId("owner2Id").Returns(expectedUser);
-        _wantlistRepository.GetUserWantlists("owner2Id").Returns([searchedWantlists]);
-        _wantlistRepository.FindTradeableDoubles(null, null).ReturnsForAnyArgs([searchedWantlists]);
+        _userRepository.GetByUserIds(default!).ReturnsForAnyArgs([expectedUser]);
+        _wantlistRepository.GetUsersWantlists(default!).ReturnsForAnyArgs([searchedWantlists]);
+        _wantlistRepository.FindTradeableDoubles(default!, default!).ReturnsForAnyArgs([searchedWantlists]);
 
         var tradeableResponse = _tradeHandler.FindTrades(searcherId);
 
@@ -141,7 +143,40 @@ public class TradeHandlerTests
             ["toto"]
         );
     }
-    
+
+    [Fact]
+    public void Should_not_return_wanted_doubles_when_trader_holds_them_as_doubles()
+    {
+        var searcherId = "userId";
+        _wantlistRepository.GetUserWantlists(searcherId).Returns(
+            [
+                new GEntities.Wantlist("id", "name", searcherId)
+                {
+                    Cards = [ new WantlistCards("id", "tata") ]
+                },
+                new GEntities.Wantlist($"{searcherId}_doubles", "doubles", searcherId)
+                {
+                    Cards = [ new WantlistCards($"{searcherId}_doubles", "toto") ]
+                }
+            ]
+        );
+        var traderDoubles = new GEntities.Wantlist("owner2Id_doubles", "doubles", "owner2Id")
+        {
+            Cards =
+            [
+                new WantlistCards("owner2Id_doubles", "tata"),
+                new WantlistCards("owner2Id_doubles", "toto")
+            ]
+        };
+        _userRepository.GetByUserIds(default!).ReturnsForAnyArgs([new User("owner2Id", "toto", "")]);
+        _wantlistRepository.GetUsersWantlists(default!).ReturnsForAnyArgs([traderDoubles]);
+        _wantlistRepository.FindTradeableDoubles(default!, default!).ReturnsForAnyArgs([traderDoubles]);
+
+        var tradeableResponse = _tradeHandler.FindTrades(searcherId);
+
+        tradeableResponse.Users.Single().Wanted.Should().BeEmpty();
+    }
+
     [Fact]
     public void Should_return_unique_user_cards_when_trade_through_wantlists()
     {
@@ -150,34 +185,34 @@ public class TradeHandlerTests
             new("id", "name", "ownerId"),
             new("id_doubles", "name", "ownerId")
             {
-                Cards = [ 
+                Cards = [
                     new WantlistCards("id_doubles", "toto"),
                     new WantlistCards("id_doubles", "tata"),
                 ]
             }
         };
         _wantlistRepository.GetUserWantlists(userId).Returns(tradeableDoubles);
-        var searchedWantlists = new GEntities.Wantlist[] 
+        var searchedWantlists = new GEntities.Wantlist[]
         {
             new ("id1", "name2", "owner2Id")
             {
-                Cards = 
+                Cards =
                 [
                     new WantlistCards("id1", "toto")
                 ]
             },
             new ("id2", "name3", "owner2Id")
             {
-                Cards = 
+                Cards =
                 [
                     new WantlistCards("id1", "tata")
                 ]
             }
         };
-        _wantlistRepository.FindTradeableDoubles(null, null).ReturnsForAnyArgs(searchedWantlists);
+        _wantlistRepository.FindTradeableDoubles(default!, default!).ReturnsForAnyArgs(searchedWantlists);
         var expectedUser = new User("owner2Id", "toto", "");
-        _userRepository.GetByUserId("owner2Id").Returns(expectedUser);
-        _wantlistRepository.GetUserWantlists("owner2Id").Returns(searchedWantlists);
+        _userRepository.GetByUserIds(default!).ReturnsForAnyArgs([expectedUser]);
+        _wantlistRepository.GetUsersWantlists(default!).ReturnsForAnyArgs(searchedWantlists);
 
         var tradeableResponse = _tradeHandler.FindTrades(userId);
 

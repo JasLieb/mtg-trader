@@ -16,9 +16,9 @@ public class TradeHandler(
         var allWantlists = _wantlistRepository
             .GetUserWantlists(userId);
         var doubles = allWantlists
-            .FirstOrDefault(wl => wl.Id.EndsWith("_doubles"));
+            .FirstOrDefault(IsDoubles);
         var wantedWantlists = allWantlists
-            .Where(wl => !wl.Id.EndsWith("_doubles"));
+            .Where(wl => !IsDoubles(wl));
 
         var tradeableWantlists = _wantlistRepository.FindTradeableDoubles(userId, wantedWantlists);
         return new([
@@ -36,13 +36,24 @@ public class TradeHandler(
         IEnumerable<Entities.General.WantlistCards> doubleCards
     )
     {
-        var groupedByUsers = wantlists.GroupBy(w => w.OwnerId);
+        var groupedByUsers = wantlists.GroupBy(w => w.OwnerId).ToList();
+        var traderIds = groupedByUsers.Select(group => group.Key).ToList();
+        var traders = _userRepository.GetByUserIds(traderIds)
+            .ToDictionary(user => user.Id);
+        // What each trader wants is in their wantlists, not in their own doubles list.
+        var wantedByTraders = _wantlistRepository.GetUsersWantlists(traderIds)
+            .Where(wl => !IsDoubles(wl))
+            .GroupBy(wl => wl.OwnerId)
+            .ToDictionary(
+                group => group.Key,
+                group => group.SelectMany(wl => wl.Cards).Select(wc => wc.CardId).ToHashSet()
+            );
+
         foreach (var wantlist in groupedByUsers)
         {
-            var user = _userRepository.GetByUserId(wantlist.Key);
-            if (user is not null)
+            if (traders.TryGetValue(wantlist.Key, out var user))
             {
-                var wantedTrade = _wantlistRepository.GetUserWantlists(user.Id);
+                var wantedTrade = wantedByTraders.GetValueOrDefault(user.Id) ?? [];
 
                 yield return new UserTradeResponse(
                     user.Id,
@@ -52,15 +63,14 @@ public class TradeHandler(
                         .Distinct()
                         .Where(c => wantedCards.Any(wc => wc.CardId.Equals(c))),
                     doubleCards
-                        .Where(c =>
-                            wantedTrade.SelectMany(wt => wt.Cards)
-                                .Select(wc => wc.CardId)
-                                .Contains(c.CardId)
-                        )
+                        .Where(c => wantedTrade.Contains(c.CardId))
                         .Distinct()
                         .Select(c => c.CardId)
                 );
             }
         }
     }
+
+    private static bool IsDoubles(Entities.General.Wantlist wantlist) =>
+        wantlist.Id.EndsWith("_doubles");
 }

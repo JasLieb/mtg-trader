@@ -13,6 +13,12 @@ public class WantlistRepository(ApplicationContext dbContext)
         return [.. DbSet.Where(x => x.OwnerId == userId).Include(x => x.Cards)];
     }
 
+    public IEnumerable<Wantlist> GetUsersWantlists(IEnumerable<string> userIds)
+    {
+        var ids = userIds.ToList();
+        return [.. DbSet.Where(x => ids.Contains(x.OwnerId)).Include(x => x.Cards)];
+    }
+
     public bool IsWantlistExist(string wantlistId)
     {
         return DbSet.Any(x => x.Id == wantlistId);
@@ -23,30 +29,18 @@ public class WantlistRepository(ApplicationContext dbContext)
         IEnumerable<Wantlist> wantedWantlists
     )
     {
-        var dbSet = DbSet.Where(wl =>
-            wl.OwnerId != ownerId
-            && wl.Id.Contains("_doubles")
-        )
-        .Include(wl => wl.Cards)
-        .ToList();
+        var wantedCardIds = wantedWantlists
+            .SelectMany(wantlist => wantlist.Cards)
+            .Select(card => card.CardId)
+            .Distinct()
+            .ToList();
         return [
-            .. wantedWantlists.SelectMany(
-                wantedWantlist =>
-                    dbSet
-                    .Where(
-                        targetWantlist => ContainsCardsFrom(
-                            targetWantlist,
-                            wantedWantlist
-                        )
-                    )
+            .. DbSet.Where(wl =>
+                wl.OwnerId != ownerId
+                && wl.Id.EndsWith("_doubles")
+                && wl.Cards.Any(card => wantedCardIds.Contains(card.CardId))
             )
+            .Include(wl => wl.Cards)
         ];
     }
-
-    private bool ContainsCardsFrom(Wantlist targetWantlist, Wantlist originWantlist) =>
-        targetWantlist.Cards
-            .Select(wc => wc.CardId)
-            .Any(
-                originWantlist.Cards.Select(wc => wc.CardId).Contains
-            );
 }

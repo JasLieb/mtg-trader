@@ -17,20 +17,19 @@ public class UserController(IAuthHandler authHandler) : ControllerBase
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<AuthResponse> Get()
     {
         var accessToken = Request.Headers[HeaderNames.Authorization];
 
         var authResponse = _authHandler.CheckTokenValidity(accessToken.ToString());
-        return authResponse is null 
-            ? Problem("Invalid token")
+        return authResponse is null
+            ? Unauthorized("Invalid token")
             : Ok(authResponse);
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public ActionResult<AuthResponse> Post(
         [FromBody] AuthRequest authRequest
     )
@@ -38,7 +37,7 @@ public class UserController(IAuthHandler authHandler) : ControllerBase
         var authResponse = _authHandler.CreateUser(authRequest);
         if (authResponse is null)
         {
-            return Problem("Unable to create user");
+            return Conflict("This email is already used");
         }
         return Ok(authResponse);
     }

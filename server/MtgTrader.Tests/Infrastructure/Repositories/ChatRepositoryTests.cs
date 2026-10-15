@@ -16,24 +16,21 @@ public class ChatRepositoryTests
     public void Should_return_chats_when_find_user_chats()
     {
         var connectedUser = new User("idk", "toto", "toto");
-        var chatsMessageDbSetMock = 
-            new List<ChatMessage> 
-            { 
+        var chatsMessageDbSetMock =
+            new List<ChatMessage>
+            {
                 new("", "hello", connectedUser.Id, "recipient", _testedDateTime),
                 new("", "hello", "recipientAsAuthor", connectedUser.Id, _testedDateTime),
                 new("", "hello", "recipientAsAuthor", "anotherRecipient", _testedDateTime),
             }.AsDbSetMock();
         _dbContextMock.Setup(db => db.Set<ChatMessage>())
             .Returns(chatsMessageDbSetMock.Object);
-        var userDbSetMock = new Mock<DbSet<User>>();
-        _dbContextMock.Setup(db => db.Set<User>())
-            .Returns(userDbSetMock.Object);
 
         var result = _chatRepository.FindChatMessages(connectedUser.Id);
 
         result.Should().HaveCount(2);
     }
-    
+
     [Fact]
     public void Should_add_message_chat_when_add_message()
     {

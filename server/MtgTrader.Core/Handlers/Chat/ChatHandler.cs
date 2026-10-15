@@ -6,12 +6,16 @@ using MtgTrader.Core.Services;
 namespace MtgTrader.Core.Handlers.Chat;
 
 public class ChatHandler(
-    IChatRepository chatRepository, 
+    IChatRepository chatRepository,
+    IUserRepository userRepository,
     IChatConnectionService chatConnection,
     IDateTimeService dateTimeService
 ) : IChatHandler
 {
+    public const int MaxMessageLength = 1000;
+
     private readonly IChatRepository _chatRepository = chatRepository;
+    private readonly IUserRepository _userRepository = userRepository;
     private readonly IChatConnectionService _chatConnection = chatConnection;
     private readonly IDateTimeService _dateTimeService = dateTimeService;
 
@@ -21,13 +25,18 @@ public class ChatHandler(
     public string? FindConnection(string userId) =>
         _chatConnection.FindConnection(userId);
 
-    public ChatMessage AddMessage(
+    public ChatMessageResponse? AddMessage(
         string senderId,
         string recipientId,
         string message
     )
     {
-        return _chatRepository.AddMessage(
+        if (string.IsNullOrWhiteSpace(message)
+            || message.Length > MaxMessageLength
+            || _userRepository.GetByUserId(recipientId) is null)
+            return null;
+
+        var chatMessage = _chatRepository.AddMessage(
             new ChatMessage(
                 Guid.NewGuid().ToString(),
                 message,
@@ -36,6 +45,7 @@ public class ChatHandler(
                 _dateTimeService.Now
             )
         );
+        return ToResponse(chatMessage);
     }
 
     public ChatsResponse LoadMessageHistory(string userId)
@@ -46,15 +56,18 @@ public class ChatHandler(
         return new(chatsDict.Values);
     }
 
-    public bool RemoveConnection(string userId) =>
-        _chatConnection.RemoveConnection(userId);
+    public bool RemoveConnection(string userId, string connectionId) =>
+        _chatConnection.RemoveConnection(userId, connectionId);
 
-    private static Dictionary<string, Entities.General.Chat> GroupByUniqueRecipient(
+    private static ChatMessageResponse ToResponse(ChatMessage message) =>
+        new(message.Id, message.Message, message.AuthorId, message.RecipientId, message.Date);
+
+    private static Dictionary<string, ChatResponse> GroupByUniqueRecipient(
         string userId,
         List<ChatMessage> chatMessages
     )
     {
-        Dictionary<string, Entities.General.Chat> chatsMap = [];
+        Dictionary<string, ChatResponse> chatsMap = [];
         chatMessages.ForEach(
             message =>
             {
@@ -63,7 +76,7 @@ public class ChatHandler(
                 {
                     associatedChat = new(otherUserId, []);
                 }
-                associatedChat = associatedChat with { ChatMessages = associatedChat.ChatMessages.Append(message) };
+                associatedChat = associatedChat with { ChatMessages = associatedChat.ChatMessages.Append(ToResponse(message)) };
                 chatsMap[otherUserId] = associatedChat;
             }
         );

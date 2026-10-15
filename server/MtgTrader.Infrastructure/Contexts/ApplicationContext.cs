@@ -17,19 +17,20 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options) : 
             .HasMany(e => e.Cards)
             .WithOne(e => e.WantlistOrigin)
             .HasForeignKey(e => e.WantlistId);
-        
+
         modelBuilder.Entity<WantlistCards>().Ignore(e => e.WantlistOrigin);
 
         modelBuilder.Entity<ChatMessage>()
             .HasOne(e => e.Author)
             .WithMany(e => e.SentMessages)
             .HasForeignKey(e => e.AuthorId);
-        
+
         modelBuilder.Entity<ChatMessage>()
             .HasOne(e => e.Recipient)
             .WithMany(e => e.ReceivedMessages)
             .HasForeignKey(e => e.RecipientId);
-        
+
+        modelBuilder.Entity<User>().HasIndex(e => e.Username).IsUnique();
         modelBuilder.Entity<User>().Ignore(e => e.SentMessages);
         modelBuilder.Entity<User>().Ignore(e => e.ReceivedMessages);
     }

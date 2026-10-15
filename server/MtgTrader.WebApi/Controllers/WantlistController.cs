@@ -16,12 +16,11 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
     [HttpGet]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult<WantlistsResponse> Get()
     {
         var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
-        if (userId == null) return Problem("Unknown user");
+        if (userId == null) return Unauthorized();
         var wantlists = _wantlistHandler.GetWantlists(userId);
         return Ok(wantlists);
     }
@@ -29,44 +28,47 @@ public class WantlistController(IWantlistHandler wantlistHandler) : ControllerBa
     [HttpPost]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult<WantlistsResponse> Post(
         [FromBody] CreateWantlistRequest request
     )
     {
         var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
-        if (userId == null) return Problem("Unknown user");
+        if (userId == null) return Unauthorized();
         _ = _wantlistHandler.CreateWantlist(request, userId);
         return Get();
     }
 
-
     [HttpPut]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<WantlistsResponse> Put(
         [FromBody] UpdateWantlistRequest request
     )
     {
-        var wantlist = _wantlistHandler.UpdateWantlist(request);
-        return wantlist is null 
-            ? Problem("Wantlist doesnt exists")
+        var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
+        if (userId == null) return Unauthorized();
+        var wantlist = _wantlistHandler.UpdateWantlist(request, userId);
+        return wantlist is null
+            ? NotFound("Wantlist not found")
             : Get();
     }
-    
+
     [HttpDelete]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<WantlistsResponse> Delete(
         [FromQuery] string wantlistId
     )
     {
-        _wantlistHandler.DeleteWantlist(wantlistId);
-        return Get();
+        var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
+        if (userId == null) return Unauthorized();
+        return _wantlistHandler.DeleteWantlist(wantlistId, userId)
+            ? Get()
+            : NotFound("Wantlist not found");
     }
 }

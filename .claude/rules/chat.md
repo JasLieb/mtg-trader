@@ -13,4 +13,4 @@ paths:
 
 Browsers can't set headers on a websocket, so the client sends its JWT as the `access_token` query parameter. `OnMessageReceived` in `ServicesExtensions.RegisterAuthentification` accepts it only on paths starting with `/chatHub`, so a new hub needs its path added there or its connections won't authenticate.
 
-`ChatConnectionService` is an in-memory singleton mapping each user id to a single connection id. It keeps the first connection a user opens, is emptied on restart, and isn't shared between instances. Live delivery is therefore best-effort. The messages stored through `ChatRepository` are the source of truth, and the client receives them again through `LoadHistory` each time it connects.
+`ChatConnectionService` is an in-memory singleton mapping each user id to a single connection id. It keeps the first connection a user opens and forgets it only when that same connection closes. It is emptied on restart and isn't shared between instances. Live delivery is therefore best-effort. The messages stored through `ChatRepository` are the source of truth, and the client receives them again through `LoadHistory` each time it connects.

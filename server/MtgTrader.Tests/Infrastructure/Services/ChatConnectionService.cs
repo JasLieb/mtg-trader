@@ -1,5 +1,3 @@
-using MtgTrader.Infrastructure.Configuration;
-
 namespace MtgTrader.Tests.Infrastructure.Services;
 
 public class ChatConnectionServiceTests
@@ -29,14 +27,24 @@ public class ChatConnectionServiceTests
     public void Should_return_true_when_remove_connection_and_exists()
     {
         _chatConnection.AddConnection("userID", "connectionId");
-        
-        _chatConnection.RemoveConnection("userID").Should().BeTrue();
+
+        _chatConnection.RemoveConnection("userID", "connectionId").Should().BeTrue();
     }
 
     [Fact]
     public void Should_return_false_when_remove_connection_and_not_exists()
     {
-        _chatConnection.RemoveConnection("userID").Should().BeFalse();
+        _chatConnection.RemoveConnection("userID", "connectionId").Should().BeFalse();
+    }
+
+    [Fact]
+    public void Should_keep_connection_when_another_connection_of_the_user_disconnects()
+    {
+        _chatConnection.AddConnection("userID", "firstTab");
+
+        _chatConnection.RemoveConnection("userID", "secondTab").Should().BeFalse();
+
+        _chatConnection.FindConnection("userID").Should().Be("firstTab");
     }
 
     [Fact]

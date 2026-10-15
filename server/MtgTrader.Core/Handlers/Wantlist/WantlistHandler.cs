@@ -12,16 +12,17 @@ public class WantlistHandler(
     private readonly IWantlistRepository _wantlistRepository = wantlistRepository;
     private readonly IWantlistCardsRepository _wantlistCardsRepository = wantlistCardsRepository;
 
-    public Entities.General.Wantlist? UpdateWantlist(UpdateWantlistRequest wantlistRequest)
+    public Entities.General.Wantlist? UpdateWantlist(UpdateWantlistRequest wantlistRequest, string userId)
     {
-        if (!_wantlistRepository.IsWantlistExist(wantlistRequest.WantlistId))
+        var wantlist = _wantlistRepository.GetById(wantlistRequest.WantlistId);
+        if (wantlist is null || wantlist.OwnerId != userId)
             return null;
 
         _wantlistCardsRepository.UpdateWantlist(
             wantlistRequest.WantlistId,
             wantlistRequest.Cards
         );
-        return _wantlistRepository.GetById(wantlistRequest.WantlistId);
+        return wantlist;
     }
 
     public Entities.General.Wantlist CreateWantlist(
@@ -52,22 +53,22 @@ public class WantlistHandler(
         );
     }
 
-    public void DeleteWantlist(string wantlistId)
+    public bool DeleteWantlist(string wantlistId, string userId)
     {
-        if (IsDoubleWantlist(wantlistId)) return;
+        if (IsDoubleWantlist(wantlistId)) return false;
         var wantlist = _wantlistRepository.GetById(wantlistId);
-        if (wantlist != null)
-        {
-            var cards = _wantlistCardsRepository.GetCards(wantlist.Id);
+        if (wantlist is null || wantlist.OwnerId != userId) return false;
 
-            foreach (var card in cards)
-                _wantlistCardsRepository.Delete(card);
+        var cards = _wantlistCardsRepository.GetCards(wantlist.Id);
 
-            _wantlistRepository.Delete(wantlist);
-        }
+        foreach (var card in cards)
+            _wantlistCardsRepository.Delete(card);
+
+        _wantlistRepository.Delete(wantlist);
+        return true;
     }
 
-    private bool IsDoubleWantlist(string wantlistId)
+    private static bool IsDoubleWantlist(string wantlistId)
     {
         return wantlistId.EndsWith("_doubles");
     }
