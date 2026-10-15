@@ -21,3 +21,19 @@ MtgTrader lets Magic: The Gathering players keep wantlists and a list of tradeab
 - A user's tradeable doubles are stored as an ordinary wantlist whose id is `{userId}_doubles`, created at registration. The rest of the app treats that list as special: it can't be deleted, it is shown apart from the wantlists, and trade matching reads it as "what I can give".
 - Scryfall owns card data. The server stores only Scryfall card ids, and the client fetches names, images, prices and printings from the Scryfall API when it needs them, so no card data goes stale in the database. New card information belongs in the client's `CardService`, not in a server table or endpoint.
 - A trade match runs both ways: another user's doubles that appear in my wantlists, paired with my doubles that appear in theirs (`TradeHandler.FindTrades`).
+
+## Boundaries
+
+Ask first:
+- Adding a NuGet or npm package.
+- Changing anything security-related: JWT validation, the CORS policy, or the `api/` match in the client's auth interceptor.
+- Changing deployment files: the Dockerfiles (including the `.render` variants), `client/nginx/`, `docker-compose.yml` and `environment.render.ts`.
+- Committing or pushing.
+
+Leave alone:
+- Existing migrations in `server/MtgTrader.Infrastructure/Migrations/`. They're generated, so a schema change gets a new migration instead.
+- `database/database.sql`, a frozen copy of the first migration.
+- `client/nginx/ssl/` and `server/ssl/`, which hold certificates and private keys.
+- `client/package-lock.json`, which changes only through npm.
+
+Change both sides together: request/response shapes, the chat hub's method and event names, and the `{userId}_doubles` id format each have a counterpart on the other side of the API.
