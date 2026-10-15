@@ -2,21 +2,22 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-MtgTrader: Magic: The Gathering wantlists, tradeable doubles, trade matching between users, and chat. Angular client in `client/`, .NET 8 API in `server/` — each has its own CLAUDE.md with architecture notes.
+MtgTrader lets Magic: The Gathering players keep wantlists and a list of tradeable doubles, finds the other users they can trade with, and lets them chat. The Angular client is in `client/` and the .NET 8 API in `server/`. Each has its own CLAUDE.md, and `.claude/rules/` holds guidance that loads only when the files it concerns are being worked on.
 
 ## Commands
 
 ### Server (run from `server/`)
-- Run API: `dotnet run --project MtgTrader.WebApi` (dev profile listens on `http://localhost:5161`, https profile on `https://localhost:7175`; Swagger is enabled in Development)
-- Single test / class: `dotnet test --filter "FullyQualifiedName~WantlistHandlerTests.Should_return_..."`
-- New migration: `dotnet ef migrations add <Name> --project MtgTrader.Infrastructure --startup-project MtgTrader.WebApi` (pending migrations are applied automatically at startup via `EnsureDatabaseExists`; note `server/README.md` wrongly says `migrations update`)
+- Run API: `dotnet run --project MtgTrader.WebApi` (dev profile on `http://localhost:5161`, https profile on `https://localhost:7175`; Swagger is served in Development)
+- Single test class or case: `dotnet test --filter "FullyQualifiedName~WantlistHandlerTests"`
+- New migration: `dotnet ef migrations add <Name> --project MtgTrader.Infrastructure --startup-project MtgTrader.WebApi`. The API applies pending migrations when it starts. `server/README.md` gives this as `migrations update`, which is not a valid command.
 
 ### Client (run from `client/`)
-- Dev server: `npm start` (http://localhost:4200; `src/proxy.conf.json` proxies `/api/*` and `/chathub` (websocket) to `http://localhost:5161`)
-- Tests (as CI runs them): `npm test -- --watch=false --browsers=ChromeHeadless`
-- Single spec file: `npm test -- --include src/app/features/trade/services/trade/trade.service.spec.ts`
+- Dev server: `npm start` (http://localhost:4200). `src/proxy.conf.json` forwards `/api/*` and the `/chathub` websocket to port 5161, so run the API's http profile alongside it.
+- Tests as CI runs them: `npm test -- --watch=false --browsers=ChromeHeadless`
+- Single spec: `npm test -- --include src/app/features/trade/services/trade/trade.service.spec.ts`
 
-## Domain conventions
-- **Doubles are a wantlist.** On registration, `AuthHandler.CreateUser` creates a wantlist with id `{userId}_doubles`. Code distinguishes doubles from regular wantlists by the `_doubles` id suffix (`WantlistHandler` refuses to delete it; `TradeHandler` uses it to compute trades).
-- Cards are identified by **Scryfall card ids**; the server stores only ids (`WantlistCards.CardId`), never card data. The client fetches card data directly from the Scryfall API.
-- Trade matching (`TradeHandler.FindTrades`): other users' doubles that are in my wantlists ↔ my doubles that are in their wantlists, grouped per user.
+## Domain
+
+- A user's tradeable doubles are stored as an ordinary wantlist whose id is `{userId}_doubles`, created at registration. The rest of the app treats that list as special: it can't be deleted, it is shown apart from the wantlists, and trade matching reads it as "what I can give".
+- Scryfall owns card data. The server stores only Scryfall card ids, and the client fetches names, images, prices and printings from the Scryfall API when it needs them, so no card data goes stale in the database. New card information belongs in the client's `CardService`, not in a server table or endpoint.
+- A trade match runs both ways: another user's doubles that appear in my wantlists, paired with my doubles that appear in theirs (`TradeHandler.FindTrades`).

@@ -1,6 +1,9 @@
-# Client architecture
+# Client
 
-- `src/app/core/` holds app-wide pieces. `authInterceptor` adds the `Bearer` token from localStorage key `usr-token` to any request whose URL contains `api/`. `makeApiUrl` prefixes routes with `environment.apiURl`, which is empty in development so the dev proxy is used.
-- `src/app/features/<feature>/{components,services,models}` — `common` holds the shared `card` component and `CardService`.
+Shared state (the user's token, wantlists, doubles and chats) lives in root-provided services, not in components. A service keeps the data in a private `BehaviorSubject` and exposes it as a read-only `name$` observable. Components read it through `toSignal` and send changes back through the service's methods, keeping only view state of their own. This gives every route the same copy of the data; a component holding its own copy would drift from it.
 
-Card data is fetched **directly from the Scryfall public API** by `CardService` (search, fetch by id, and all printings/sets of a card), not through the backend. Chat uses `features/trade/services/chat/chathub.proxy.ts` (SignalR) against the server's `ChatHub` (`LoadHistory`, `ReceiveMessage`, `SendMessage`).
+Backend calls build their URL with `makeApiUrl`. In development `environment.apiURl` is empty, so the route stays relative and the dev proxy handles it; other environments prefix their API host. `authInterceptor` attaches the JWT to any URL containing the substring `api/`. That is what keeps the token away from Scryfall, and it also means a third-party URL containing `api/` would receive the token.
+
+For a request whose result is used once, `subscribeOnce` and `tapOnce` (`core/utils/subscribeExtensions.ts`) complete after the first value, so there is nothing to tear down.
+
+Card data comes from Scryfall through `CardService` in `features/common/services/card/`. `features/common/` holds what more than one feature uses, such as the shared `card` component.

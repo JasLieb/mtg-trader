@@ -1,12 +1,11 @@
-# Server architecture
+# Server
 
-Clean-architecture style, dependencies point inward:
+The solution has three layers, with dependencies pointing inward:
 
-- **MtgTrader.Core** — entities (`Entities/General` = EF-persisted models, `Entities/Business` = request/response DTOs), **handlers** (business logic per feature: Auth, Wantlist, Trade, Chat), and *interfaces* for repositories and services. No EF/ASP.NET dependencies here.
-- **MtgTrader.Infrastructure** — `ApplicationContext` (EF Core/Npgsql), repository implementations (all derive from `BaseRepository<T>`, which uses `_dbContext.Set<T>()` and calls `SaveChanges()` on every write), service implementations (`JwtTokenService`, `ChatConnectionService`, `DateTimeService`), migrations, and `Configuration/ConfigurationConstants.cs` (config keys + env var names).
-- **MtgTrader.WebApi** — thin controllers that pull the user id from the JWT (`ControllerExtensions.GetUserIdFromContext`) and delegate to handlers; `Hubs/ChatHub.cs` (SignalR, mapped at `/chathub`); all DI/startup wiring lives in `Extensions/` (`ServicesExtensions.RegisterServices` is where new handlers/repositories/services must be registered).
-- **MtgTrader.Tests** — mirrors `Core/` and `Infrastructure/`. Handlers are tested with mocked repository interfaces; repositories are tested against a `Mock<ApplicationContext>` whose `Set<T>()` returns an in-memory `DbSet` built via `.AsDbSetMock()` (`Extensions/MoqExtensions.cs`). Repositories must therefore access data through `Set<T>()` (not `DbSet` properties) to stay testable.
+- `MtgTrader.Core` is the domain: entities, request/response records, handlers holding the business logic, and the interfaces for repositories and services. It has no EF Core or ASP.NET dependency, which keeps business rules testable against substituted interfaces. New logic therefore belongs in a handler, not in a controller, hub or repository.
+- `MtgTrader.Infrastructure` implements Core's interfaces: EF Core on PostgreSQL, JWT tokens, the chat connection registry, and the configuration key constants.
+- `MtgTrader.WebApi` turns HTTP and SignalR traffic into handler calls. Controllers and `ChatHub` stay thin. They take the acting user from the JWT claims (`ControllerExtensions.GetUserIdFromContext`, or `ClaimTypes.NameIdentifier` in the hub), never from request input, call a handler, and shape the response.
 
-Configuration: `ConfigurationExtensions.RegisterConfiguration` lets environment variables (`PG_HOST`, `PG_PORT`, `PG_USER`, `PG_PASSWORD`, `PG_DATABASE`, JWT secret, `PORT`, `USE_HTTPS`) override `appsettings*.json`. Outside Development, Kestrel listens on `PORT` with HTTPS (PEM cert from `ssl/`) or plain HTTP depending on `USE_HTTPS`.
+`Program.cs` is only a chain of extension methods. The wiring lives in `MtgTrader.WebApi/Extensions/`, grouped by concern, and a new handler, repository or service is registered in `ServicesExtensions.RegisterServices`. Choose its lifetime from the state it holds: repositories and stateless services are transient, handlers are scoped, and singleton is kept for process-wide state such as `ChatConnectionService`'s connection map.
 
-SignalR auth: the JWT is passed as the `access_token` query string for `/chatHub` requests (see `OnMessageReceived` in `RegisterAuthentification`).
+Every setting has to be overridable from the environment, because Docker Compose configures the API only through environment variables. `ConfigurationExtensions.RegisterConfiguration` copies each variable (`PG_*`, `JWT_SECRET`, `PORT`, `USE_HTTPS`) onto its `appsettings` key, and the names live in `Infrastructure/Configuration/ConfigurationConstants.cs`. A new setting follows the same path. Outside Development, Kestrel listens on `PORT`, using HTTPS with the PEM pair from `ssl/` when `USE_HTTPS` is true.
