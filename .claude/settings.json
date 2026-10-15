@@ -21,6 +21,19 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/quality-gate.js", "check"],
+            "timeout": 600,
+            "statusMessage": "Quality gate: build, lint, tests"
+          }
+        ]
+      }
     ]
   }
 }
