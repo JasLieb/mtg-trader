@@ -1,6 +1,6 @@
 ---
 name: mtg-review
-description: Review code changes in the MtgTrader repo (Angular client + .NET API) against this project's own rules (API contracts kept in sync on both sides, Scryfall owning card data, the `{userId}_doubles` list, user ids taken from the JWT, EF migrations, DI lifetimes, client state services) as well as general correctness and security. Use it whenever the user asks to review, check, audit or look over changes, a branch, a diff, a commit or files, before committing, merging or opening a PR ("review my changes", "is this ready to merge?", "can you check what I did?", "relis mon code"), even if they don't say "code review". Reports findings ranked by severity, then offers to fix the ones the user picks.
+description: Review code changes in the MtgTrader repo, covering the .NET API (controllers, SignalR hub, handlers, repositories, EF Core entities and migrations, DI wiring, auth, xUnit tests) and the Angular client, against this project's own rules (API contracts kept in sync on both sides, Scryfall owning card data, the `{userId}_doubles` list, user ids taken from the JWT, migrations, client state services) as well as general correctness and security. Use it whenever the user asks to review, check, audit or look over changes, a branch, a diff, a commit, an endpoint, a handler or a migration, before committing, merging or opening a PR ("review my changes", "is this ready to merge?", "can you check my new endpoint?", "relis mon code"), even if they don't say "code review". Reports findings ranked by severity, then offers to fix the ones the user picks.
 ---
 
 # MtgTrader review
@@ -26,18 +26,26 @@ The project rules live in the repo and are the source of truth:
 - `CLAUDE.md` at the root, `server/CLAUDE.md` and `client/CLAUDE.md`
 - `.claude/rules/*.md`: each one lists the paths it governs in its `paths:` frontmatter
 
-Read the ones that cover the changed files; they're short. Then read `references/checklist.md` (next to this file), which turns those rules into concrete review questions, area by area. If the checklist and a rule file disagree, the rule file wins. Mention the drift in the report so the checklist gets updated.
+Read the ones that cover the changed files; they're short. Then read the checklists next to this file, which turn those rules into concrete review questions:
+
+- `references/cross-cutting.md`: always.
+- `references/server.md`: when anything under `server/` changed.
+- `references/client.md`: when anything under `client/` changed.
+
+If a checklist and a rule file disagree, the rule file wins. Mention the drift in the report so the checklist gets updated.
 
 ## 3. Read each change in context
 
 Read every changed hunk and enough of the surrounding file to understand it. Many of this project's bugs are invisible inside the diff. A server record changes while its TypeScript interface doesn't. A hub event is renamed on one side only. A new handler is registered with the wrong lifetime in a file the diff never touched. Whenever a change has a counterpart on the other side of the API, open the counterpart and compare. That is the most common way this codebase breaks, because nothing generates the client types from the server.
+
+On the server, trace each changed endpoint or hub method through every layer: controller or hub, handler, repository, entity and migration, DI registration, and tests. `references/server.md` lists where each one lives.
 
 ## 4. Run the mechanical checks once
 
 Run the checks only for the side(s) that changed:
 
 - **Server**, from `server/`:
-  - `dotnet build MtgTrader.sln -v q`
+  - `dotnet build MtgTrader.sln -v q`. A new compiler warning (typically a nullable one) in a file the change touched is a finding; warnings in other files are pre-existing.
   - `dotnet test MtgTrader.sln --no-build`. If the test host reports that .NET 8 is missing, set the environment variable `DOTNET_ROLL_FORWARD=Major` for that run.
   - `dotnet format MtgTrader.sln --verify-no-changes --include <changed .cs files>`
 - **Client**, from `client/`:
@@ -51,7 +59,7 @@ Report failures as findings, quoting the relevant error lines. The codebase does
 
 Go through these in order of importance:
 
-1. **Project rules.** Work through the checklist sections for the areas touched.
+1. **Project rules.** Work through the checklists you loaded in step 2.
 2. **Correctness.** Logic errors; edge cases (empty lists, null or undefined, the doubles list); error paths; async mistakes (`.Result` or `.Wait()`, tasks that are never awaited, subscriptions that are never torn down).
 3. **Security.** The acting user comes from the JWT. Mutations check that the caller owns what they change. No secrets or hosts are hard-coded. Nothing sends the user's token to a third party.
 4. **Tests.** New or changed behaviour in a handler, repository, service or client service should come with tests that follow the conventions in `.claude/rules/server-tests.md` or the existing specs.
