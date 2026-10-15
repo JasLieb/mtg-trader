@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // PreToolUse hook: refuses Edit/Write/NotebookEdit on the files CLAUDE.md lists under "Leave alone".
 // Shell commands (dotnet ef, npm install) are not affected, so generated files still change the normal way.
+// The same list lives in permissions.deny in .claude/settings.json and under "Leave alone" in CLAUDE.md;
+// change all three together.
 
 const path = require('path');
 

@@ -16,6 +16,10 @@ MtgTrader lets Magic: The Gathering players keep wantlists and a list of tradeab
 - Tests as CI runs them: `npm test -- --watch=false --browsers=ChromeHeadless`
 - Single spec: `npm test -- --include src/app/features/trade/services/trade/trade.service.spec.ts`
 
+### Hooks (`.claude/settings.json`)
+- `protect-files.js` refuses Claude's edits to the files listed under "Leave alone" below. `permissions.deny` in the same settings file blocks the same paths, so a change to that list belongs in all three places.
+- `quality-gate.js` records the uncommitted files when a prompt is sent. When Claude finishes, it builds and tests each side whose files changed during the turn and lints only those files. A failure sends Claude back to fix it, at most three times, so a turn that changed code can take up to a minute longer to end.
+
 ## Domain
 
 - A user's tradeable doubles are stored as an ordinary wantlist whose id is `{userId}_doubles`, created at registration. The rest of the app treats that list as special: it can't be deleted, it is shown apart from the wantlists, and trade matching reads it as "what I can give".
