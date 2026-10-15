@@ -1,9 +1,9 @@
-import { delay, Observable, take, tap } from 'rxjs';
+import { Observable, take, tap } from 'rxjs';
 
 export function subscribeOnce<T>(
   observableToSubcribe: Observable<T>,
   next?: (value: T) => void,
-  error?: (error: any) => void
+  error?: (error: unknown) => void
 ) {
   observableToSubcribe.pipe(take(1)).subscribe({ next, error });
 }
@@ -11,7 +11,7 @@ export function subscribeOnce<T>(
 export function tapOnce<T>(
   observableToSubcribe: Observable<T>,
   next?: (value: T) => void,
-  error?: (error: any) => void
+  error?: (error: unknown) => void
 ): Observable<T> {
   return observableToSubcribe.pipe(take(1), tap({ next, error }));
 }

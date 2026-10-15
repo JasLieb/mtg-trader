@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { delay, Observable, of } from 'rxjs';
+import { AuthResponse } from '../../../../core/models/auth-response';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { RegisterComponent } from './register.component';
 
@@ -22,7 +23,7 @@ describe('RegisterComponent', () => {
     });
   });
 
-  function initFixture(fakeCall: () => Observable<any>) {
+  function initFixture(fakeCall: () => Observable<AuthResponse>) {
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     authService.register.and.callFake(fakeCall);
 

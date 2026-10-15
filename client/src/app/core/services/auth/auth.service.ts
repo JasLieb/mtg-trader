@@ -22,7 +22,7 @@ export class AuthService {
       subscribeOnce(
         this.http.get<AuthResponse>(this.userApiUrl),
         (response) => this.updateConnectedUser(response),
-        (_) => this.handleError()
+        () => this.handleError()
       );
     }
   }
@@ -47,7 +47,7 @@ export class AuthService {
     return tapOnce(
       this.http.post<AuthResponse>(route, body),
       (response) => this.updateConnectedUser(response),
-      (err) => this.handleError()
+      () => this.handleError()
     );
   }
 

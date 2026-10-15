@@ -1,5 +1,5 @@
-export function initLocalStorageForTests(): any {
-  let localStore = { 'usr-token': 'toto' } as any;
+export function initLocalStorageForTests(): Record<string, string> {
+  let localStore: Record<string, string> = { 'usr-token': 'toto' };
 
   spyOn(window.localStorage, 'getItem').and.callFake((key) =>
     key in localStore ? localStore[key] : null

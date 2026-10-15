@@ -41,7 +41,7 @@ export class CardSearcherComponent implements OnInit, OnDestroy {
   results: WritableSignal<Card[] | undefined> = signal(undefined);
   searchControl: FormControl;
 
-  onFoundCard = output<Card>();
+  cardFound = output<Card>();
 
   constructor(private cardService: CardService) {
     this.searchControl = new FormControl('');
@@ -74,7 +74,7 @@ export class CardSearcherComponent implements OnInit, OnDestroy {
 
   onAddCard() {
     if (this.selectedCard) {
-      this.onFoundCard.emit(this.selectedCard);
+      this.cardFound.emit(this.selectedCard);
     }
   }
 }

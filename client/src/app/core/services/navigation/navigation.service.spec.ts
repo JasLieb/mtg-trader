@@ -19,7 +19,7 @@ describe('NavigationService', () => {
       imports: [RouterModule.forRoot([])],
     });
 
-    const _ = initLocalStorageForTests();
+    initLocalStorageForTests();
     router = TestBed.inject(Router);
     service = TestBed.inject(NavigationService);
   });
@@ -91,7 +91,7 @@ describe('NavigationService', () => {
 
   it('should save last route on navigation', (done) => {
     service.navigateTrade();
-    service.currentRoute$.subscribe((_) => {
+    service.currentRoute$.subscribe(() => {
       expect(window.localStorage.setItem).toHaveBeenCalledWith(
         'last-route',
         Routes.TradeUrl
@@ -102,7 +102,7 @@ describe('NavigationService', () => {
 
   it('should not save last route on auth navigation', (done) => {
     service.navigateAuth();
-    service.currentRoute$.subscribe((_) => {
+    service.currentRoute$.subscribe(() => {
       expect(window.localStorage.setItem).toHaveBeenCalledTimes(0);
       done();
     });

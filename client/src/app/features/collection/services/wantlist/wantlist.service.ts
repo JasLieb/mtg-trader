@@ -3,6 +3,7 @@ import { Wantlist } from '../../models/wantlist';
 import {
   BehaviorSubject,
   catchError,
+  EMPTY,
   forkJoin,
   map,
   Observable,
@@ -102,9 +103,9 @@ export class WantlistService {
     );
   }
 
-  private handleError(error: HttpErrorResponse): Observable<any> {
+  private handleError(error: HttpErrorResponse): Observable<never> {
     console.error(error);
-    return of(new Error(error.message));
+    return EMPTY;
   }
 
   private makeUserWantlists(

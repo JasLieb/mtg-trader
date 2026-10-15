@@ -30,7 +30,7 @@ describe('CardSearcherComponent', () => {
 
     fixture = TestBed.createComponent(CardSearcherComponent);
     component = fixture.componentInstance;
-    spyOn(component.onFoundCard, 'emit');
+    spyOn(component.cardFound, 'emit');
     fixture.detectChanges();
   });
 
@@ -125,10 +125,10 @@ describe('CardSearcherComponent', () => {
     fixture.whenStable().then(() => {
       (document.querySelectorAll('mat-option')[0] as HTMLElement).click();
 
-      var btns = fixture.nativeElement.querySelectorAll('button');
+      const btns = fixture.nativeElement.querySelectorAll('button');
       btns[btns.length - 1].click();
 
-      expect(component.onFoundCard.emit).toHaveBeenCalledWith({
+      expect(component.cardFound.emit).toHaveBeenCalledWith({
         id: 't',
         name: 'toto',
       } as Card);

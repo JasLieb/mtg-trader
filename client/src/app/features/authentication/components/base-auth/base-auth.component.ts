@@ -16,8 +16,6 @@ export class BaseAuthComponent implements OnInit {
   form: FormGroup = new FormGroup({});
   isLoading = signal(false);
 
-  constructor() {}
-
   ngOnInit(): void {
     this.isLoading.set(false);
   }

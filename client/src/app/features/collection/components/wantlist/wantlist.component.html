@@ -1,11 +1,11 @@
 <div class="wantlist-container">
   <app-card-searcher
-    (onFoundCard)="addCardToWantlist($event)"
+    (cardFound)="addCardToWantlist($event)"
   ></app-card-searcher>
 
   <app-collection-card-list
     [cards]="wantlist()?.cards ?? []"
-    (onDeletedCard)="deleteCard($event)"
-    (onUpdateCard)="updateCardSet($event)"
+    (cardDeleted)="deleteCard($event)"
+    (cardUpdated)="updateCardSet($event)"
   ></app-collection-card-list>
 </div>

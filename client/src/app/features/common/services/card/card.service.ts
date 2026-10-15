@@ -20,13 +20,13 @@ export class CardService {
 
   search(query: string): Observable<Card[]> {
     return this.httpClient
-      .get(`https://api.scryfall.com/cards/search?q="${query}"`)
+      .get<{ data: ScryfallCard[] }>(`https://api.scryfall.com/cards/search?q="${query}"`)
       .pipe(
-        map((res: any) => res.data.map(this.parseCard)),
+        map((res) => res.data.map(this.parseCard)),
         mergeMap((cards: Card[]) => {
           return combineLatest(cards.map(this.populateSets.bind(this)));
         }),
-        catchError((_) => {
+        catchError(() => {
           return of([]);
         })
       );
@@ -39,7 +39,7 @@ export class CardService {
         switchMap((card) => {
           return this.populateSets(this.parseCard(card));
         }),
-        catchError((_) => {
+        catchError(() => {
           return of(undefined);
         })
       );
@@ -51,7 +51,7 @@ export class CardService {
         `https://api.scryfall.com/cards/search?unique=prints&q=!%22${card.name}%22`
       )
       .pipe(
-        map((res: any) => {
+        map((res) => {
           return this.populateCardSets(
             card,
             res.data.map((set: ScryfallCardSet) => {
