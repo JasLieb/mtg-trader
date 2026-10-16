@@ -22,6 +22,12 @@ public static class PgConstants
     public const string Password = "PG:Password";
 }
 
+public static class CorsConstants
+{
+    public const string EnvOrigins = "CORS_ORIGINS";
+    public const string Origins = "Cors:Origins";
+}
+
 public static class JwtConstants
 {
     public const string EnvSecret = "JWT_SECRET";

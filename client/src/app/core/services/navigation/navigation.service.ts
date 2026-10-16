@@ -20,6 +20,10 @@ export class NavigationService {
     this.navigate(Routes.TradeUrl);
   }
 
+  navigateProposals() {
+    this.navigate(Routes.ProposalsUrl);
+  }
+
   navigateWantlists() {
     this.navigate(Routes.WantlistsUrl);
   }

@@ -18,11 +18,10 @@ public class TradeController(
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<TradeableResponse> Get()
     {
         var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
-        if (userId == null) return Problem("Unknown user");
+        if (userId == null) return Unauthorized();
         return Ok(_tradeHandler.FindTrades(userId));
     }
 }

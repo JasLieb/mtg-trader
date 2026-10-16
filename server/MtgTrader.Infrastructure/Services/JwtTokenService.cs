@@ -15,7 +15,7 @@ public class JwtTokenService(IConfiguration configuration) : ITokenService
 
     public string? CheckToken(string token)
     {
-        var key = Encoding.ASCII.GetBytes(GetConfiguration(Config.JwtConstants.Secret));
+        var key = Encoding.UTF8.GetBytes(GetConfiguration(Config.JwtConstants.Secret));
         var signingKeys = new SymmetricSecurityKey(key);
         var validationParameters = new TokenValidationParameters
         {
@@ -48,7 +48,7 @@ public class JwtTokenService(IConfiguration configuration) : ITokenService
     public string CreateToken(User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(GetConfiguration(Config.JwtConstants.Secret));
+        var key = Encoding.UTF8.GetBytes(GetConfiguration(Config.JwtConstants.Secret));
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(

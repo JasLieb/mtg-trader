@@ -1,7 +1,18 @@
-using MtgTrader.Core.Entities.General;
-
 namespace MtgTrader.Core.Entities.Business.Responses;
 
 public record ChatsResponse(
-    IEnumerable<Chat> Chats
+    IEnumerable<ChatResponse> Chats
+);
+
+public record ChatResponse(
+    string RecipientId,
+    IEnumerable<ChatMessageResponse> ChatMessages
+);
+
+public record ChatMessageResponse(
+    string Id,
+    string Message,
+    string AuthorId,
+    string RecipientId,
+    DateTime Date
 );

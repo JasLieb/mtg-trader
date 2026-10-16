@@ -12,7 +12,6 @@ import { ChatHomeComponent } from './chat-home.component';
 describe('ChatHomeComponent', () => {
   let component: ChatHomeComponent;
   let fixture: ComponentFixture<ChatHomeComponent>;
-  let route: ActivatedRoute;
   let chatService: jasmine.SpyObj<ChatService>;
   const routeParamsBehavior = new BehaviorSubject<Params>({});
 
@@ -40,7 +39,6 @@ describe('ChatHomeComponent', () => {
     chatService = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
     chatService.chats$ = of(makeChats());
 
-    route = TestBed.inject(ActivatedRoute);
     fixture = TestBed.createComponent(ChatHomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

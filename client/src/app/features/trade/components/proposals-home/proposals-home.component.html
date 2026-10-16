@@ -1,0 +1,116 @@
+<div class="proposals-home-container">
+  @for (proposal of proposals(); track proposal.id) {
+  <mat-card class="proposal">
+    <mat-card-header>
+      <mat-card-title class="proposal-title">
+        @if (isTrade(proposal)) { Trade with } @else {
+        {{ proposal.isSent ? "Sent to" : "Received from" }}
+        }
+        {{ proposal.otherUserName }}
+      </mat-card-title>
+      <mat-card-subtitle class="proposal-state">
+        {{ proposal.state }} · {{ proposal.sentAt | date : "short" }}
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div>You give :</div>
+      <app-trade-card-list
+        class="proposal-given"
+        [cards]="proposal.givenCards"
+      ></app-trade-card-list>
+      <div class="proposal-given-total">
+        Total : {{ proposal.givenCards | euroTotal }}
+      </div>
+      <div>You receive :</div>
+      <app-trade-card-list
+        class="proposal-received"
+        [cards]="proposal.receivedCards"
+      ></app-trade-card-list>
+      <div class="proposal-received-total">
+        Total : {{ proposal.receivedCards | euroTotal }}
+      </div>
+    </mat-card-content>
+    @if (refusalOf(proposal); as refusal) {
+    <p class="proposal-refusal">
+      @switch (refusal.reason) {
+      @case ('missing-cards') {
+      Can't accept: these cards are no longer in the doubles list of the user
+      who gives them:
+      <span class="proposal-missing-cards">{{ missingCardNames(proposal) }}</span>.
+      }
+      @case ('not-pending') {
+      This trade proposal is no longer pending.
+      }
+      @default {
+      The trade proposal could not be updated.
+      }
+      }
+    </p>
+    }
+    @if (committedWarningsOf(proposal); as warnings) {
+    <div class="proposal-committed">
+      <app-committed-cards-warning [warnings]="warnings"></app-committed-cards-warning>
+      <button
+        mat-button
+        class="proposal-confirm-accept"
+        [disabled]="actingOn() !== null"
+        (click)="confirmAccept(proposal)"
+      >
+        Accept anyway
+      </button>
+      <button
+        mat-button
+        class="proposal-cancel-accept"
+        (click)="cancelAccept(proposal)"
+      >
+        Cancel
+      </button>
+    </div>
+    }
+    <mat-card-actions>
+      <button mat-button class="proposal-chat" (click)="openChat(proposal)">
+        Send a message
+      </button>
+      @if (canAnswer(proposal)) {
+      <button
+        mat-button
+        class="proposal-accept"
+        [disabled]="actingOn() !== null"
+        (click)="accept(proposal)"
+      >
+        Accept
+      </button>
+      <button
+        mat-button
+        class="proposal-decline"
+        [disabled]="actingOn() !== null"
+        (click)="decline(proposal)"
+      >
+        Decline
+      </button>
+      }
+      @if (canWithdraw(proposal)) {
+      <button
+        mat-button
+        class="proposal-withdraw"
+        [disabled]="actingOn() !== null"
+        (click)="withdraw(proposal)"
+      >
+        Withdraw
+      </button>
+      }
+      @if (canRemoveCards(proposal)) {
+      <button
+        mat-button
+        class="proposal-remove-cards"
+        (click)="removeCards(proposal)"
+      >
+        Remove these cards from my lists
+      </button>
+      }
+    </mat-card-actions>
+  </mat-card>
+  } @empty {
+  <p class="proposals-empty">No trade proposal yet.</p>
+  }
+</div>

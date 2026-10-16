@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using MtgTrader.Core.Handlers.Auth;
 using MtgTrader.Core.Handlers.Chat;
 using MtgTrader.Core.Handlers.Trade;
+using MtgTrader.Core.Handlers.TradeProposals;
 using MtgTrader.Core.Handlers.Wantlist;
 using MtgTrader.Core.Repositories;
 using MtgTrader.Core.Services;
@@ -25,13 +26,16 @@ public static class ServicesExtensions
             .AddTransient<IDateTimeService, DateTimeService>()
             .AddSingleton<IChatConnectionService, ChatConnectionService>()
             .AddTransient<ITokenService, JwtTokenService>()
+            .AddTransient<IPasswordHasher, Pbkdf2PasswordHasher>()
             .AddTransient<IUserRepository, UserRepository>()
             .AddTransient<IWantlistRepository, WantlistRepository>()
             .AddTransient<IWantlistCardsRepository, WantlistCardsRepository>()
             .AddTransient<IChatRepository, ChatRepository>()
+            .AddTransient<ITradeProposalRepository, TradeProposalRepository>()
             .AddScoped<IAuthHandler, AuthHandler>()
             .AddScoped<IWantlistHandler, WantlistHandler>()
             .AddScoped<ITradeHandler, TradeHandler>()
+            .AddScoped<ITradeProposalHandler, TradeProposalHandler>()
             .AddScoped<IChatHandler, ChatHandler>();
 
     public static IServiceCollection RegisterInfrastructure(
@@ -39,25 +43,17 @@ public static class ServicesExtensions
         ConfigurationManager configuration
     )
     {
+        var allowedOrigins = (configuration[CorsConstants.Origins] ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         services.AddCors(options =>
             options.AddPolicy(
                 CorsPolicyName,
                 policy => policy
-                    .WithOrigins(
-                        "http://localhost:4200",
-                        "http://localhost",
-                        "https://localhost",
-                        "http://client-tek5.onrender.com",
-                        "https://client-tek5.onrender.com"
-                    )
+                    .WithOrigins(allowedOrigins)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .SetPreflightMaxAge(TimeSpan.FromMinutes(2))
-                    .SetIsOriginAllowed(_ =>
-                    {
-                        return true;
-                    })
             )
         );
         services.AddSignalR();

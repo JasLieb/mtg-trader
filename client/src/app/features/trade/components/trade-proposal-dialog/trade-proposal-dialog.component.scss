@@ -1,0 +1,24 @@
+.trade-proposal-dialog-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.trade-proposal-none,
+.trade-proposal-hint {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.trade-proposal-error {
+  color: #b00020;
+}
+
+// Between the scrolling content and the actions, so the totals and the warning about committed
+// cards stay in view next to Send.
+.trade-proposal-totals {
+  padding: 8px 24px 0;
+
+  p {
+    margin: 0 0 4px;
+  }
+}

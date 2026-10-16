@@ -5,8 +5,12 @@ export interface ScryfallCard {
   scryfall_uri: string;
   card_faces: CardFace[];
   image_uris: CardImageUris;
+  // The finishes the printing exists in: 'nonfoil', 'foil', 'etched'.
+  finishes?: string[];
+  // Scryfall sends prices as decimal strings, and null when it has none.
   prices: {
-    eur: number;
+    eur: string | null;
+    eur_foil: string | null;
   };
 }
 

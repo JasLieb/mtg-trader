@@ -13,6 +13,15 @@ public static class ConfigurationExtensions
         builder.Configuration[JwtConstants.Secret] =
             Environment.GetEnvironmentVariable(JwtConstants.EnvSecret)
             ?? builder.Configuration[JwtConstants.Secret];
+        // Only appsettings.Development.json carries a secret, so any other environment must provide one.
+        if (string.IsNullOrEmpty(builder.Configuration[JwtConstants.Secret]))
+            throw new InvalidOperationException(
+                $"No JWT secret configured: set the {JwtConstants.EnvSecret} environment variable."
+            );
+
+        builder.Configuration[CorsConstants.Origins] =
+            Environment.GetEnvironmentVariable(CorsConstants.EnvOrigins)
+            ?? builder.Configuration[CorsConstants.Origins];
 
         builder.Configuration[PgConstants.Host] =
             Environment.GetEnvironmentVariable(PgConstants.EnvHost)
@@ -37,7 +46,7 @@ public static class ConfigurationExtensions
         builder.Configuration[EnvConstants.UseHttps] =
             Environment.GetEnvironmentVariable(EnvConstants.EnvUseHttps)
             ?? builder.Configuration[EnvConstants.UseHttps];
-        
+
         builder.Configuration[EnvConstants.Port] =
             Environment.GetEnvironmentVariable(EnvConstants.EnvPort)
             ?? builder.Configuration[EnvConstants.Port];
@@ -49,7 +58,7 @@ public static class ConfigurationExtensions
         if (!builder.Environment.IsDevelopment())
         {
             var useHttps = Convert.ToBoolean(builder.Configuration[EnvConstants.UseHttps]);
-            if(useHttps) 
+            if (useHttps)
                 InitHttpsListening(builder);
             else
                 InitHttpListening(builder);
@@ -70,7 +79,7 @@ public static class ConfigurationExtensions
         builder.WebHost.UseKestrel(
             options =>
             options.Listen(
-                IPAddress.Any, 
+                IPAddress.Any,
                 listeningPort,
                 listenOptions => listenOptions.UseHttps(
                     X509Certificate2.CreateFromPemFile(_certPath, _keyPath)
@@ -83,7 +92,7 @@ public static class ConfigurationExtensions
     {
         builder.WebHost.UseKestrel(
             options => options.Listen(
-                IPAddress.Parse("0.0.0.0"), 
+                IPAddress.Parse("0.0.0.0"),
                 Convert.ToInt32(builder.Configuration[EnvConstants.Port])
             )
         );

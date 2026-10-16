@@ -48,7 +48,7 @@ describe('CollectionCardListComponent', () => {
     cardServiceSpy = jasmine.createSpyObj([
       'fetch',
     ]) as jasmine.SpyObj<CardService>;
-    cardServiceSpy.fetch.and.callFake((_) => of(expectedUpdatedCard));
+    cardServiceSpy.fetch.and.callFake(() => of(expectedUpdatedCard));
 
     await TestBed.configureTestingModule({
       providers: [
@@ -77,8 +77,8 @@ describe('CollectionCardListComponent', () => {
   }
 
   function initOutput() {
-    spyOn(component.onDeletedCard, 'emit');
-    spyOn(component.onUpdateCard, 'emit');
+    spyOn(component.cardDeleted, 'emit');
+    spyOn(component.cardUpdated, 'emit');
     fixture.detectChanges();
   }
 
@@ -113,7 +113,7 @@ describe('CollectionCardListComponent', () => {
 
     component.openDialog(expectedBaseCard);
 
-    expect(component.onUpdateCard.emit).toHaveBeenCalledWith({
+    expect(component.cardUpdated.emit).toHaveBeenCalledWith({
       baseCard: expectedBaseCard,
       updatedCard: expectedUpdatedCard,
     });
@@ -125,6 +125,6 @@ describe('CollectionCardListComponent', () => {
 
     component.deleteCard(expectedBaseCard);
 
-    expect(component.onDeletedCard.emit).toHaveBeenCalledWith(expectedBaseCard);
+    expect(component.cardDeleted.emit).toHaveBeenCalledWith(expectedBaseCard);
   });
 });

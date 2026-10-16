@@ -3,10 +3,14 @@
     @for (chat of chats(); track $index) {
     <div
       class="chat-home-conversation-tab"
+      role="button"
+      tabindex="0"
       [class.chat-home-conversation-tab-selected]="
-        selectedChat()?.recipient?.id == chat.recipient.id
+        selectedChat()?.recipient?.id === chat.recipient.id
       "
       (click)="selectChat(chat.recipient.id)"
+      (keydown.enter)="selectChat(chat.recipient.id)"
+      (keydown.space)="$event.preventDefault(); selectChat(chat.recipient.id)"
     >
       {{ chat.recipient.name }}
     </div>

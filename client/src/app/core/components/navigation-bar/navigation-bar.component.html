@@ -26,6 +26,20 @@
     <mat-list-item
       class="navigation-bar-item"
       role="listitem"
+      [class.navigation-bar-item-selected]="isProposalsTab()"
+      (click)="navigateProposals()"
+      >Proposals
+      @if (pendingReceivedProposals() > 0) {
+      <span
+        class="navigation-bar-counter"
+        title="Received proposals awaiting your answer"
+        >{{ pendingReceivedProposals() }}</span
+      >
+      }
+    </mat-list-item>
+    <mat-list-item
+      class="navigation-bar-item"
+      role="listitem"
       [class.navigation-bar-item-selected]="isChatTab()"
       (click)="navigateChat()"
       >Chat</mat-list-item

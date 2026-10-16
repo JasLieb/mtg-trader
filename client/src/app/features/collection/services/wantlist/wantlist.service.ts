@@ -3,6 +3,7 @@ import { Wantlist } from '../../models/wantlist';
 import {
   BehaviorSubject,
   catchError,
+  EMPTY,
   forkJoin,
   map,
   Observable,
@@ -13,6 +14,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CardService } from '../../../common/services/card/card.service';
 import { Card } from '../../../common/models/card';
 import { UserWantlists } from '../../models/user-wantlists';
+import { splitDoublesList } from '../../models/doubles-list';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import {
   PopulatedWantlistResponse,
@@ -59,6 +61,12 @@ export class WantlistService {
     );
   }
 
+  // Rebuilds the wantlists and the doubles from a full WantlistsResponse that another feature's
+  // request answered with, as removing a Trade's cards from my lists does.
+  publish(response: WantlistsResponse) {
+    this.subscribeWantlistResponse(of(response));
+  }
+
   private refreshWantlists() {
     this.subscribeWantlistResponse(
       this.http.get<WantlistsResponse>(this.apiWantlistUrl)
@@ -102,9 +110,9 @@ export class WantlistService {
     );
   }
 
-  private handleError(error: HttpErrorResponse): Observable<any> {
+  private handleError(error: HttpErrorResponse): Observable<never> {
     console.error(error);
-    return of(new Error(error.message));
+    return EMPTY;
   }
 
   private makeUserWantlists(
@@ -122,9 +130,6 @@ export class WantlistService {
       }
     );
 
-    return {
-      wantlists: parsedWl.filter((wl) => !wl.id.includes('double')),
-      doubles: parsedWl.find((wl) => wl.id.includes('double')),
-    } as UserWantlists;
+    return splitDoublesList(parsedWl);
   }
 }

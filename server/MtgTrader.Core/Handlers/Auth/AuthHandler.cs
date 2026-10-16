@@ -1,5 +1,6 @@
 using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Entities.Business.Responses;
+using MtgTrader.Core.Entities.General;
 using MtgTrader.Core.Repositories;
 using MtgTrader.Core.Services;
 
@@ -7,45 +8,48 @@ namespace MtgTrader.Core.Handlers.Auth;
 
 public class AuthHandler(
     IUserRepository userRepository,
-    IWantlistRepository wantlistRepository,
-    ITokenService tokenService
+    ITokenService tokenService,
+    IPasswordHasher passwordHasher
 ) : IAuthHandler
 {
     private readonly IUserRepository _userRepository = userRepository;
-    private readonly IWantlistRepository _wantlistRepository = wantlistRepository;
     private readonly ITokenService _tokenService = tokenService;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
 
     public AuthResponse? Connect(AuthRequest authRequest)
     {
-        var user = _userRepository.GetByUsername(authRequest.Email);
+        var user = _userRepository.GetByUsername(NormalizeEmail(authRequest.Email));
+        if (user is null || !_passwordHasher.Verify(authRequest.Password, user.Password))
+            return null;
 
-        if (user is not null && user.Password == authRequest.Password)
-            return new AuthResponse(_tokenService.CreateToken(user));
+        // Accounts created before passwords were hashed get their hash at their next login.
+        if (!_passwordHasher.IsHashed(user.Password))
+        {
+            user.Password = _passwordHasher.Hash(authRequest.Password);
+            _userRepository.Update(user);
+        }
 
-        return null;
+        return new AuthResponse(_tokenService.CreateToken(user));
     }
 
     public AuthResponse? CreateUser(AuthRequest authRequest)
     {
-        var canCreateUser = _userRepository.GetByUsername(authRequest.Email) is null;
-        if (canCreateUser)
-        {
-            var userId = Guid.NewGuid().ToString();
-            var user = _userRepository.Create(new(
-                userId,
-                authRequest.Email,
-                authRequest.Password
-            ));
-            _wantlistRepository.Create(
-                new($"{userId}_doubles", "doubles", userId)
-            );
-            return new AuthResponse(_tokenService.CreateToken(user));
-        }
-        return null;
+        var email = NormalizeEmail(authRequest.Email);
+        if (_userRepository.GetByUsername(email) is not null)
+            return null;
+
+        var userId = Guid.NewGuid().ToString();
+        var user = _userRepository.CreateWithDoubles(
+            new(userId, email, _passwordHasher.Hash(authRequest.Password)),
+            new(DoublesList.IdFor(userId), "doubles", userId)
+        );
+        return user is null ? null : new AuthResponse(_tokenService.CreateToken(user));
     }
 
     public AuthResponse? CheckTokenValidity(string token) =>
         !string.IsNullOrEmpty(_tokenService.CheckToken(token))
-        ? new (token)
+        ? new(token)
         : null;
+
+    private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
 }

@@ -5,6 +5,11 @@
   flex-wrap: wrap;
 }
 
+.trade-card-list-empty {
+  font-style: italic;
+  opacity: 0.7;
+}
+
 .trade-card {
   margin: 1%;
   padding: 1%;

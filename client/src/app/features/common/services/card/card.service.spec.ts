@@ -68,7 +68,7 @@ describe('CardService', () => {
   it('should send GET request when search card', () => {
     service.search('anything').subscribe();
 
-    var req = httpTestingController.expectOne(
+    const req = httpTestingController.expectOne(
       'https://api.scryfall.com/cards/search?q="anything"',
       'URL to scryfall endpoint to search some cards from a query'
     );

@@ -51,12 +51,41 @@ public class WantlistRepositoryTests
     }
 
     [Fact]
+    public void Should_return_wantlists_of_requested_users_when_get_users_wantlists()
+    {
+        var first = new Wantlist("1", "name", "user1");
+        var second = new Wantlist("2", "name", "user2");
+        var other = new Wantlist("3", "name", "user3");
+        _dbContextMock.Setup(db => db.Set<Wantlist>())
+            .Returns(new[] { first, second, other }.AsDbSetMock().Object);
+
+        var actualWantlists = _wantlistRepository.GetUsersWantlists(["user1", "user2"]);
+
+        actualWantlists.Should().BeEquivalentTo([first, second]);
+    }
+
+    [Fact]
+    public void Should_not_return_double_wantlists_without_wanted_cards_when_found_tradeable()
+    {
+        var argumentWantlist = new Wantlist("id", "wantlists", "user")
+        { Cards = [new("id", "card")] };
+        var unrelatedDoubles = new Wantlist("id1_doubles", "doubles", "user1")
+        { Cards = [new("id1_doubles", "other card")] };
+        _dbContextMock.Setup(db => db.Set<Wantlist>())
+            .Returns(new[] { argumentWantlist, unrelatedDoubles }.AsDbSetMock().Object);
+
+        var actualWantlists = _wantlistRepository.FindTradeableDoubles("user", [argumentWantlist]);
+
+        actualWantlists.Should().BeEmpty();
+    }
+
+    [Fact]
     public void Should_return_double_wantlists_when_found_tradeable()
     {
         var argumentWantlist = new Wantlist("id", "wantlists", "user")
-        { Cards = [new ("id", "card")] };
+        { Cards = [new("id", "card")] };
         var expectedWantlist = new Wantlist("id1_doubles", "doubles", "user1")
-        { Cards = [new ("id1_doubles", "card")] };
+        { Cards = [new("id1_doubles", "card")] };
         var wantlistCardsSetMock = new Wantlist[] { argumentWantlist, expectedWantlist }.AsDbSetMock();
         _dbContextMock.Setup(db => db.Set<Wantlist>())
             .Returns(wantlistCardsSetMock.Object);
@@ -70,9 +99,9 @@ public class WantlistRepositoryTests
     public void Should_not_return_owner_double_wantlist_when_found_tradeable()
     {
         var argumentWantlist = new Wantlist("id", "wantlists", "user")
-        { Cards = [new ("id", "card")] };
+        { Cards = [new("id", "card")] };
         var otherWantlist = new Wantlist("id_doubles", "doubles", "user")
-        { Cards = [new ("id_doubles", "card")] };
+        { Cards = [new("id_doubles", "card")] };
         var wantlistCardsSetMock = new Wantlist[] { argumentWantlist, otherWantlist }.AsDbSetMock();
         _dbContextMock.Setup(db => db.Set<Wantlist>())
             .Returns(wantlistCardsSetMock.Object);
@@ -86,9 +115,9 @@ public class WantlistRepositoryTests
     public void Should_not_return_other_user_wantlist_when_found_tradeable()
     {
         var argumentWantlist = new Wantlist("id", "wantlists", "user")
-        { Cards = [new ("id", "card")] };
+        { Cards = [new("id", "card")] };
         var expectedWantlist = new Wantlist("id1", "my_wantlist", "user1")
-        { Cards = [new ("id1", "card")] };
+        { Cards = [new("id1", "card")] };
         var wantlistCardsSetMock = new Wantlist[] { argumentWantlist, expectedWantlist }.AsDbSetMock();
         _dbContextMock.Setup(db => db.Set<Wantlist>())
             .Returns(wantlistCardsSetMock.Object);

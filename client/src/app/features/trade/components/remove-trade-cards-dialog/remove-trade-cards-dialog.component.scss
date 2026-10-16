@@ -1,0 +1,13 @@
+.remove-trade-cards-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.remove-trade-cards-hint {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.remove-trade-cards-error {
+  color: #b00020;
+}

@@ -20,13 +20,13 @@ export class CardService {
 
   search(query: string): Observable<Card[]> {
     return this.httpClient
-      .get(`https://api.scryfall.com/cards/search?q="${query}"`)
+      .get<{ data: ScryfallCard[] }>(`https://api.scryfall.com/cards/search?q="${query}"`)
       .pipe(
-        map((res: any) => res.data.map(this.parseCard)),
+        map((res) => res.data.map(this.parseCard)),
         mergeMap((cards: Card[]) => {
           return combineLatest(cards.map(this.populateSets.bind(this)));
         }),
-        catchError((_) => {
+        catchError(() => {
           return of([]);
         })
       );
@@ -39,7 +39,7 @@ export class CardService {
         switchMap((card) => {
           return this.populateSets(this.parseCard(card));
         }),
-        catchError((_) => {
+        catchError(() => {
           return of(undefined);
         })
       );
@@ -51,7 +51,7 @@ export class CardService {
         `https://api.scryfall.com/cards/search?unique=prints&q=!%22${card.name}%22`
       )
       .pipe(
-        map((res: any) => {
+        map((res) => {
           return this.populateCardSets(
             card,
             res.data.map((set: ScryfallCardSet) => {
@@ -75,7 +75,7 @@ export class CardService {
       raw.name,
       raw.scryfall_uri,
       image,
-      raw.prices.eur,
+      eurPrice(raw),
       raw.set,
       `https://svgs.scryfall.io/sets/${raw.set}.svg`,
       []
@@ -88,4 +88,18 @@ export class CardService {
       sets,
     };
   }
+}
+
+// The one place that picks which Scryfall price a Card is worth. Cards are tracked by printing
+// without a foil flag (ADR 0001), so a Card is valued at its non-foil price: the finish most
+// copies are owned in, and the lower one, so a trade is not balanced on a foil premium nobody
+// claimed. A printing made only in foil has no non-foil price, and its foil price applies.
+// A missing price stays null rather than becoming 0.
+function eurPrice(raw: ScryfallCard): number | null {
+  const foilOnly =
+    !!raw.finishes?.includes('foil') && !raw.finishes.includes('nonfoil');
+  const price = foilOnly ? raw.prices.eur_foil : raw.prices.eur;
+  if (price == null) return null;
+  const euros = Number(price);
+  return Number.isFinite(euros) ? euros : null;
 }

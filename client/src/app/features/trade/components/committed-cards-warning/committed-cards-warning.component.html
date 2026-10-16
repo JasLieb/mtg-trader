@@ -1,0 +1,13 @@
+@if (warnings().length > 0) {
+<div class="committed-cards-warning">
+  @for (warning of warnings(); track warning.card.id) {
+  <p class="committed-card">
+    {{ warning.card.name }} is already committed with
+    {{ formatUserNames(warning.committedWith) }}.
+  </p>
+  }
+  <p class="committed-cards-hint">
+    You can still go ahead if you own more than one copy.
+  </p>
+</div>
+}

@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>Remove these cards from my lists</h2>
+<mat-dialog-content class="remove-trade-cards-content">
+  <p class="remove-trade-cards-hint">
+    Uncheck a card you still have in spare, or still look for.
+  </p>
+
+  <h3>You give</h3>
+  <p class="remove-trade-cards-hint">Checked cards leave your doubles list.</p>
+  @for (card of trade.givenCards; track card.id) {
+  <mat-checkbox
+    class="remove-trade-cards-given"
+    [checked]="givenCardIds().has(card.id)"
+    (change)="toggleGiven(card)"
+    >{{ card.name }}</mat-checkbox
+  >
+  }
+
+  <h3>You receive</h3>
+  <p class="remove-trade-cards-hint">
+    Checked cards leave every wantlist that holds them.
+  </p>
+  @for (card of trade.receivedCards; track card.id) {
+  <mat-checkbox
+    class="remove-trade-cards-received"
+    [checked]="receivedCardIds().has(card.id)"
+    (change)="toggleReceived(card)"
+    >{{ card.name }}</mat-checkbox
+  >
+  }
+
+  @if (refusal(); as refusal) {
+  <p class="remove-trade-cards-error">
+    @if (refusal.reason === 'not-available') {
+    No card was removed: this trade changed since it was loaded.
+    } @else {
+    The cards could not be removed from your lists.
+    }
+  </p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button
+    mat-button
+    class="remove-trade-cards-validate"
+    [disabled]="removing()"
+    (click)="remove()"
+  >
+    Remove from my lists
+  </button>
+</mat-dialog-actions>

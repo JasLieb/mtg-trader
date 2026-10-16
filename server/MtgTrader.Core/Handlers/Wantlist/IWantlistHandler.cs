@@ -4,8 +4,8 @@ namespace MtgTrader.Core.Handlers.Wantlist;
 
 public interface IWantlistHandler
 {
-    Entities.General.Wantlist? UpdateWantlist(UpdateWantlistRequest wantlistRequest);
+    Entities.General.Wantlist? UpdateWantlist(UpdateWantlistRequest wantlistRequest, string userId);
     Entities.General.Wantlist CreateWantlist(CreateWantlistRequest request, string userId);
     Entities.Business.Responses.WantlistsResponse GetWantlists(string userId);
-    void DeleteWantlist(string wantlistId);
+    bool DeleteWantlist(string wantlistId, string userId);
 }

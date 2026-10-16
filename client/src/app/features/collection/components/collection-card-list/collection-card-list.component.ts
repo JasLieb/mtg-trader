@@ -19,8 +19,8 @@ export class CollectionCardListComponent {
   readonly dialog = inject(MatDialog);
   cards = input<Card[]>([]);
 
-  onDeletedCard = output<Card>();
-  onUpdateCard = output<{ baseCard: Card; updatedCard: Card }>();
+  cardDeleted = output<Card>();
+  cardUpdated = output<{ baseCard: Card; updatedCard: Card }>();
 
   constructor(private cardService: CardService) {}
 
@@ -38,13 +38,13 @@ export class CollectionCardListComponent {
     subscribeOnce(dialogRef.afterClosed(), (result) => {
       if (result && baseCard.id !== result.card_id) {
         subscribeOnce(this.cardService.fetch(result.card_id), (updatedCard) => {
-          if (updatedCard) this.onUpdateCard.emit({ baseCard, updatedCard });
+          if (updatedCard) this.cardUpdated.emit({ baseCard, updatedCard });
         });
       }
     });
   }
 
   deleteCard(card: Card) {
-    this.onDeletedCard.emit(card);
+    this.cardDeleted.emit(card);
   }
 }

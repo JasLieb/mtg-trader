@@ -13,7 +13,7 @@ describe('AuthService', () => {
   let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
-    const _ = initLocalStorageForTests();
+    initLocalStorageForTests();
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
@@ -96,7 +96,11 @@ describe('AuthService', () => {
   });
 
   it('should update isConnected$ when fail login', (done) => {
-    service.login('anything@xyz.com', 'poep').subscribe({ error: () => {} });
+    service.login('anything@xyz.com', 'poep').subscribe({
+      error: () => {
+        /* the failed login is what this test expects */
+      },
+    });
 
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/auth'
@@ -145,7 +149,11 @@ describe('AuthService', () => {
   });
 
   it('should update isConnected$ when fail register', (done) => {
-    service.register('anything@xyz.com', 'poep').subscribe({ error: () => {} });
+    service.register('anything@xyz.com', 'poep').subscribe({
+      error: () => {
+        /* the failed registration is what this test expects */
+      },
+    });
 
     const reqs = httpTestingController.match(
       (req) => req.method == 'POST' && req.url == 'api/user'

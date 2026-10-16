@@ -6,8 +6,14 @@ public interface IWantlistRepository : IBaseRepository<Wantlist>
 {
     bool IsWantlistExist(string wantlistId);
     IEnumerable<Wantlist> GetUserWantlists(string userId);
+    IEnumerable<Wantlist> GetUsersWantlists(IEnumerable<string> userIds);
+    Wantlist? GetDoublesList(string userId);
     IEnumerable<Wantlist> FindTradeableDoubles(
         string ownerId,
         IEnumerable<Wantlist> expectedWantlists
+    );
+    IEnumerable<string> FindUserIdsWantingCards(
+        string userId,
+        IEnumerable<string> cardIds
     );
 }

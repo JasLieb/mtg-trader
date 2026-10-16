@@ -1,4 +1,4 @@
-import { Component, EventEmitter, input, Input, Output, signal } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Card } from '../../../common/models/card';
 import { CardComponent } from "../../../common/components/card/card.component";
 
@@ -10,4 +10,5 @@ import { CardComponent } from "../../../common/components/card/card.component";
 })
 export class TradeCardListComponent {
   cards = input<Card[]>([]);
+  emptyMessage = input('');
 }
