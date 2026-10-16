@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "blockReadsOutsideWorkingDirectories": false,
+    "blockReadsOutsideWorkingDirectories": true,
     "deny": [
       "Edit(/server/MtgTrader.Infrastructure/Migrations/**)",
       "Edit(/database/database.sql)",

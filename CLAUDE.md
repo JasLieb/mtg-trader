@@ -8,13 +8,11 @@ MtgTrader lets Magic: The Gathering players keep wantlists and a list of tradeab
 
 ### Server (run from `server/`)
 - Run API: `dotnet run --project MtgTrader.WebApi` (dev profile on `http://localhost:5161`, https profile on `https://localhost:7175`; Swagger is served in Development)
-- Single test class or case: `dotnet test --filter "FullyQualifiedName~WantlistHandlerTests"`
 - New migration: `dotnet ef migrations add <Name> --project MtgTrader.Infrastructure --startup-project MtgTrader.WebApi`. The API applies pending migrations when it starts. `server/README.md` gives this as `migrations update`, which is not a valid command.
 
 ### Client (run from `client/`)
 - Dev server: `npm start` (http://localhost:4200). `src/proxy.conf.json` forwards `/api/*` and the `/chathub` websocket to port 5161, so run the API's http profile alongside it.
 - Tests as CI runs them: `npm test -- --watch=false --browsers=ChromeHeadless`
-- Single spec: `npm test -- --include src/app/features/trade/services/trade/trade.service.spec.ts`
 
 ### Hooks (`.claude/settings.json`)
 - `protect-files.js` refuses Claude's edits to the files listed under "Leave alone" below. `permissions.deny` in the same settings file blocks the same paths, so a change to that list belongs in all three places.
@@ -41,3 +39,17 @@ Leave alone:
 - `client/package-lock.json`, which changes only through npm.
 
 Change both sides together: request/response shapes, the chat hub's method and event names, and the `{userId}_doubles` id format each have a counterpart on the other side of the API.
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live as local markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five default triage roles, each label named after its role (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.

@@ -5,5 +5,3 @@ Shared state (the user's token, wantlists, doubles and chats) lives in root-prov
 Backend calls build their URL with `makeApiUrl`. In development `environment.apiURl` is empty, so the route stays relative and the dev proxy handles it; other environments prefix their API host. `authInterceptor` attaches the JWT to any URL containing the substring `api/`. That is what keeps the token away from Scryfall, and it also means a third-party URL containing `api/` would receive the token.
 
 For a request whose result is used once, `subscribeOnce` and `tapOnce` (`core/utils/subscribeExtensions.ts`) complete after the first value, so there is nothing to tear down.
-
-Card data comes from Scryfall through `CardService` in `features/common/services/card/`. `features/common/` holds what more than one feature uses, such as the shared `card` component.
