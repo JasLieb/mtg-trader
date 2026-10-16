@@ -1,0 +1,29 @@
+<div class="proposals-home-container">
+  @for (proposal of proposals(); track proposal.id) {
+  <mat-card class="proposal">
+    <mat-card-header>
+      <mat-card-title class="proposal-title">
+        {{ proposal.isSent ? "Sent to" : "Received from" }}
+        {{ proposal.otherUserName }}
+      </mat-card-title>
+      <mat-card-subtitle class="proposal-state">
+        {{ proposal.state }} · {{ proposal.sentAt | date : "short" }}
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div>You give :</div>
+      <app-trade-card-list
+        class="proposal-given"
+        [cards]="proposal.givenCards"
+      ></app-trade-card-list>
+      <div>You receive :</div>
+      <app-trade-card-list
+        class="proposal-received"
+        [cards]="proposal.receivedCards"
+      ></app-trade-card-list>
+    </mat-card-content>
+  </mat-card>
+  } @empty {
+  <p class="proposals-empty">No trade proposal yet.</p>
+  }
+</div>

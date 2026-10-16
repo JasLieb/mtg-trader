@@ -18,6 +18,13 @@
       <mat-action-row>
         <button
           mat-button
+          class="trade-user-propose"
+          (click)="proposeTrade(user)"
+        >
+          Propose a trade
+        </button>
+        <button
+          mat-button
           class="trade-user-action"
           (click)="startChat(user)"
         >

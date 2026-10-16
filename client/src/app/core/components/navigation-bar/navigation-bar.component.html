@@ -26,6 +26,13 @@
     <mat-list-item
       class="navigation-bar-item"
       role="listitem"
+      [class.navigation-bar-item-selected]="isProposalsTab()"
+      (click)="navigateProposals()"
+      >Proposals</mat-list-item
+    >
+    <mat-list-item
+      class="navigation-bar-item"
+      role="listitem"
       [class.navigation-bar-item-selected]="isChatTab()"
       (click)="navigateChat()"
       >Chat</mat-list-item

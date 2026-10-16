@@ -51,6 +51,59 @@ namespace MtgTrader.Infrastructure.Migrations
                     b.ToTable("ChatMessages");
                 });
 
+            modelBuilder.Entity("MtgTrader.Core.Entities.General.TradeProposal", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProposerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RecipientId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProposerId");
+
+                    b.HasIndex("RecipientId");
+
+                    b.ToTable("TradeProposals");
+                });
+
+            modelBuilder.Entity("MtgTrader.Core.Entities.General.TradeProposalCard", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CardId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("GivenBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TradeProposalId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TradeProposalId");
+
+                    b.ToTable("TradeProposalCards");
+                });
+
             modelBuilder.Entity("MtgTrader.Core.Entities.General.User", b =>
                 {
                     b.Property<string>("Id")
@@ -129,6 +182,30 @@ namespace MtgTrader.Infrastructure.Migrations
                     b.Navigation("Recipient");
                 });
 
+            modelBuilder.Entity("MtgTrader.Core.Entities.General.TradeProposal", b =>
+                {
+                    b.HasOne("MtgTrader.Core.Entities.General.User", null)
+                        .WithMany()
+                        .HasForeignKey("ProposerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MtgTrader.Core.Entities.General.User", null)
+                        .WithMany()
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MtgTrader.Core.Entities.General.TradeProposalCard", b =>
+                {
+                    b.HasOne("MtgTrader.Core.Entities.General.TradeProposal", null)
+                        .WithMany("Cards")
+                        .HasForeignKey("TradeProposalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MtgTrader.Core.Entities.General.WantlistCards", b =>
                 {
                     b.HasOne("MtgTrader.Core.Entities.General.Wantlist", null)
@@ -136,6 +213,11 @@ namespace MtgTrader.Infrastructure.Migrations
                         .HasForeignKey("WantlistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MtgTrader.Core.Entities.General.TradeProposal", b =>
+                {
+                    b.Navigation("Cards");
                 });
 
             modelBuilder.Entity("MtgTrader.Core.Entities.General.Wantlist", b =>

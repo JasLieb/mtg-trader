@@ -16,6 +16,7 @@ import { NavigationService } from '../../services/navigation/navigation.service'
 export class NavigationBarComponent {
   currentRoute: Signal<string>;
   isTradeTab: Signal<boolean>;
+  isProposalsTab: Signal<boolean>;
   isChatTab: Signal<boolean>;
   isWantlistsTab: Signal<boolean>;
   isDoublesTab: Signal<boolean>;
@@ -34,11 +35,18 @@ export class NavigationBarComponent {
       () => this.currentRoute() === Routes.DoublesUrl
     );
     this.isTradeTab = computed(() => this.currentRoute() === Routes.TradeUrl);
+    this.isProposalsTab = computed(
+      () => this.currentRoute() === Routes.ProposalsUrl
+    );
     this.isChatTab = computed(() => this.currentRoute() === Routes.ChatUrl);
   }
 
   navigateTrade() {
     this.navigationService.navigateTrade();
+  }
+
+  navigateProposals() {
+    this.navigationService.navigateProposals();
   }
 
   navigateWantlists() {

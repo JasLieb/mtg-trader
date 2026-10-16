@@ -19,6 +19,12 @@ public class WantlistRepository(ApplicationContext dbContext)
         return [.. DbSet.Where(x => ids.Contains(x.OwnerId)).Include(x => x.Cards)];
     }
 
+    public Wantlist? GetDoublesList(string userId)
+    {
+        var doublesListId = DoublesList.IdFor(userId);
+        return DbSet.Include(x => x.Cards).FirstOrDefault(x => x.Id == doublesListId);
+    }
+
     public bool IsWantlistExist(string wantlistId)
     {
         return DbSet.Any(x => x.Id == wantlistId);

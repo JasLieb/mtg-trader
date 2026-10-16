@@ -6,7 +6,7 @@ Paths as of October 2026. If a path has moved, find it again with Grep before re
 
 | Layer | Where | Notes |
 |---|---|---|
-| Entity | `MtgTrader.Core/Entities/General/`: `User`, `Wantlist`, `WantlistCards`, `ChatMessage` | Primary constructors bound by EF by parameter name |
+| Entity | `MtgTrader.Core/Entities/General/`: `User`, `Wantlist`, `WantlistCards`, `ChatMessage`, `TradeProposal`, `TradeProposalCard` | Primary constructors bound by EF by parameter name |
 | EF configuration | `MtgTrader.Infrastructure/Contexts/ApplicationContext.cs` | `DbSet` properties and `OnModelCreating` (fluent API) |
 | Migrations | `MtgTrader.Infrastructure/Migrations/` | Generated only. Protected by `protect-files.js` and `permissions.deny` |
 | Repository | interface in `MtgTrader.Core/Repositories/`, implementation in `MtgTrader.Infrastructure/Repositories/` | Derives from `BaseRepository<T>` and queries through `DbSet`. Every write saves immediately |
@@ -27,6 +27,7 @@ A new constructor parameter has to be passed at each of these sites, plus the te
 | `Wantlist` | `AuthHandler.CreateUser` (the doubles list), `WantlistHandler` (user wantlists) |
 | `WantlistCards` | `WantlistCardsRepository` (from a wantlist id and a card id) |
 | `ChatMessage` | `ChatHandler.AddMessage` |
+| `TradeProposal`, `TradeProposalCard` | `TradeProposalHandler.SendProposal` (the cards are added with their proposal) |
 
 ## Server record ↔ client model
 
@@ -40,6 +41,8 @@ Nothing generates the client types; each pair is maintained by hand. Paths on th
 | `UpdateWantlistRequest` | inline object `{ wantlistId, cards }` in `WantlistService.updateWantlist` | `WantlistService` | none |
 | `WantlistsResponse` / `WantlistResponse` | `features/collection/models/wantlist-response.ts` `WantlistsResponse`; `features/collection/models/wantlist.ts` `WantlistMin` | `WantlistService` (GET, POST, PUT, DELETE all return it) | `Wantlist` (cards as `Card[]`) and `UserWantlists`, in `WantlistService.makeUserWantlists` |
 | `TradeableResponse` / `UserTradeResponse` | `features/trade/models/tradeable-response.ts`; `features/trade/models/user-trader.ts` `UserTraderMin` | `features/trade/services/trade/trade.service.ts` | `UserTrader` (cards as `Card[]`), in `TradeService.populateUser` |
+| `SendTradeProposalRequest` | `features/trade/models/trade-proposal.ts` `SendTradeProposalRequest` | `features/trade/services/trade-proposal/trade-proposal.service.ts` (`send`) | none |
+| `TradeProposalsResponse` / `TradeProposalResponse` | `features/trade/models/trade-proposal.ts` `TradeProposalsResponse`, `TradeProposalMin` | `TradeProposalService` (GET and POST both return it) | `TradeProposal` (cards as `Card[]`), in `TradeProposalService.populateProposals` |
 | `ChatsResponse` / `ChatResponse` / `ChatMessageResponse` | `features/trade/models/chat.ts` `Chats`, `ChatDto`; `features/trade/models/chat-message.ts` `ChatMessage` | `features/trade/services/chat/chathub.proxy.ts` (`LoadHistory`, `ReceiveMessage`) | `Chat` (recipient as `UserTrader`) |
 
 A field missing from the "richer" type's mapping is dropped silently: the mapping code builds a new object field by field. For example, `makeUserWantlists` copies only `id`, `name` and `cards`.

@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using MtgTrader.Core.Handlers.Auth;
 using MtgTrader.Core.Handlers.Chat;
 using MtgTrader.Core.Handlers.Trade;
+using MtgTrader.Core.Handlers.TradeProposals;
 using MtgTrader.Core.Handlers.Wantlist;
 using MtgTrader.Core.Repositories;
 using MtgTrader.Core.Services;
@@ -30,9 +31,11 @@ public static class ServicesExtensions
             .AddTransient<IWantlistRepository, WantlistRepository>()
             .AddTransient<IWantlistCardsRepository, WantlistCardsRepository>()
             .AddTransient<IChatRepository, ChatRepository>()
+            .AddTransient<ITradeProposalRepository, TradeProposalRepository>()
             .AddScoped<IAuthHandler, AuthHandler>()
             .AddScoped<IWantlistHandler, WantlistHandler>()
             .AddScoped<ITradeHandler, TradeHandler>()
+            .AddScoped<ITradeProposalHandler, TradeProposalHandler>()
             .AddScoped<IChatHandler, ChatHandler>();
 
     public static IServiceCollection RegisterInfrastructure(

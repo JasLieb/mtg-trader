@@ -9,6 +9,8 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options) : 
     public DbSet<Wantlist> Wantlists { get; set; }
     public DbSet<WantlistCards> WantlistCards { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<TradeProposal> TradeProposals { get; set; }
+    public DbSet<TradeProposalCard> TradeProposalCards { get; set; }
 
     override protected void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,5 +35,28 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options) : 
         modelBuilder.Entity<User>().HasIndex(e => e.Username).IsUnique();
         modelBuilder.Entity<User>().Ignore(e => e.SentMessages);
         modelBuilder.Entity<User>().Ignore(e => e.ReceivedMessages);
+
+        modelBuilder.Entity<TradeProposal>()
+            .HasMany(e => e.Cards)
+            .WithOne()
+            .HasForeignKey(e => e.TradeProposalId);
+        modelBuilder.Entity<TradeProposal>()
+            .Property(e => e.State)
+            .HasConversion<string>();
+        // Restrict, not cascade: what deleting an account does to its trades is still to decide (backlog ticket 21).
+        modelBuilder.Entity<TradeProposal>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(e => e.ProposerId)
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TradeProposal>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(e => e.RecipientId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TradeProposalCard>()
+            .Property(e => e.GivenBy)
+            .HasConversion<string>();
     }
 }

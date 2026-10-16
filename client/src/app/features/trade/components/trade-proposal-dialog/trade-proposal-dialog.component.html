@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>Propose a trade to {{ partner.name }}</h2>
+<mat-dialog-content class="trade-proposal-dialog-content">
+  <h3>You receive</h3>
+  @for (card of partner.doubles; track card.id) {
+  <mat-checkbox
+    class="trade-proposal-received"
+    [checked]="receivedCardIds().has(card.id)"
+    (change)="toggleReceived(card)"
+    >{{ card.name }}</mat-checkbox
+  >
+  } @empty {
+  <p class="trade-proposal-none">none of {{ partner.name }}'s doubles</p>
+  }
+
+  <h3>You give</h3>
+  @for (card of partner.wanted; track card.id) {
+  <mat-checkbox
+    class="trade-proposal-given"
+    [checked]="givenCardIds().has(card.id)"
+    (change)="toggleGiven(card)"
+    >{{ card.name }}</mat-checkbox
+  >
+  } @empty {
+  <p class="trade-proposal-none">none of your doubles</p>
+  }
+
+  @if (!hasBothSides()) {
+  <p class="trade-proposal-hint">Pick at least one card on each side.</p>
+  }
+  @if (sendFailed()) {
+  <p class="trade-proposal-error">The trade proposal could not be sent.</p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button
+    mat-button
+    class="trade-proposal-send"
+    [disabled]="!hasBothSides() || sending()"
+    (click)="send()"
+  >
+    Send
+  </button>
+</mat-dialog-actions>

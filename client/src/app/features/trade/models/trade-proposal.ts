@@ -1,0 +1,33 @@
+import { Card } from '../../common/models/card';
+
+export type TradeProposalState = 'Pending' | 'Accepted' | 'Declined' | 'Withdrawn';
+
+// TradeProposalResponse on the server, seen from the connected user: isSent tells whether they
+// made the proposal, givenCards are the cards they give and receivedCards the cards they receive.
+export interface TradeProposalMin {
+  id: string;
+  isSent: boolean;
+  otherUserId: string;
+  otherUserName: string;
+  givenCards: string[];
+  receivedCards: string[];
+  state: TradeProposalState;
+  sentAt: string;
+}
+
+export interface TradeProposalsResponse {
+  proposals: TradeProposalMin[];
+}
+
+export interface TradeProposal
+  extends Omit<TradeProposalMin, 'givenCards' | 'receivedCards'> {
+  givenCards: Card[];
+  receivedCards: Card[];
+}
+
+// Seen from the proposer: givenCards come from their doubles list, receivedCards from the recipient's.
+export interface SendTradeProposalRequest {
+  recipientId: string;
+  givenCards: string[];
+  receivedCards: string[];
+}
