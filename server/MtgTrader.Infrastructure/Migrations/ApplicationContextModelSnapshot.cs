@@ -60,9 +60,17 @@ namespace MtgTrader.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("ProposerRemovedCardsAt")
+                        .IsConcurrencyToken()
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("RecipientId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("RecipientRemovedCardsAt")
+                        .IsConcurrencyToken()
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("RespondedAt")
                         .HasColumnType("timestamp with time zone");

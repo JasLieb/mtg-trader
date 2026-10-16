@@ -23,6 +23,7 @@ describe('ProposalsHomeComponent value of each side', () => {
     receivedCards: [makeCard('ragavan', 'Ragavan', '', '', 45.5)],
     state: 'Pending',
     sentAt: '2026-10-16T09:30:00Z',
+    hasRemovedCards: false,
   };
 
   beforeEach(async () => {

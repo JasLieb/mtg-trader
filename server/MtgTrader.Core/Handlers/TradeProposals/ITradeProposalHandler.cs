@@ -11,4 +11,5 @@ public interface ITradeProposalHandler
     TradeProposalActionResult AcceptProposal(string userId, string proposalId);
     TradeProposalActionResult DeclineProposal(string userId, string proposalId);
     TradeProposalActionResult WithdrawProposal(string userId, string proposalId);
+    TradeCardsRemovalOutcome RemoveTradeCards(string userId, string proposalId, RemoveTradeCardsRequest request);
 }

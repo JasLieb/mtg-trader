@@ -20,6 +20,8 @@ export interface TradeProposalMin {
   receivedCards: string[];
   state: TradeProposalState;
   sentAt: string;
+  // On a Trade: whether the connected user has gone through "Remove these cards from my lists".
+  hasRemovedCards: boolean;
 }
 
 export interface TradeProposalsResponse {

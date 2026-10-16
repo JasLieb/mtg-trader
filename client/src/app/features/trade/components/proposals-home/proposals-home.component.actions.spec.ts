@@ -23,6 +23,7 @@ describe('ProposalsHomeComponent actions', () => {
     receivedCards: [makeCard('sol-ring', 'Sol Ring')],
     state: 'Pending',
     sentAt: '2026-10-16T09:30:00Z',
+    hasRemovedCards: false,
   };
   // The same proposal, seen by Alice.
   const sentToBob: TradeProposal = {
@@ -70,10 +71,13 @@ describe('ProposalsHomeComponent actions', () => {
     return fixture.nativeElement.querySelector(selector);
   }
 
-  // The actions on the proposal itself; the chat link, offered on every proposal, is left out.
+  // The actions on the proposal itself; the chat link, offered on every proposal, is left out, and so
+  // is the step that follows a Trade, covered by proposals-home.component.remove-cards.spec.ts.
   function actions(): string[] {
     return Array.from<HTMLElement>(
-      fixture.nativeElement.querySelectorAll('mat-card-actions button:not(.proposal-chat)')
+      fixture.nativeElement.querySelectorAll(
+        'mat-card-actions button:not(.proposal-chat):not(.proposal-remove-cards)'
+      )
     ).map((action) => action.textContent?.trim() ?? '');
   }
 

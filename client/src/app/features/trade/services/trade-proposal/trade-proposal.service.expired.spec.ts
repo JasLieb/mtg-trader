@@ -31,6 +31,7 @@ describe('TradeProposalService expired proposals', () => {
     receivedCards: ['sol-ring'],
     state: 'Pending',
     sentAt: '2026-10-09T09:30:00Z',
+    hasRemovedCards: false,
   };
 
   beforeEach(() => {

@@ -31,6 +31,7 @@ describe('TradeProposalService actions', () => {
     receivedCards: ['sol-ring'],
     state: 'Pending',
     sentAt: '2026-10-16T09:30:00Z',
+    hasRemovedCards: false,
   };
 
   beforeEach(() => {

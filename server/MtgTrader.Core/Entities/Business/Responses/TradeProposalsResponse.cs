@@ -15,4 +15,8 @@ public record TradeProposalResponse(
     IEnumerable<string> ReceivedCards,
     string State,
     DateTime SentAt
-);
+)
+{
+    // On a Trade: whether the user asking has gone through "Remove these cards from my lists".
+    public bool HasRemovedCards { get; init; }
+}

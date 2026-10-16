@@ -61,6 +61,12 @@ export class WantlistService {
     );
   }
 
+  // Rebuilds the wantlists and the doubles from a full WantlistsResponse that another feature's
+  // request answered with, as removing a Trade's cards from my lists does.
+  publish(response: WantlistsResponse) {
+    this.subscribeWantlistResponse(of(response));
+  }
+
   private refreshWantlists() {
     this.subscribeWantlistResponse(
       this.http.get<WantlistsResponse>(this.apiWantlistUrl)

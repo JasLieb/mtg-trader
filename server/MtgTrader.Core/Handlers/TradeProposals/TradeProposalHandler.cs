@@ -88,6 +88,52 @@ public class TradeProposalHandler(
     public TradeProposalActionResult WithdrawProposal(string userId, string proposalId) =>
         Act(userId, proposalId, TradeProposalSide.Proposer, TradeProposalState.Withdrawn);
 
+    // "Remove these cards from my lists", done once by each User of a Trade, on their own lists only.
+    // The checked Cards I give leave my Doubles list; the checked Cards I receive leave every one of my
+    // Wantlists that holds them. The step is marked done even when nothing is checked.
+    public TradeCardsRemovalOutcome RemoveTradeCards(
+        string userId,
+        string proposalId,
+        RemoveTradeCardsRequest request
+    )
+    {
+        var trade = _tradeProposalRepository.FindProposal(proposalId);
+        if (trade is null || (trade.ProposerId != userId && trade.RecipientId != userId))
+            return TradeCardsRemovalOutcome.NotFound;
+        if (CurrentState(trade) != TradeProposalState.Accepted)
+            return TradeCardsRemovalOutcome.NotATrade;
+        if (trade.HasRemovedCards(userId))
+            return TradeCardsRemovalOutcome.AlreadyDone;
+
+        // Whatever the client sends, only the Trade's own Cards, each on its side, may leave my lists.
+        var (mySide, otherSide) = trade.ProposerId == userId
+            ? (TradeProposalSide.Proposer, TradeProposalSide.Recipient)
+            : (TradeProposalSide.Recipient, TradeProposalSide.Proposer);
+        var givenCards = request.GivenCards.ToHashSet();
+        var receivedCards = request.ReceivedCards.ToHashSet();
+        if (!givenCards.IsSubsetOf(CardsGivenBy(trade, mySide))
+            || !receivedCards.IsSubsetOf(CardsGivenBy(trade, otherSide)))
+            return TradeCardsRemovalOutcome.NotTradeCards;
+
+        // The Doubles list is not one of the Wantlists a received Card leaves: receiving one more copy
+        // of a Card leaves my spare copies of it as they were.
+        var myLists = _wantlistRepository.GetUserWantlists(userId).ToList();
+        List<WantlistCards> listCards =
+        [
+            .. myLists.Where(DoublesList.IsDoublesList)
+                .SelectMany(list => list.Cards)
+                .Where(card => givenCards.Contains(card.CardId)),
+            .. myLists.Where(list => !DoublesList.IsDoublesList(list))
+                .SelectMany(list => list.Cards)
+                .Where(card => receivedCards.Contains(card.CardId)),
+        ];
+
+        // One write for every removal and the mark, so the step succeeds or fails as a whole.
+        return _tradeProposalRepository.TryRemoveTradeCards(trade, mySide, listCards, _dateTimeService.Now)
+            ? TradeCardsRemovalOutcome.Done
+            : TradeCardsRemovalOutcome.Conflict;
+    }
+
     // Moves a pending proposal to its final state, when the user is the side allowed to.
     private TradeProposalActionResult Act(
         string userId,
@@ -185,6 +231,9 @@ public class TradeProposalHandler(
             proposal.Cards.Where(card => card.GivenBy != mySide).Select(card => card.CardId),
             CurrentState(proposal).ToString(),
             proposal.SentAt
-        );
+        )
+        {
+            HasRemovedCards = proposal.HasRemovedCards(userId)
+        };
     }
 }

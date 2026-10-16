@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Entities.Business.Responses;
 using MtgTrader.Core.Handlers.TradeProposals;
+using MtgTrader.Core.Handlers.Wantlist;
 using MtgTrader.WebApi.Extensions;
 
 namespace MtgTrader.WebApi.Controllers;
@@ -10,10 +11,12 @@ namespace MtgTrader.WebApi.Controllers;
 [ApiController]
 [Route("api/trade-proposals")]
 public class TradeProposalController(
-    ITradeProposalHandler tradeProposalHandler
+    ITradeProposalHandler tradeProposalHandler,
+    IWantlistHandler wantlistHandler
 ) : ControllerBase
 {
     private readonly ITradeProposalHandler _tradeProposalHandler = tradeProposalHandler;
+    private readonly IWantlistHandler _wantlistHandler = wantlistHandler;
 
     [HttpGet]
     [Authorize]
@@ -88,6 +91,38 @@ public class TradeProposalController(
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public ActionResult<TradeProposalsResponse> Withdraw(string proposalId) =>
         Act(userId => _tradeProposalHandler.WithdrawProposal(userId, proposalId));
+
+    [HttpPost("{proposalId}/remove-cards")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public ActionResult<TradeCardsRemovedResponse> RemoveCards(
+        string proposalId,
+        [FromBody] RemoveTradeCardsRequest request
+    )
+    {
+        var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
+        if (userId == null) return Unauthorized();
+        return _tradeProposalHandler.RemoveTradeCards(userId, proposalId, request) switch
+        {
+            // Like a wantlist mutation, the step answers with all of the user's lists, and with their
+            // proposals, where it now shows as done.
+            TradeCardsRemovalOutcome.Done => Ok(
+                new TradeCardsRemovedResponse(
+                    _wantlistHandler.GetWantlists(userId).Wantlists,
+                    _tradeProposalHandler.GetProposals(userId).Proposals
+                )
+            ),
+            TradeCardsRemovalOutcome.NotFound => NotFound("Trade proposal not found"),
+            TradeCardsRemovalOutcome.NotTradeCards => BadRequest("These cards are not part of this trade"),
+            TradeCardsRemovalOutcome.NotATrade => Conflict("This trade proposal has not been accepted"),
+            TradeCardsRemovalOutcome.AlreadyDone => Conflict("The cards of this trade were already removed from your lists"),
+            _ => Conflict("This trade or your lists changed meanwhile: no card was removed"),
+        };
+    }
 
     // Like the POST, a successful action answers with all of the user's proposals.
     private ActionResult<TradeProposalsResponse> Act(Func<string, TradeProposalActionResult> action)

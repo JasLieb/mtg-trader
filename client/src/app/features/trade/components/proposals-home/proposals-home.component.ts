@@ -3,9 +3,11 @@ import { Component, inject, signal, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { NavigationService } from '../../../../core/services/navigation/navigation.service';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
+import { canRemoveCards } from '../../models/trade-cards-removal';
 import { TradeProposal } from '../../models/trade-proposal';
 import {
   canAnswer,
@@ -16,6 +18,7 @@ import {
 import { EuroTotalPipe } from '../../pipes/euro-total.pipe';
 import { ChatService } from '../../services/chat/chat.service';
 import { TradeProposalService } from '../../services/trade-proposal/trade-proposal.service';
+import { RemoveTradeCardsDialogComponent } from '../remove-trade-cards-dialog/remove-trade-cards-dialog.component';
 import { TradeCardListComponent } from '../trade-card-list/trade-card-list.component';
 
 @Component({
@@ -89,6 +92,18 @@ export class ProposalsHomeComponent {
       wanted: proposal.givenCards,
     });
     this.navigationService.navigateChat(proposal.otherUserId);
+  }
+
+  // Each User of a Trade removes its cards from their own lists, once. The dialog sends the step
+  // itself, and TradeProposalService then publishes the proposals where it shows as done.
+  readonly canRemoveCards = canRemoveCards;
+  private readonly dialog = inject(MatDialog);
+
+  removeCards(trade: TradeProposal) {
+    this.dialog.open<RemoveTradeCardsDialogComponent, TradeProposal, boolean>(
+      RemoveTradeCardsDialogComponent,
+      { data: trade }
+    );
   }
 
   private act(

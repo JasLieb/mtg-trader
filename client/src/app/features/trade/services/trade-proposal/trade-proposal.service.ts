@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -15,7 +15,13 @@ import { makeApiUrl } from '../../../../core/utils/makeUrl';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { Card } from '../../../common/models/card';
 import { CardService } from '../../../common/services/card/card.service';
+import { WantlistService } from '../../../collection/services/wantlist/wantlist.service';
 import { PartnerDoublesResponse } from '../../models/partner-doubles-response';
+import {
+  RemoveTradeCardsRequest,
+  TradeCardsRemovalRefusal,
+  TradeCardsRemovedResponse,
+} from '../../models/trade-cards-removal';
 import {
   SendTradeProposalRequest,
   TradeProposal,
@@ -43,6 +49,10 @@ export class TradeProposalService {
   pendingReceivedCount$ = this.pendingReceivedCountBehavior.asObservable();
 
   constructor(private http: HttpClient, private cardService: CardService) {}
+
+  // WantlistService is looked up only when a Trade's cards are removed: it loads the wantlists as
+  // soon as it is created, which nothing else here needs.
+  private readonly injector = inject(Injector);
 
   // Reloads only the counter: unlike refresh, it fetches no card from Scryfall,
   // so the menu can call it on every navigation.
@@ -99,6 +109,30 @@ export class TradeProposalService {
 
   withdraw(proposalId: string): Observable<TradeProposal[]> {
     return this.act(proposalId, 'withdraw');
+  }
+
+  // "Remove these cards from my lists" on a Trade. The server answers with the user's lists and
+  // proposals in full: the lists go to WantlistService, so the Wantlists and Doubles pages are up to
+  // date without a reload, and the proposals, where the step now shows as done, are published like
+  // any action's. A refused step fails with a TradeCardsRemovalRefusal.
+  removeCards(
+    proposalId: string,
+    request: RemoveTradeCardsRequest
+  ): Observable<TradeProposal[]> {
+    const url = `${this.apiTradeProposalsUrl}/${encodeURIComponent(proposalId)}/remove-cards`;
+    return this.publishProposals(
+      this.http.post<TradeCardsRemovedResponse>(url, request).pipe(
+        tap((res) =>
+          this.injector.get(WantlistService).publish({ wantlists: res.wantlists })
+        ),
+        catchError((error: unknown) => {
+          const refusal = toRemovalRefusal(error);
+          // The trade changed since it was loaded: reload to show what became of it.
+          if (refusal.reason === 'not-available') this.refresh();
+          return throwError(() => refusal);
+        })
+      )
+    );
   }
 
   private act(
@@ -188,4 +222,10 @@ function toRefusal(error: unknown): TradeProposalRefusal {
     default:
       return { reason: 'failed' };
   }
+}
+
+function toRemovalRefusal(error: unknown): TradeCardsRemovalRefusal {
+  return error instanceof HttpErrorResponse && error.status === 409
+    ? { reason: 'not-available' }
+    : { reason: 'failed' };
 }

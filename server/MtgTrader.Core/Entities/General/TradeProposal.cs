@@ -15,8 +15,18 @@ public class TradeProposal(
     public TradeProposalState State { get; set; } = state;
     // When the proposal stopped being pending: accepted, declined or withdrawn. Null while pending.
     public DateTime? RespondedAt { get; set; }
+    // When each User went through "Remove these cards from my lists" on this Trade. Null until they do.
+    public DateTime? ProposerRemovedCardsAt { get; set; }
+    public DateTime? RecipientRemovedCardsAt { get; set; }
 
     public ICollection<TradeProposalCard> Cards { get; set; } = [];
+
+    // Whether this User has gone through "Remove these cards from my lists" on this Trade.
+    // False for a User who is neither its proposer nor its recipient.
+    public bool HasRemovedCards(string userId) =>
+        (userId == ProposerId ? ProposerRemovedCardsAt
+            : userId == RecipientId ? RecipientRemovedCardsAt
+            : null) is not null;
 }
 
 public enum TradeProposalState

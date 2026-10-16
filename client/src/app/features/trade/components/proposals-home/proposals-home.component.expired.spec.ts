@@ -25,6 +25,7 @@ describe('ProposalsHomeComponent expired proposals', () => {
     receivedCards: [makeCard('sol-ring', 'Sol Ring')],
     state: 'Pending',
     sentAt: '2026-10-09T09:30:00Z',
+    hasRemovedCards: false,
   };
   // The same proposal, seen by Alice.
   const sentToBob: TradeProposal = {

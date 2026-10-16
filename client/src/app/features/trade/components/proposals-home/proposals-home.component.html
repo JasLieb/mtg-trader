@@ -79,6 +79,15 @@
         Withdraw
       </button>
       }
+      @if (canRemoveCards(proposal)) {
+      <button
+        mat-button
+        class="proposal-remove-cards"
+        (click)="removeCards(proposal)"
+      >
+        Remove these cards from my lists
+      </button>
+      }
     </mat-card-actions>
   </mat-card>
   } @empty {
