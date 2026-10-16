@@ -11,4 +11,8 @@ public interface IWantlistRepository : IBaseRepository<Wantlist>
         string ownerId,
         IEnumerable<Wantlist> expectedWantlists
     );
+    IEnumerable<string> FindUserIdsWantingCards(
+        string userId,
+        IEnumerable<string> cardIds
+    );
 }

@@ -10,4 +10,5 @@ import { CardComponent } from "../../../common/components/card/card.component";
 })
 export class TradeCardListComponent {
   cards = input<Card[]>([]);
+  emptyMessage = input('');
 }

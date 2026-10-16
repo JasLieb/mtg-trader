@@ -6,9 +6,15 @@
         <mat-panel-title class="trade-user">{{ user.name }}</mat-panel-title>
       </mat-expansion-panel-header>
       <div>You're looking for :</div>
-      <app-trade-card-list [cards]="user.doubles"></app-trade-card-list>
+      <app-trade-card-list
+        [cards]="user.doubles"
+        emptyMessage="none of {{ user.name }}'s doubles"
+      ></app-trade-card-list>
       <div>{{ user.name }} is looking for :</div>
-      <app-trade-card-list [cards]="user.wanted"></app-trade-card-list>
+      <app-trade-card-list
+        [cards]="user.wanted"
+        emptyMessage="none of your doubles"
+      ></app-trade-card-list>
       <mat-action-row>
         <button
           mat-button

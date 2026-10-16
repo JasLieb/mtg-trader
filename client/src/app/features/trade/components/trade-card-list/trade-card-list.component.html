@@ -1,5 +1,7 @@
 <div class="trade-card-list-container">
   @for (card of cards(); track card.id) {
   <app-card class="trade-card" [card]="card"></app-card>
+  } @empty {
+  <div class="trade-card-list-empty">{{ emptyMessage() }}</div>
   }
 </div>

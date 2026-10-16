@@ -6,7 +6,14 @@
 
 **Status:** ready-for-agent
 
-- [ ] Scénario 2 de la spec : Carol cherche le Sol Ring d'Alice, et Alice ne cherche rien de ce qu'a Carol. Chacune voit l'autre sur sa page Trade.
-- [ ] Un User qui n'a aucune Card en commun avec moi, dans aucun sens, n'apparaît pas.
-- [ ] La réponse de la page Trade garde sa forme. Seul le côté « ce qu'il peut me donner » peut désormais être vide.
-- [ ] Des tests couvrent chacun des deux sens, ainsi que l'absence de correspondance.
+- [x] Scénario 2 de la spec : Carol cherche le Sol Ring d'Alice, et Alice ne cherche rien de ce qu'a Carol. Chacune voit l'autre sur sa page Trade.
+- [x] Un User qui n'a aucune Card en commun avec moi, dans aucun sens, n'apparaît pas.
+- [x] La réponse de la page Trade garde sa forme. Seul le côté « ce qu'il peut me donner » peut désormais être vide.
+- [x] Des tests couvrent chacun des deux sens, ainsi que l'absence de correspondance.
+
+## Comments
+
+- 2026-10-16 : implémenté, non commité.
+  - Serveur : `FindTrades` ajoute aux Users dont les doubles contiennent ce que je cherche ceux qui cherchent mes doubles (nouvelle méthode de dépôt `FindUserIdsWantingCards`). Un même partenaire n'apparaît qu'une fois. Pour le ticket 03, « être Trade partners » = figurer dans `FindTrades` de l'auteur.
+  - Client : un côté vide de la correspondance affiche « none of X's doubles » ou « none of your doubles » au lieu d'une liste vide.
+  - Tests : `TradeHandlerTradePartnersTests` (6), `WantlistRepositoryUsersWantingCardsTests` (6), `trade-home.component.partners.spec.ts` (3). Serveur 101 tests verts, client 142 ; `dotnet format` et ESLint propres.

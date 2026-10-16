@@ -20,25 +20,35 @@ public class TradeHandler(
             .FirstOrDefault(DoublesList.IsDoublesList);
         var wantedWantlists = allWantlists
             .Where(wl => !DoublesList.IsDoublesList(wl));
+        var doubleCards = doubles?.Cards ?? [];
 
+        // Trade partners run both ways: users holding doubles I want, and users wanting my doubles.
         var tradeableWantlists = _wantlistRepository.FindTradeableDoubles(userId, wantedWantlists);
+        var usersWantingMyDoubles = _wantlistRepository.FindUserIdsWantingCards(
+            userId,
+            doubleCards.Select(c => c.CardId)
+        );
         return new([
             .. MakeTradeableResponseContent(
                 tradeableWantlists,
+                usersWantingMyDoubles,
                 wantedWantlists.SelectMany(w => w.Cards),
-                doubles?.Cards ?? []
+                doubleCards
             )
         ]);
     }
 
     private IEnumerable<UserTradeResponse> MakeTradeableResponseContent(
         IEnumerable<Entities.General.Wantlist> wantlists,
+        IEnumerable<string> usersWantingMyDoubles,
         IEnumerable<Entities.General.WantlistCards> wantedCards,
         IEnumerable<Entities.General.WantlistCards> doubleCards
     )
     {
-        var groupedByUsers = wantlists.GroupBy(w => w.OwnerId).ToList();
-        var traderIds = groupedByUsers.Select(group => group.Key).ToList();
+        var doublesByTraders = wantlists
+            .GroupBy(w => w.OwnerId)
+            .ToDictionary(group => group.Key, group => group.ToList());
+        var traderIds = doublesByTraders.Keys.Union(usersWantingMyDoubles).ToList();
         var traders = _userRepository.GetByUserIds(traderIds)
             .ToDictionary(user => user.Id);
         // What each trader wants is in their wantlists, not in their own doubles list.
@@ -50,16 +60,18 @@ public class TradeHandler(
                 group => group.SelectMany(wl => wl.Cards).Select(wc => wc.CardId).ToHashSet()
             );
 
-        foreach (var wantlist in groupedByUsers)
+        foreach (var traderId in traderIds)
         {
-            if (traders.TryGetValue(wantlist.Key, out var user))
+            if (traders.TryGetValue(traderId, out var user))
             {
                 var wantedTrade = wantedByTraders.GetValueOrDefault(user.Id) ?? [];
+                // A user who only wants my doubles holds none I want, so this side stays empty for them.
+                var traderDoubles = doublesByTraders.GetValueOrDefault(user.Id) ?? [];
 
                 yield return new UserTradeResponse(
                     user.Id,
                     user.Username,
-                    wantlist.SelectMany(w => w.Cards)
+                    traderDoubles.SelectMany(w => w.Cards)
                         .Select(c => c.CardId)
                         .Distinct()
                         .Where(c => wantedCards.Any(wc => wc.CardId.Equals(c))),

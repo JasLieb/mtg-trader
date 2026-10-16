@@ -44,4 +44,21 @@ public class WantlistRepository(ApplicationContext dbContext)
             .Include(wl => wl.Cards)
         ];
     }
+
+    public IEnumerable<string> FindUserIdsWantingCards(
+        string userId,
+        IEnumerable<string> cardIds
+    )
+    {
+        var wantedCardIds = cardIds.Distinct().ToList();
+        return [
+            .. DbSet.Where(wl =>
+                wl.OwnerId != userId
+                && !wl.Id.EndsWith(DoublesList.IdSuffix)
+                && wl.Cards.Any(card => wantedCardIds.Contains(card.CardId))
+            )
+            .Select(wl => wl.OwnerId)
+            .Distinct()
+        ];
+    }
 }
