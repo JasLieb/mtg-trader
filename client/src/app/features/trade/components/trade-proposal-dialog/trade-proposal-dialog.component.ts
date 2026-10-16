@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {
@@ -7,6 +8,7 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
+import { WantlistService } from '../../../collection/services/wantlist/wantlist.service';
 import { Card } from '../../../common/models/card';
 import { UserTrader } from '../../models/user-trader';
 import { EuroTotalPipe } from '../../pipes/euro-total.pipe';
@@ -38,27 +40,32 @@ export class TradeProposalDialogComponent {
     () => this.receivedCardIds().size > 0 && this.givenCardIds().size > 0
   );
 
-  // Every card the form has offered, by id. Toggling a card records it, so the totals price
-  // whatever is checked, including cards from outside the Trade match.
-  private readonly offeredCards = new Map(
-    [...this.partner.doubles, ...this.partner.wanted].map(
-      (card) => [card.id, card] as const
-    )
+  // Each side lists the Trade match first, pre-checked, then the other cards of that side's
+  // Doubles list, unchecked, so that the value of the trade can be balanced.
+  private readonly partnerDoubles = toSignal(
+    this.tradeProposalService.fetchPartnerDoubles(this.partner.id),
+    { initialValue: [] }
   );
+  private readonly myDoubles = toSignal(inject(WantlistService).doubles$);
+  readonly receivedCards = computed(() =>
+    withOtherDoubles(this.partner.doubles, this.partnerDoubles())
+  );
+  readonly givenCards = computed(() =>
+    withOtherDoubles(this.partner.wanted, this.myDoubles()?.cards ?? [])
+  );
+  // The checked cards of each side, which the totals price.
   readonly checkedReceivedCards = computed(() =>
-    this.offered(this.receivedCardIds())
+    this.receivedCards().filter((card) => this.receivedCardIds().has(card.id))
   );
   readonly checkedGivenCards = computed(() =>
-    this.offered(this.givenCardIds())
+    this.givenCards().filter((card) => this.givenCardIds().has(card.id))
   );
 
   toggleReceived(card: Card) {
-    this.offeredCards.set(card.id, card);
     this.receivedCardIds.update((ids) => toggle(ids, card.id));
   }
 
   toggleGiven(card: Card) {
-    this.offeredCards.set(card.id, card);
     this.givenCardIds.update((ids) => toggle(ids, card.id));
   }
 
@@ -79,10 +86,6 @@ export class TradeProposalDialogComponent {
       }
     );
   }
-
-  private offered(ids: Set<string>): Card[] {
-    return [...ids].flatMap((id) => this.offeredCards.get(id) ?? []);
-  }
 }
 
 function toggle(ids: Set<string>, id: string): Set<string> {
@@ -90,4 +93,20 @@ function toggle(ids: Set<string>, id: string): Set<string> {
   if (toggled.has(id)) toggled.delete(id);
   else toggled.add(id);
   return toggled;
+}
+
+// The Trade match cards, followed by the cards of the Doubles list that are not in it, each card once.
+// A card Scryfall could not load is left out.
+function withOtherDoubles(
+  tradeMatch: Card[],
+  doubles: (Card | undefined)[]
+): Card[] {
+  const listedIds = new Set(tradeMatch.map((card) => card.id));
+  const others: Card[] = [];
+  for (const card of doubles) {
+    if (!card || listedIds.has(card.id)) continue;
+    listedIds.add(card.id);
+    others.push(card);
+  }
+  return [...tradeMatch, ...others];
 }

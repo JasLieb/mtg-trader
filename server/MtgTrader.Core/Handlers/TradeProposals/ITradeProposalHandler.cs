@@ -7,4 +7,5 @@ public interface ITradeProposalHandler
 {
     TradeProposalsResponse GetProposals(string userId);
     bool SendProposal(string proposerId, SendTradeProposalRequest request);
+    PartnerDoublesResponse? GetPartnerDoubles(string userId, string partnerId);
 }

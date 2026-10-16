@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Propose a trade to {{ partner.name }}</h2>
 <mat-dialog-content class="trade-proposal-dialog-content">
   <h3>You receive</h3>
-  @for (card of partner.doubles; track card.id) {
+  @for (card of receivedCards(); track card.id) {
   <mat-checkbox
     class="trade-proposal-received"
     [checked]="receivedCardIds().has(card.id)"
@@ -13,7 +13,7 @@
   }
 
   <h3>You give</h3>
-  @for (card of partner.wanted; track card.id) {
+  @for (card of givenCards(); track card.id) {
   <mat-checkbox
     class="trade-proposal-given"
     [checked]="givenCardIds().has(card.id)"

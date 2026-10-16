@@ -67,6 +67,17 @@ public class TradeProposalHandler(
         return true;
     }
 
+    // The proposal form lists the partner's whole Doubles list, so that a proposal can go beyond the Trade match.
+    // Only a Trade partner may read it, and only that list: the partner's Wantlists stay private.
+    // Returns null when the users are not Trade partners.
+    public PartnerDoublesResponse? GetPartnerDoubles(string userId, string partnerId)
+    {
+        if (!AreTradePartners(userId, partnerId)) return null;
+
+        var doublesCards = _wantlistRepository.GetDoublesList(partnerId)?.Cards ?? [];
+        return new(doublesCards.Select(card => card.CardId).Distinct());
+    }
+
     // Trade partners are the users the Trade page lists, so the rule is checked through it.
     private bool AreTradePartners(string userId, string otherUserId) =>
         _tradeHandler.FindTrades(userId).Users.Any(user => user.Id == otherUserId);

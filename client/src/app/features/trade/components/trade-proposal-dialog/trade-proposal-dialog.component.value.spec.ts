@@ -6,8 +6,12 @@ import {
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
+import { Wantlist } from '../../../collection/models/wantlist';
+import { WantlistService } from '../../../collection/services/wantlist/wantlist.service';
 import { makeCard } from '../../../common/models/card';
 import { CardService } from '../../../common/services/card/card.service';
+import { PartnerDoublesResponse } from '../../models/partner-doubles-response';
 import { TradeProposalsResponse } from '../../models/trade-proposal';
 import { UserTrader } from '../../models/user-trader';
 import { TradeProposalDialogComponent } from './trade-proposal-dialog.component';
@@ -30,6 +34,13 @@ describe('TradeProposalDialogComponent value of each side', () => {
     wanted: [solRing, counterspell],
   };
 
+  // Alice's Doubles list: the Trade match, plus Thoughtseize, which is outside it.
+  const aliceDoubles = {
+    id: 'alice_doubles',
+    name: 'doubles',
+    cards: [solRing, counterspell, thoughtseize],
+  } as Wantlist;
+
   // The real TradeProposalService runs, so the request it posts can be inspected.
   async function initFixture(partner: UserTrader) {
     await TestBed.configureTestingModule({
@@ -43,6 +54,7 @@ describe('TradeProposalDialogComponent value of each side', () => {
           provide: CardService,
           useValue: jasmine.createSpyObj('CardService', ['fetch']),
         },
+        { provide: WantlistService, useValue: { doubles$: of(aliceDoubles) } },
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
@@ -51,6 +63,10 @@ describe('TradeProposalDialogComponent value of each side', () => {
 
     httpTestingController = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(TradeProposalDialogComponent);
+    // The partner's other doubles play no part in these totals.
+    httpTestingController
+      .expectOne((r) => r.url.endsWith(`partners/${partner.id}/doubles`))
+      .flush({ cards: [] } as PartnerDoublesResponse);
     fixture.detectChanges();
   }
 
@@ -105,11 +121,11 @@ describe('TradeProposalDialogComponent value of each side', () => {
   it('should count a card checked from outside the Trade match', async () => {
     await initFixture(bob);
 
-    fixture.componentInstance.toggleGiven(thoughtseize);
+    checkbox('.trade-proposal-given', 2).click();
     fixture.detectChanges();
     expect(givenTotal()).toBe('You give 14.00 €');
 
-    fixture.componentInstance.toggleGiven(thoughtseize);
+    checkbox('.trade-proposal-given', 2).click();
     fixture.detectChanges();
     expect(givenTotal()).toBe('You give 2.00 €');
   });

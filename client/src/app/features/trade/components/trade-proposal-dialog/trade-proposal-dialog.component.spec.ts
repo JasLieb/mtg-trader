@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
+import { WantlistService } from '../../../collection/services/wantlist/wantlist.service';
 import { makeCard } from '../../../common/models/card';
 import { UserTrader } from '../../models/user-trader';
 import { TradeProposalService } from '../../services/trade-proposal/trade-proposal.service';
@@ -21,8 +22,12 @@ describe('TradeProposalDialogComponent', () => {
   };
 
   async function initFixture(partner: UserTrader) {
-    tradeProposalService = jasmine.createSpyObj('TradeProposalService', ['send']);
+    tradeProposalService = jasmine.createSpyObj('TradeProposalService', [
+      'send',
+      'fetchPartnerDoubles',
+    ]);
     tradeProposalService.send.and.returnValue(of([]));
+    tradeProposalService.fetchPartnerDoubles.and.returnValue(of([]));
     dialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
 
     await TestBed.configureTestingModule({
@@ -30,6 +35,7 @@ describe('TradeProposalDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: partner },
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: TradeProposalService, useValue: tradeProposalService },
+        { provide: WantlistService, useValue: { doubles$: of(undefined) } },
       ],
       imports: [TradeProposalDialogComponent, NoopAnimationsModule],
     }).compileComponents();

@@ -41,4 +41,20 @@ public class TradeProposalController(
             ? Get()
             : BadRequest("Invalid trade proposal");
     }
+
+    [HttpGet("partners/{partnerId}/doubles")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<PartnerDoublesResponse> GetPartnerDoubles(string partnerId)
+    {
+        var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
+        if (userId == null) return Unauthorized();
+        var doubles = _tradeProposalHandler.GetPartnerDoubles(userId, partnerId);
+        // Not a Trade partner: the list is answered as missing rather than forbidden, so nothing is revealed about it.
+        return doubles is null
+            ? NotFound("Doubles list not found")
+            : Ok(doubles);
+    }
 }

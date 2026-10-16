@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
+  catchError,
   forkJoin,
   map,
   Observable,
@@ -13,6 +14,7 @@ import { makeApiUrl } from '../../../../core/utils/makeUrl';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { Card } from '../../../common/models/card';
 import { CardService } from '../../../common/services/card/card.service';
+import { PartnerDoublesResponse } from '../../models/partner-doubles-response';
 import {
   SendTradeProposalRequest,
   TradeProposal,
@@ -39,6 +41,22 @@ export class TradeProposalService {
       undefined,
       (error) => console.error(error)
     );
+  }
+
+  // A Trade partner's whole Doubles list, for the proposal form; used once, so it is not kept as state.
+  // The server refuses it to anyone who is not their Trade partner: the form then offers none of these cards.
+  fetchPartnerDoubles(partnerId: string): Observable<Card[]> {
+    return this.http
+      .get<PartnerDoublesResponse>(
+        `${this.apiTradeProposalsUrl}/partners/${encodeURIComponent(partnerId)}/doubles`
+      )
+      .pipe(
+        switchMap((res) => this.fetchCards(res.cards)),
+        catchError((error) => {
+          console.error(error);
+          return of([]);
+        })
+      );
   }
 
   // The server answers with all of the user's proposals, which replace the current ones.
@@ -83,6 +101,14 @@ export class TradeProposalService {
           receivedCards: toCards(proposal.receivedCards),
         }));
       })
+    );
+  }
+
+  // A card Scryfall could not load is left out.
+  private fetchCards(cardIds: string[]): Observable<Card[]> {
+    if (cardIds.length == 0) return of([]);
+    return forkJoin(cardIds.map((id) => this.cardService.fetch(id))).pipe(
+      map((cards) => cards.filter((card): card is Card => !!card))
     );
   }
 }
