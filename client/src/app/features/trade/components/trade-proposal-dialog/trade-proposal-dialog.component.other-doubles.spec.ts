@@ -37,9 +37,11 @@ describe('TradeProposalDialogComponent with the other doubles', () => {
     tradeProposalService = jasmine.createSpyObj('TradeProposalService', [
       'send',
       'fetchPartnerDoubles',
+      'fetchCommittedCards',
     ]);
     tradeProposalService.send.and.returnValue(of([]));
     tradeProposalService.fetchPartnerDoubles.and.returnValue(of(partnerDoubles));
+    tradeProposalService.fetchCommittedCards.and.returnValue(of(new Map()));
     dialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
     const doubles = { id: 'alice_doubles', name: 'doubles', cards: myDoubles } as Wantlist;
 

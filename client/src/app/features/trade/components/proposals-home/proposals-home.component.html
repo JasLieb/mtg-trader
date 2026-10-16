@@ -47,6 +47,26 @@
       }
     </p>
     }
+    @if (committedWarningsOf(proposal); as warnings) {
+    <div class="proposal-committed">
+      <app-committed-cards-warning [warnings]="warnings"></app-committed-cards-warning>
+      <button
+        mat-button
+        class="proposal-confirm-accept"
+        [disabled]="actingOn() !== null"
+        (click)="confirmAccept(proposal)"
+      >
+        Accept anyway
+      </button>
+      <button
+        mat-button
+        class="proposal-cancel-accept"
+        (click)="cancelAccept(proposal)"
+      >
+        Cancel
+      </button>
+    </div>
+    }
     <mat-card-actions>
       <button mat-button class="proposal-chat" (click)="openChat(proposal)">
         Send a message

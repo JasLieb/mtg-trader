@@ -25,9 +25,11 @@ describe('TradeProposalDialogComponent', () => {
     tradeProposalService = jasmine.createSpyObj('TradeProposalService', [
       'send',
       'fetchPartnerDoubles',
+      'fetchCommittedCards',
     ]);
     tradeProposalService.send.and.returnValue(of([]));
     tradeProposalService.fetchPartnerDoubles.and.returnValue(of([]));
+    tradeProposalService.fetchCommittedCards.and.returnValue(of(new Map()));
     dialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
 
     await TestBed.configureTestingModule({

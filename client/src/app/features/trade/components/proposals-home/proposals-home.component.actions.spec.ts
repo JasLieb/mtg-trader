@@ -39,10 +39,12 @@ describe('ProposalsHomeComponent actions', () => {
     proposals = new BehaviorSubject<TradeProposal[]>([]);
     tradeProposalService = jasmine.createSpyObj(
       'TradeProposalService',
-      ['refresh', 'accept', 'decline', 'withdraw'],
+      ['refresh', 'accept', 'decline', 'withdraw', 'fetchCommittedCardsIn'],
       { proposals$: proposals.asObservable() }
     );
     tradeProposalService.accept.and.returnValue(of([]));
+    // None of the cards Bob gives is committed elsewhere, so Accept accepts at once.
+    tradeProposalService.fetchCommittedCardsIn.and.returnValue(of(new Map()));
     tradeProposalService.decline.and.returnValue(of([]));
     tradeProposalService.withdraw.and.returnValue(of([]));
 

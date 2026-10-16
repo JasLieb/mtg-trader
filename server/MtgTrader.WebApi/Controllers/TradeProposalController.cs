@@ -61,6 +61,35 @@ public class TradeProposalController(
             : Ok(doubles);
     }
 
+    // The user's Committed Cards, for the warning the proposal form shows before sending.
+    [HttpGet("committed-cards")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public ActionResult<CommittedCardsResponse> GetCommittedCards()
+    {
+        var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
+        if (userId == null) return Unauthorized();
+        return Ok(_tradeProposalHandler.GetCommittedCards(userId));
+    }
+
+    // For the warning shown before accepting: the Cards the user gives in this proposal that are
+    // already committed elsewhere. It decides nothing: the accept that follows makes its own checks.
+    [HttpGet("{proposalId}/committed-cards")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<CommittedCardsResponse> GetCommittedCardsIn(string proposalId)
+    {
+        var userId = ControllerExtensions.GetUserIdFromContext(HttpContext);
+        if (userId == null) return Unauthorized();
+        var committedCards = _tradeProposalHandler.GetCommittedCardsIn(userId, proposalId);
+        return committedCards is null
+            ? NotFound("Trade proposal not found")
+            : Ok(committedCards);
+    }
+
     [HttpPost("{proposalId}/accept")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]

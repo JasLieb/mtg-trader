@@ -7,6 +7,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { NavigationService } from '../../../../core/services/navigation/navigation.service';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
+import {
+  CommittedCardWarning,
+  committedCardWarnings,
+} from '../../models/committed-cards';
 import { canRemoveCards } from '../../models/trade-cards-removal';
 import { TradeProposal } from '../../models/trade-proposal';
 import {
@@ -18,12 +22,14 @@ import {
 import { EuroTotalPipe } from '../../pipes/euro-total.pipe';
 import { ChatService } from '../../services/chat/chat.service';
 import { TradeProposalService } from '../../services/trade-proposal/trade-proposal.service';
+import { CommittedCardsWarningComponent } from '../committed-cards-warning/committed-cards-warning.component';
 import { RemoveTradeCardsDialogComponent } from '../remove-trade-cards-dialog/remove-trade-cards-dialog.component';
 import { TradeCardListComponent } from '../trade-card-list/trade-card-list.component';
 
 @Component({
   selector: 'app-proposals-home',
   imports: [
+    CommittedCardsWarningComponent,
     DatePipe,
     EuroTotalPipe,
     MatButtonModule,
@@ -56,8 +62,43 @@ export class ProposalsHomeComponent {
     new Map()
   );
 
+  // Accepting commits the cards I give. When the server reports some of them already committed
+  // elsewhere, I am warned first, and the proposal is accepted only once I confirm. The warning blocks
+  // nothing: when no card is committed, or the server can't tell, the acceptance goes ahead at once.
+  private readonly committedWarnings = signal<
+    ReadonlyMap<string, CommittedCardWarning[]>
+  >(new Map());
+
   accept(proposal: TradeProposal) {
+    if (this.actingOn() !== null) return;
+    this.actingOn.set(proposal.id);
+    this.setRefusal(proposal.id, undefined);
+    this.setCommittedWarnings(proposal.id, undefined);
+    subscribeOnce(
+      this.tradeProposalService.fetchCommittedCardsIn(proposal.id),
+      (committed) => {
+        this.actingOn.set(null);
+        const warnings = committedCardWarnings(proposal.givenCards, committed);
+        if (warnings.length > 0) this.setCommittedWarnings(proposal.id, warnings);
+        else this.confirmAccept(proposal);
+      }
+    );
+  }
+
+  confirmAccept(proposal: TradeProposal) {
     this.act(proposal, (id) => this.tradeProposalService.accept(id));
+  }
+
+  cancelAccept(proposal: TradeProposal) {
+    this.setCommittedWarnings(proposal.id, undefined);
+  }
+
+  // Only while the proposal can still be accepted: a warning left over from before the proposals
+  // were reloaded must not offer to accept one that is no longer pending.
+  committedWarningsOf(proposal: TradeProposal): CommittedCardWarning[] | undefined {
+    return canAnswer(proposal)
+      ? this.committedWarnings().get(proposal.id)
+      : undefined;
   }
 
   decline(proposal: TradeProposal) {
@@ -113,6 +154,7 @@ export class ProposalsHomeComponent {
     if (this.actingOn() !== null) return;
     this.actingOn.set(proposal.id);
     this.setRefusal(proposal.id, undefined);
+    this.setCommittedWarnings(proposal.id, undefined);
     subscribeOnce(
       action(proposal.id),
       () => this.actingOn.set(null),
@@ -124,11 +166,25 @@ export class ProposalsHomeComponent {
   }
 
   private setRefusal(proposalId: string, refusal: TradeProposalRefusal | undefined) {
-    this.refusals.update((refusals) => {
-      const updated = new Map(refusals);
-      if (refusal) updated.set(proposalId, refusal);
-      else updated.delete(proposalId);
-      return updated;
-    });
+    this.refusals.update((refusals) => withEntry(refusals, proposalId, refusal));
   }
+
+  private setCommittedWarnings(
+    proposalId: string,
+    warnings: CommittedCardWarning[] | undefined
+  ) {
+    this.committedWarnings.update((all) => withEntry(all, proposalId, warnings));
+  }
+}
+
+// A copy of the map where the proposal has this value, or none when it is undefined.
+function withEntry<T>(
+  map: ReadonlyMap<string, T>,
+  proposalId: string,
+  value: T | undefined
+): ReadonlyMap<string, T> {
+  const updated = new Map(map);
+  if (value !== undefined) updated.set(proposalId, value);
+  else updated.delete(proposalId);
+  return updated;
 }

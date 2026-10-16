@@ -16,6 +16,11 @@ import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { Card } from '../../../common/models/card';
 import { CardService } from '../../../common/services/card/card.service';
 import { WantlistService } from '../../../collection/services/wantlist/wantlist.service';
+import {
+  CommittedCards,
+  CommittedCardsResponse,
+  toCommittedCards,
+} from '../../models/committed-cards';
 import { PartnerDoublesResponse } from '../../models/partner-doubles-response';
 import {
   RemoveTradeCardsRequest,
@@ -88,6 +93,20 @@ export class TradeProposalService {
           return of([]);
         })
       );
+  }
+
+  // The user's Committed Cards, for the warning of the proposal form; used once, so not kept as state.
+  // The warning never blocks anything: when the server can't say, no card shows as committed.
+  fetchCommittedCards(): Observable<CommittedCards> {
+    return this.fetchCommitted(`${this.apiTradeProposalsUrl}/committed-cards`);
+  }
+
+  // Before the recipient accepts a proposal: the cards they give in it that are already committed
+  // elsewhere, the proposal itself not counted. Like fetchCommittedCards, it never fails.
+  fetchCommittedCardsIn(proposalId: string): Observable<CommittedCards> {
+    return this.fetchCommitted(
+      `${this.apiTradeProposalsUrl}/${encodeURIComponent(proposalId)}/committed-cards`
+    );
   }
 
   // The server answers with all of the user's proposals, which replace the current ones.
@@ -195,6 +214,16 @@ export class TradeProposalService {
           givenCards: toCards(proposal.givenCards),
           receivedCards: toCards(proposal.receivedCards),
         }));
+      })
+    );
+  }
+
+  private fetchCommitted(url: string): Observable<CommittedCards> {
+    return this.http.get<CommittedCardsResponse>(url).pipe(
+      map(toCommittedCards),
+      catchError((error) => {
+        console.error(error);
+        return of<CommittedCards>(new Map());
       })
     );
   }

@@ -41,10 +41,11 @@ describe('ProposalsHomeComponent expired proposals', () => {
     proposals = new BehaviorSubject<TradeProposal[]>([]);
     tradeProposalService = jasmine.createSpyObj(
       'TradeProposalService',
-      ['refresh', 'accept', 'decline', 'withdraw'],
+      ['refresh', 'accept', 'decline', 'withdraw', 'fetchCommittedCardsIn'],
       { proposals$: proposals.asObservable() }
     );
     tradeProposalService.accept.and.returnValue(of([]));
+    tradeProposalService.fetchCommittedCardsIn.and.returnValue(of(new Map()));
     chatService = jasmine.createSpyObj('ChatService', ['initChat']);
     navigationService = jasmine.createSpyObj('NavigationService', ['navigateChat']);
 

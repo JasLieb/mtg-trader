@@ -11,6 +11,7 @@ import { Wantlist } from '../../../collection/models/wantlist';
 import { WantlistService } from '../../../collection/services/wantlist/wantlist.service';
 import { makeCard } from '../../../common/models/card';
 import { CardService } from '../../../common/services/card/card.service';
+import { CommittedCardsResponse } from '../../models/committed-cards';
 import { PartnerDoublesResponse } from '../../models/partner-doubles-response';
 import { TradeProposalsResponse } from '../../models/trade-proposal';
 import { UserTrader } from '../../models/user-trader';
@@ -63,10 +64,13 @@ describe('TradeProposalDialogComponent value of each side', () => {
 
     httpTestingController = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(TradeProposalDialogComponent);
-    // The partner's other doubles play no part in these totals.
+    // The partner's other doubles and my committed cards play no part in these totals.
     httpTestingController
       .expectOne((r) => r.url.endsWith(`partners/${partner.id}/doubles`))
       .flush({ cards: [] } as PartnerDoublesResponse);
+    httpTestingController
+      .expectOne((r) => r.url.endsWith('api/trade-proposals/committed-cards'))
+      .flush({ committedCards: [] } as CommittedCardsResponse);
     fixture.detectChanges();
   }
 

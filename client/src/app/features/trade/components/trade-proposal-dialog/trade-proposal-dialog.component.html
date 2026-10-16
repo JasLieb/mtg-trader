@@ -38,6 +38,10 @@
   <p class="trade-proposal-given-total">
     You give {{ checkedGivenCards() | euroTotal }}
   </p>
+  <app-committed-cards-warning
+    class="trade-proposal-committed"
+    [warnings]="committedWarnings()"
+  ></app-committed-cards-warning>
 </div>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Cancel</button>

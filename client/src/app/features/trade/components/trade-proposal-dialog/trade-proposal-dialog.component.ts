@@ -10,15 +10,26 @@ import {
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { WantlistService } from '../../../collection/services/wantlist/wantlist.service';
 import { Card } from '../../../common/models/card';
+import {
+  CommittedCards,
+  committedCardWarnings,
+} from '../../models/committed-cards';
 import { UserTrader } from '../../models/user-trader';
 import { EuroTotalPipe } from '../../pipes/euro-total.pipe';
 import { TradeProposalService } from '../../services/trade-proposal/trade-proposal.service';
+import { CommittedCardsWarningComponent } from '../committed-cards-warning/committed-cards-warning.component';
 
 // Composes a Trade proposal to a Trade partner, starting from the whole Trade match.
 // The dialog closes with true once the proposal is sent.
 @Component({
   selector: 'app-trade-proposal-dialog',
-  imports: [EuroTotalPipe, MatButtonModule, MatCheckboxModule, MatDialogModule],
+  imports: [
+    CommittedCardsWarningComponent,
+    EuroTotalPipe,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDialogModule,
+  ],
   templateUrl: './trade-proposal-dialog.component.html',
   styleUrl: './trade-proposal-dialog.component.scss',
 })
@@ -59,6 +70,17 @@ export class TradeProposalDialogComponent {
   );
   readonly checkedGivenCards = computed(() =>
     this.givenCards().filter((card) => this.givenCardIds().has(card.id))
+  );
+
+  // Before sending, I am warned about the checked cards I give that are already committed elsewhere,
+  // inside the Trade match or not. The server says which cards are committed; the warning follows the
+  // boxes from there, and blocks nothing.
+  private readonly committedCards = toSignal(
+    this.tradeProposalService.fetchCommittedCards(),
+    { initialValue: new Map() as CommittedCards }
+  );
+  readonly committedWarnings = computed(() =>
+    committedCardWarnings(this.checkedGivenCards(), this.committedCards())
   );
 
   toggleReceived(card: Card) {

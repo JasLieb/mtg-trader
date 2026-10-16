@@ -24,9 +24,7 @@ public class TradeProposalHandler(
     public TradeProposalsResponse GetProposals(string userId)
     {
         var proposals = _tradeProposalRepository.FindUserProposals(userId).ToList();
-        var otherUserIds = proposals.Select(proposal => OtherUserId(proposal, userId)).Distinct().ToList();
-        var usernames = _userRepository.GetByUserIds(otherUserIds)
-            .ToDictionary(user => user.Id, user => user.Username);
+        var usernames = UsernamesOf(proposals.Select(proposal => OtherUserId(proposal, userId)));
 
         return new(
             proposals
@@ -76,6 +74,31 @@ public class TradeProposalHandler(
 
         var doublesCards = _wantlistRepository.GetDoublesList(partnerId)?.Cards ?? [];
         return new(doublesCards.Select(card => card.CardId).Distinct());
+    }
+
+    // All of the user's Committed Cards, which the proposal form warns about before sending. There is
+    // no proposal yet to leave out. The form picks the checked Cards among them, so the warning follows
+    // the boxes without the client ever working out what is committed.
+    public CommittedCardsResponse GetCommittedCards(string userId) =>
+        CommittedCards(userId, _tradeProposalRepository.FindUserProposals(userId));
+
+    // Before accepting a proposal: those of the Cards the user gives in it that are already committed
+    // elsewhere. The proposal itself is not counted. Only the user's own Cards are ever reported, never
+    // those of the other User of the proposal. Returns null when there is no such proposal or it does
+    // not concern the user.
+    public CommittedCardsResponse? GetCommittedCardsIn(string userId, string proposalId)
+    {
+        var proposal = _tradeProposalRepository.FindProposal(proposalId);
+        if (proposal is null || (proposal.ProposerId != userId && proposal.RecipientId != userId))
+            return null;
+
+        var cardsIGive = CardsGivenBy(proposal, SideOf(proposal, userId)).ToHashSet();
+        var otherProposals = _tradeProposalRepository.FindUserProposals(userId)
+            .Where(other => other.Id != proposalId);
+        return new(
+            CommittedCards(userId, otherProposals).CommittedCards
+                .Where(card => cardsIGive.Contains(card.CardId))
+        );
     }
 
     // No Trade partner check: being Trade partners is only required to send.
@@ -187,6 +210,48 @@ public class TradeProposalHandler(
 
     // Pending and not expired: the proposal can still be accepted, declined or withdrawn.
     private bool IsPending(TradeProposal proposal) => CurrentState(proposal) == TradeProposalState.Pending;
+
+    // The one rule for Committed Cards. A proposal commits the Cards a User gives in it while it is
+    // pending and not expired, whoever sent it; once accepted, the Trade commits them until that User
+    // has removed its Cards from their lists. Declined, withdrawn and expired proposals commit nothing.
+    private bool Commits(TradeProposal proposal, string userId) =>
+        IsPending(proposal)
+        || (CurrentState(proposal) == TradeProposalState.Accepted && !proposal.HasRemovedCards(userId));
+
+    // The user's Committed Cards among these proposals, each with the other Users it is committed with,
+    // named once each. Only the user's own giving side counts: a Card they would receive is not theirs
+    // to commit.
+    private CommittedCardsResponse CommittedCards(string userId, IEnumerable<TradeProposal> proposals)
+    {
+        var commitments = proposals
+            .Where(proposal => Commits(proposal, userId))
+            .SelectMany(proposal => CardsGivenBy(proposal, SideOf(proposal, userId))
+                .Select(cardId => (CardId: cardId, OtherUserId: OtherUserId(proposal, userId))))
+            .ToList();
+        if (commitments.Count == 0) return new([]);
+
+        var usernames = UsernamesOf(commitments.Select(commitment => commitment.OtherUserId));
+        return new(
+            commitments
+                .GroupBy(commitment => commitment.CardId)
+                .Select(card => new CommittedCardResponse(
+                    card.Key,
+                    [
+                        .. card.Select(commitment => usernames.GetValueOrDefault(commitment.OtherUserId) ?? string.Empty)
+                            .Distinct()
+                            .Order(StringComparer.Ordinal)
+                    ]
+                ))
+                .ToList()
+        );
+    }
+
+    private Dictionary<string, string> UsernamesOf(IEnumerable<string> userIds) =>
+        _userRepository.GetByUserIds([.. userIds.Distinct()])
+            .ToDictionary(user => user.Id, user => user.Username);
+
+    private static TradeProposalSide SideOf(TradeProposal proposal, string userId) =>
+        proposal.ProposerId == userId ? TradeProposalSide.Proposer : TradeProposalSide.Recipient;
 
     private static string UserIdOf(TradeProposal proposal, TradeProposalSide side) =>
         side == TradeProposalSide.Proposer ? proposal.ProposerId : proposal.RecipientId;
