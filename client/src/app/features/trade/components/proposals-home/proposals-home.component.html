@@ -47,8 +47,10 @@
       }
     </p>
     }
-    @if (canAnswer(proposal) || canWithdraw(proposal)) {
     <mat-card-actions>
+      <button mat-button class="proposal-chat" (click)="openChat(proposal)">
+        Send a message
+      </button>
       @if (canAnswer(proposal)) {
       <button
         mat-button
@@ -78,7 +80,6 @@
       </button>
       }
     </mat-card-actions>
-    }
   </mat-card>
   } @empty {
   <p class="proposals-empty">No trade proposal yet.</p>

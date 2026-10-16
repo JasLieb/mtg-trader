@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
+import { NavigationService } from '../../../../core/services/navigation/navigation.service';
 import { makeCard } from '../../../common/models/card';
 import { TradeProposal } from '../../models/trade-proposal';
 import { TradeProposalRefusal } from '../../models/trade-proposal-action';
+import { ChatService } from '../../services/chat/chat.service';
 import { TradeProposalService } from '../../services/trade-proposal/trade-proposal.service';
 import { ProposalsHomeComponent } from './proposals-home.component';
 
@@ -44,7 +46,14 @@ describe('ProposalsHomeComponent actions', () => {
     tradeProposalService.withdraw.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
-      providers: [{ provide: TradeProposalService, useValue: tradeProposalService }],
+      providers: [
+        { provide: TradeProposalService, useValue: tradeProposalService },
+        { provide: ChatService, useValue: jasmine.createSpyObj('ChatService', ['initChat']) },
+        {
+          provide: NavigationService,
+          useValue: jasmine.createSpyObj('NavigationService', ['navigateChat']),
+        },
+      ],
       imports: [ProposalsHomeComponent],
     }).compileComponents();
 
@@ -61,9 +70,10 @@ describe('ProposalsHomeComponent actions', () => {
     return fixture.nativeElement.querySelector(selector);
   }
 
+  // The actions on the proposal itself; the chat link, offered on every proposal, is left out.
   function actions(): string[] {
     return Array.from<HTMLElement>(
-      fixture.nativeElement.querySelectorAll('mat-card-actions button')
+      fixture.nativeElement.querySelectorAll('mat-card-actions button:not(.proposal-chat)')
     ).map((action) => action.textContent?.trim() ?? '');
   }
 

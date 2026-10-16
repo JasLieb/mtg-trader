@@ -37,7 +37,22 @@ export class TradeProposalService {
   private proposalsBehavior = new BehaviorSubject<TradeProposal[]>([]);
   proposals$ = this.proposalsBehavior.asObservable();
 
+  // The received proposals still pending, counted from every list the server sends back,
+  // before its cards are loaded, so the menu doesn't wait on Scryfall.
+  private pendingReceivedCountBehavior = new BehaviorSubject<number>(0);
+  pendingReceivedCount$ = this.pendingReceivedCountBehavior.asObservable();
+
   constructor(private http: HttpClient, private cardService: CardService) {}
+
+  // Reloads only the counter: unlike refresh, it fetches no card from Scryfall,
+  // so the menu can call it on every navigation.
+  refreshPendingReceivedCount() {
+    subscribeOnce(
+      this.http.get<TradeProposalsResponse>(this.apiTradeProposalsUrl),
+      (res) => this.publishPendingReceivedCount(res.proposals),
+      (error) => console.error(error)
+    );
+  }
 
   refresh() {
     subscribeOnce(
@@ -107,8 +122,17 @@ export class TradeProposalService {
     response: Observable<TradeProposalsResponse>
   ): Observable<TradeProposal[]> {
     return response.pipe(
+      tap((res) => this.publishPendingReceivedCount(res.proposals)),
       switchMap((res) => this.populateProposals(res.proposals)),
       tap((proposals) => this.proposalsBehavior.next(proposals))
+    );
+  }
+
+  // Counts only what the server reports as pending, so a proposal it reports in any other
+  // state, expired included, drops out of the counter with no change here.
+  private publishPendingReceivedCount(proposals: TradeProposalMin[]) {
+    this.pendingReceivedCountBehavior.next(
+      proposals.filter((p) => !p.isSent && p.state === 'Pending').length
     );
   }
 

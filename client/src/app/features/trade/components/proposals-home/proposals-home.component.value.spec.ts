@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
+import { NavigationService } from '../../../../core/services/navigation/navigation.service';
 import { makeCard } from '../../../common/models/card';
 import { TradeProposal } from '../../models/trade-proposal';
+import { ChatService } from '../../services/chat/chat.service';
 import { TradeProposalService } from '../../services/trade-proposal/trade-proposal.service';
 import { ProposalsHomeComponent } from './proposals-home.component';
 
@@ -32,7 +34,14 @@ describe('ProposalsHomeComponent value of each side', () => {
     );
 
     await TestBed.configureTestingModule({
-      providers: [{ provide: TradeProposalService, useValue: tradeProposalService }],
+      providers: [
+        { provide: TradeProposalService, useValue: tradeProposalService },
+        { provide: ChatService, useValue: jasmine.createSpyObj('ChatService', ['initChat']) },
+        {
+          provide: NavigationService,
+          useValue: jasmine.createSpyObj('NavigationService', ['navigateChat']),
+        },
+      ],
       imports: [ProposalsHomeComponent],
     }).compileComponents();
 

@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { Observable } from 'rxjs';
+import { NavigationService } from '../../../../core/services/navigation/navigation.service';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { TradeProposal } from '../../models/trade-proposal';
 import {
@@ -13,6 +14,7 @@ import {
   TradeProposalRefusal,
 } from '../../models/trade-proposal-action';
 import { EuroTotalPipe } from '../../pipes/euro-total.pipe';
+import { ChatService } from '../../services/chat/chat.service';
 import { TradeProposalService } from '../../services/trade-proposal/trade-proposal.service';
 import { TradeCardListComponent } from '../trade-card-list/trade-card-list.component';
 
@@ -29,6 +31,9 @@ import { TradeCardListComponent } from '../trade-card-list/trade-card-list.compo
   styleUrl: './proposals-home.component.scss',
 })
 export class ProposalsHomeComponent {
+  private readonly chatService = inject(ChatService);
+  private readonly navigationService = inject(NavigationService);
+
   proposals: Signal<TradeProposal[]>;
 
   constructor(tradeProposalService: TradeProposalService) {
@@ -72,6 +77,18 @@ export class ProposalsHomeComponent {
     return refusal.missingCards
       .map((id) => cards.find((card) => card.id === id)?.name ?? id)
       .join(', ');
+  }
+
+  // Opens the conversation with the other User the way the Trade page's "Send a message" does.
+  // The chat reminds the cards of this proposal when there is no conversation yet.
+  openChat(proposal: TradeProposal) {
+    this.chatService.initChat({
+      id: proposal.otherUserId,
+      name: proposal.otherUserName,
+      doubles: proposal.receivedCards,
+      wanted: proposal.givenCards,
+    });
+    this.navigationService.navigateChat(proposal.otherUserId);
   }
 
   private act(

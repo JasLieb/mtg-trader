@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { TradeProposalService } from '../../../features/trade/services/trade-proposal/trade-proposal.service';
 import { Routes } from '../../models/routesEnum';
 import { AuthService } from '../../services/auth/auth.service';
 import { NavigationService } from '../../services/navigation/navigation.service';
@@ -17,6 +18,14 @@ describe('NavigationBarComponent proposals entry', () => {
       providers: [
         { provide: AuthService, useValue: jasmine.createSpyObj('AuthService', ['disconnect']) },
         { provide: NavigationService, useValue: navService },
+        {
+          provide: TradeProposalService,
+          useValue: jasmine.createSpyObj(
+            'TradeProposalService',
+            ['refreshPendingReceivedCount'],
+            { pendingReceivedCount$: of(0) }
+          ),
+        },
       ],
       imports: [NavigationBarComponent],
     }).compileComponents();
