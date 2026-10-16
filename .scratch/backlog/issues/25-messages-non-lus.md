@@ -12,3 +12,7 @@ _Rédigé par IA le 2026-10-16 ; idée de fonctionnalité à discuter au triage.
 - [ ] Ouvrir une conversation marque ses messages comme lus, et cet état est conservé après un rechargement ou sur un autre appareil.
 
 Voir aussi : 15, 16.
+
+## Comments
+
+- 2026-10-16 (grilling du 26, `.scratch/trade-proposals/spec.md`) : le 26 ajoute un compteur des Trade proposals reçues en attente, rafraîchi au chargement et à la navigation, sans temps réel. La notification en direct des propositions est à traiter avec ce ticket et le 16.

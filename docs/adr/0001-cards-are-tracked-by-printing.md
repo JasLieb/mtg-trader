@@ -1,0 +1,3 @@
+# Cards are tracked and matched by printing, not by name
+
+A card in a wantlist or a doubles list is one specific printing, stored as its Scryfall card id, and trade matching compares those ids exactly. So a wanted Lightning Bolt from M10 does not match a Lightning Bolt from 2XM held as a double. We chose this over matching by card name because the price of the same card can differ widely from one set to another, and a trade agreed on the name alone could be badly unbalanced. The cost is fewer trade matches. Matching across printings would need a new model of what a wanted card is, not a tweak to the comparison.

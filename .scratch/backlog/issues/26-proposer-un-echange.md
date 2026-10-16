@@ -13,3 +13,7 @@ _Rédigé par IA le 2026-10-16 ; idée de fonctionnalité à discuter au triage.
 - [ ] Une fois l'échange conclu, je retire en un clic les cartes concernées de mes doubles et de mes wantlists.
 
 Voir aussi : 22 (quantités), 24 (valeur de l'échange).
+
+## Comments
+
+- 2026-10-16 : spec issue de la session de grilling dans `.scratch/trade-proposals/spec.md`, vocabulaire dans `GLOSSARY.md`, ADR `docs/adr/0001-cards-are-tracked-by-printing.md`. Le ticket reste à découper en tickets d'implémentation sous `.scratch/trade-proposals/issues/`.

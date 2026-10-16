@@ -11,3 +11,7 @@ _Rédigé par IA le 2026-10-16 ; idée de fonctionnalité à discuter au triage.
 - [ ] Sur la page Trade, chaque partenaire affiche la valeur totale en euros de ce que je recevrais et de ce que je donnerais.
 - [ ] Je peux trier les partenaires par nombre de cartes échangeables ou par valeur.
 - [ ] Les cartes sans prix sont signalées au lieu d'être comptées pour 0 €.
+
+## Comments
+
+- 2026-10-16 (grilling du 26, `.scratch/trade-proposals/spec.md`) : le formulaire de Trade proposal affiche déjà les totaux de chaque côté, aux prix Scryfall du moment, sans rien enregistrer, et signale les Cards sans prix. Le calcul est à partager avec celui de ce ticket.

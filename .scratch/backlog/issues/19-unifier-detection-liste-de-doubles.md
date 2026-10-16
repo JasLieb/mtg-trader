@@ -12,3 +12,7 @@ _Rédigé par IA d'après une lecture du code (commit `0e587e8`, 2026-10-16) ; �
 
 - [ ] Les deux côtés n'utilisent qu'une seule règle, le suffixe `_doubles`, définie à un seul endroit de chaque côté.
 - [ ] Les tests couvrent un identifiant qui contient « double » sans se terminer par `_doubles`.
+
+## Comments
+
+- 2026-10-16 : repris comme ticket de préparation des Trade proposals, dans `.scratch/trade-proposals/issues/01-une-regle-pour-la-doubles-list.md`. Le suivi se fait là-bas.

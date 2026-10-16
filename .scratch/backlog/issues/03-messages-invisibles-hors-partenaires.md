@@ -18,3 +18,7 @@ Quand A écrit à B sans que A soit dans la liste de B, le message est bien enre
 - [ ] Le nom du correspondant s'affiche dans tous les cas. Le rappel des cartes à échanger n'apparaît que s'il y en a.
 
 Voir aussi : 04, 14.
+
+## Comments
+
+- 2026-10-16 (grilling du 26, `.scratch/trade-proposals/spec.md`) : le 26 rend les Trade partners symétriques (Trade match non vide dans un sens ou dans l'autre), ce qui règle le premier cas. Le second reste : une conversation disparaît quand les deux Users ne sont plus partenaires, et le lien d'une Trade proposal vers la conversation y mène alors à une page vide.
