@@ -89,13 +89,13 @@ describe('TradeProposalService pending received count', () => {
   });
 
   it('should not count a received proposal the server reports in any other state, expired included', () => {
-    // Expired arrives with ticket 06; the counter relies on the state the server reports.
-    const otherStates = [
+    // The counter relies on the state the server reports, Expired included.
+    const otherStates: TradeProposalState[] = [
       'Accepted',
       'Declined',
       'Withdrawn',
       'Expired',
-    ] as TradeProposalState[];
+    ];
 
     service.refreshPendingReceivedCount();
     answerGet(

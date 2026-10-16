@@ -1,6 +1,13 @@
 import { Card } from '../../common/models/card';
 
-export type TradeProposalState = 'Pending' | 'Accepted' | 'Declined' | 'Withdrawn';
+// Only the server decides that a proposal has Expired (7 days after sentAt without an answer);
+// the client never works it out from sentAt, so the page and the menu counter agree with the actions.
+export type TradeProposalState =
+  | 'Pending'
+  | 'Accepted'
+  | 'Declined'
+  | 'Withdrawn'
+  | 'Expired';
 
 // TradeProposalResponse on the server, seen from the connected user: isSent tells whether they
 // made the proposal, givenCards are the cards they give and receivedCards the cards they receive.

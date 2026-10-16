@@ -126,10 +126,20 @@ public class TradeProposalHandler(
             : new(TradeProposalActionOutcome.MissingCards) { MissingCards = missingCards };
     }
 
+    // How long a proposal waits for an answer, the same for every proposal and defined only here.
+    private static readonly TimeSpan ExpiryDelay = TimeSpan.FromDays(7);
+
     // The one rule for what state a proposal is in now. The Proposals page and the actions both
     // go through it, so a proposal the page shows as pending is one that can be acted on.
-    private TradeProposalState CurrentState(TradeProposal proposal) => proposal.State;
+    // A proposal still pending is Expired from the instant SentAt + ExpiryDelay on, that instant
+    // included. Expired is worked out at each read and never stored: SentAt never changes, so
+    // checking it before writing is enough, and the stored state stays Pending.
+    private TradeProposalState CurrentState(TradeProposal proposal) =>
+        proposal.State == TradeProposalState.Pending && _dateTimeService.Now >= proposal.SentAt + ExpiryDelay
+            ? TradeProposalState.Expired
+            : proposal.State;
 
+    // Pending and not expired: the proposal can still be accepted, declined or withdrawn.
     private bool IsPending(TradeProposal proposal) => CurrentState(proposal) == TradeProposalState.Pending;
 
     private static string UserIdOf(TradeProposal proposal, TradeProposalSide side) =>

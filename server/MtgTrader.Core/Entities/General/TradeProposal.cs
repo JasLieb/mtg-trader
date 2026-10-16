@@ -25,4 +25,7 @@ public enum TradeProposalState
     Accepted,
     Declined,
     Withdrawn,
+    // Never stored: a proposal still Pending in the database is reported Expired once its delay has
+    // passed, which TradeProposalHandler.CurrentState works out from SentAt each time it is read.
+    Expired,
 }
