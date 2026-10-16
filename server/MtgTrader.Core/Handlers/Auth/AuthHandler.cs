@@ -1,5 +1,6 @@
 using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Entities.Business.Responses;
+using MtgTrader.Core.Entities.General;
 using MtgTrader.Core.Repositories;
 using MtgTrader.Core.Services;
 
@@ -40,7 +41,7 @@ public class AuthHandler(
         var userId = Guid.NewGuid().ToString();
         var user = _userRepository.CreateWithDoubles(
             new(userId, email, _passwordHasher.Hash(authRequest.Password)),
-            new($"{userId}_doubles", "doubles", userId)
+            new(DoublesList.IdFor(userId), "doubles", userId)
         );
         return user is null ? null : new AuthResponse(_tokenService.CreateToken(user));
     }

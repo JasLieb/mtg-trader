@@ -14,6 +14,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CardService } from '../../../common/services/card/card.service';
 import { Card } from '../../../common/models/card';
 import { UserWantlists } from '../../models/user-wantlists';
+import { splitDoublesList } from '../../models/doubles-list';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import {
   PopulatedWantlistResponse,
@@ -123,9 +124,6 @@ export class WantlistService {
       }
     );
 
-    return {
-      wantlists: parsedWl.filter((wl) => !wl.id.includes('double')),
-      doubles: parsedWl.find((wl) => wl.id.includes('double')),
-    } as UserWantlists;
+    return splitDoublesList(parsedWl);
   }
 }

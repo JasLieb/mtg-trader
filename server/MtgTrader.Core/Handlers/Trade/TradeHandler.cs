@@ -1,4 +1,5 @@
 using MtgTrader.Core.Entities.Business.Responses;
+using MtgTrader.Core.Entities.General;
 using MtgTrader.Core.Repositories;
 
 namespace MtgTrader.Core.Handlers.Trade;
@@ -16,9 +17,9 @@ public class TradeHandler(
         var allWantlists = _wantlistRepository
             .GetUserWantlists(userId);
         var doubles = allWantlists
-            .FirstOrDefault(IsDoubles);
+            .FirstOrDefault(DoublesList.IsDoublesList);
         var wantedWantlists = allWantlists
-            .Where(wl => !IsDoubles(wl));
+            .Where(wl => !DoublesList.IsDoublesList(wl));
 
         var tradeableWantlists = _wantlistRepository.FindTradeableDoubles(userId, wantedWantlists);
         return new([
@@ -42,7 +43,7 @@ public class TradeHandler(
             .ToDictionary(user => user.Id);
         // What each trader wants is in their wantlists, not in their own doubles list.
         var wantedByTraders = _wantlistRepository.GetUsersWantlists(traderIds)
-            .Where(wl => !IsDoubles(wl))
+            .Where(wl => !DoublesList.IsDoublesList(wl))
             .GroupBy(wl => wl.OwnerId)
             .ToDictionary(
                 group => group.Key,
@@ -70,7 +71,4 @@ public class TradeHandler(
             }
         }
     }
-
-    private static bool IsDoubles(Entities.General.Wantlist wantlist) =>
-        wantlist.Id.EndsWith("_doubles");
 }

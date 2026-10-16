@@ -12,4 +12,4 @@ paths:
 
 The `_doubles` id suffix is the only thing that marks a user's doubles list. Any code that lists, deletes or matches wantlists therefore has to decide whether the doubles list is included.
 
-The existing checks differ. On the server, `WantlistHandler`, `TradeHandler` and `WantlistRepository.FindTradeableDoubles` use the suffix (`EndsWith("_doubles")`), while the client's `WantlistService` uses `includes('double')`. They agree today only because every other wantlist id is a GUID. New code should test for the `_doubles` suffix rather than add another variant.
+Each side defines that format once: `DoublesList` in `MtgTrader.Core/Entities/General` on the server (`IdFor`, `IsDoublesListId`, `IsDoublesList`, `IdSuffix`), and `features/collection/models/doubles-list.ts` on the client (`doublesListIdFor`, `isDoublesListId`, `splitDoublesList`). New code goes through them instead of spelling out `_doubles`. The one exception is an EF Core query, which can't translate a method call: it tests `EndsWith(DoublesList.IdSuffix)` itself, as `WantlistRepository.FindTradeableDoubles` does.

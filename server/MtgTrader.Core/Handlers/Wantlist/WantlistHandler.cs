@@ -1,5 +1,6 @@
 using MtgTrader.Core.Entities.Business.Requests;
 using MtgTrader.Core.Entities.Business.Responses;
+using MtgTrader.Core.Entities.General;
 using MtgTrader.Core.Repositories;
 
 namespace MtgTrader.Core.Handlers.Wantlist;
@@ -55,7 +56,7 @@ public class WantlistHandler(
 
     public bool DeleteWantlist(string wantlistId, string userId)
     {
-        if (IsDoubleWantlist(wantlistId)) return false;
+        if (DoublesList.IsDoublesListId(wantlistId)) return false;
         var wantlist = _wantlistRepository.GetById(wantlistId);
         if (wantlist is null || wantlist.OwnerId != userId) return false;
 
@@ -66,10 +67,5 @@ public class WantlistHandler(
 
         _wantlistRepository.Delete(wantlist);
         return true;
-    }
-
-    private static bool IsDoubleWantlist(string wantlistId)
-    {
-        return wantlistId.EndsWith("_doubles");
     }
 }

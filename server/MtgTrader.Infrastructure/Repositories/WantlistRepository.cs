@@ -34,10 +34,11 @@ public class WantlistRepository(ApplicationContext dbContext)
             .Select(card => card.CardId)
             .Distinct()
             .ToList();
+        // DoublesList.IsDoublesListId can't be translated to SQL, so the query tests the suffix itself.
         return [
             .. DbSet.Where(wl =>
                 wl.OwnerId != ownerId
-                && wl.Id.EndsWith("_doubles")
+                && wl.Id.EndsWith(DoublesList.IdSuffix)
                 && wl.Cards.Any(card => wantedCardIds.Contains(card.CardId))
             )
             .Include(wl => wl.Cards)

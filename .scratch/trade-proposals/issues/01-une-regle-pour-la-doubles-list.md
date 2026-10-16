@@ -6,6 +6,10 @@
 
 **Status:** ready-for-agent
 
-- [ ] Côté serveur comme côté client, la règle est définie une seule fois, et tout le code qui distingue la Doubles list des Wantlists l'utilise.
-- [ ] Des tests couvrent un identifiant qui contient « double » sans se terminer par `_doubles` : il désigne une Wantlist.
-- [ ] Le comportement de l'application ne change pas : les tests existants passent sans que leurs attentes soient modifiées.
+- [x] Côté serveur comme côté client, la règle est définie une seule fois, et tout le code qui distingue la Doubles list des Wantlists l'utilise.
+- [x] Des tests couvrent un identifiant qui contient « double » sans se terminer par `_doubles` : il désigne une Wantlist.
+- [x] Le comportement de l'application ne change pas : les tests existants passent sans que leurs attentes soient modifiées.
+
+## Comments
+
+- 2026-10-16 : implémenté, non commité. Serveur : `DoublesList` (Core) utilisé par `AuthHandler`, `WantlistHandler`, `TradeHandler` et `WantlistRepository`, testé par `DoublesListTests`. Client : `doubles-list.ts` utilisé par `WantlistService`, testé par `doubles-list.spec.ts`. Serveur : 89 tests verts ; client : 139 tests verts ; `dotnet format` et ESLint propres sur les fichiers modifiés.
