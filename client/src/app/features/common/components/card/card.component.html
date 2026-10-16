@@ -14,7 +14,7 @@
   />
 
   @if(card.price) {
-  <div class="app-card-price">({{ card.price }}€)</div>
+  <div class="app-card-price">({{ card.price.toFixed(2) }}€)</div>
   }
 
   <ng-content />

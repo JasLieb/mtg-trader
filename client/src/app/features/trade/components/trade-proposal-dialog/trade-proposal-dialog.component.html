@@ -31,6 +31,14 @@
   <p class="trade-proposal-error">The trade proposal could not be sent.</p>
   }
 </mat-dialog-content>
+<div class="trade-proposal-totals">
+  <p class="trade-proposal-received-total">
+    You receive {{ checkedReceivedCards() | euroTotal }}
+  </p>
+  <p class="trade-proposal-given-total">
+    You give {{ checkedGivenCards() | euroTotal }}
+  </p>
+</div>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Cancel</button>
   <button

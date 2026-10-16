@@ -16,11 +16,17 @@
         class="proposal-given"
         [cards]="proposal.givenCards"
       ></app-trade-card-list>
+      <div class="proposal-given-total">
+        Total : {{ proposal.givenCards | euroTotal }}
+      </div>
       <div>You receive :</div>
       <app-trade-card-list
         class="proposal-received"
         [cards]="proposal.receivedCards"
       ></app-trade-card-list>
+      <div class="proposal-received-total">
+        Total : {{ proposal.receivedCards | euroTotal }}
+      </div>
     </mat-card-content>
   </mat-card>
   } @empty {

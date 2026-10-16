@@ -3,7 +3,9 @@ export interface Card {
   name: string;
   uri: string;
   image_uri: string;
-  price: number;
+  // Euros at Scryfall's price of the moment (CardService decides which one), or null when
+  // Scryfall has none. Never stored nor sent to the server.
+  price: number | null;
   set: string;
   set_uri: string;
   sets: CardSet[];
@@ -20,7 +22,7 @@ export function makeCard(
   name = '',
   uri = '',
   image_uri = '',
-  price = 0,
+  price: number | null = 0,
   set = '',
   set_uri = '',
   sets: CardSet[] = []

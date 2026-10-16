@@ -75,7 +75,7 @@ export class CardService {
       raw.name,
       raw.scryfall_uri,
       image,
-      raw.prices.eur,
+      eurPrice(raw),
       raw.set,
       `https://svgs.scryfall.io/sets/${raw.set}.svg`,
       []
@@ -88,4 +88,18 @@ export class CardService {
       sets,
     };
   }
+}
+
+// The one place that picks which Scryfall price a Card is worth. Cards are tracked by printing
+// without a foil flag (ADR 0001), so a Card is valued at its non-foil price: the finish most
+// copies are owned in, and the lower one, so a trade is not balanced on a foil premium nobody
+// claimed. A printing made only in foil has no non-foil price, and its foil price applies.
+// A missing price stays null rather than becoming 0.
+function eurPrice(raw: ScryfallCard): number | null {
+  const foilOnly =
+    !!raw.finishes?.includes('foil') && !raw.finishes.includes('nonfoil');
+  const price = foilOnly ? raw.prices.eur_foil : raw.prices.eur;
+  if (price == null) return null;
+  const euros = Number(price);
+  return Number.isFinite(euros) ? euros : null;
 }

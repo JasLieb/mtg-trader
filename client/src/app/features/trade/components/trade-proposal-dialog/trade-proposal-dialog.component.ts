@@ -9,13 +9,14 @@ import {
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
 import { Card } from '../../../common/models/card';
 import { UserTrader } from '../../models/user-trader';
+import { EuroTotalPipe } from '../../pipes/euro-total.pipe';
 import { TradeProposalService } from '../../services/trade-proposal/trade-proposal.service';
 
 // Composes a Trade proposal to a Trade partner, starting from the whole Trade match.
 // The dialog closes with true once the proposal is sent.
 @Component({
   selector: 'app-trade-proposal-dialog',
-  imports: [MatButtonModule, MatCheckboxModule, MatDialogModule],
+  imports: [EuroTotalPipe, MatButtonModule, MatCheckboxModule, MatDialogModule],
   templateUrl: './trade-proposal-dialog.component.html',
   styleUrl: './trade-proposal-dialog.component.scss',
 })
@@ -37,11 +38,27 @@ export class TradeProposalDialogComponent {
     () => this.receivedCardIds().size > 0 && this.givenCardIds().size > 0
   );
 
+  // Every card the form has offered, by id. Toggling a card records it, so the totals price
+  // whatever is checked, including cards from outside the Trade match.
+  private readonly offeredCards = new Map(
+    [...this.partner.doubles, ...this.partner.wanted].map(
+      (card) => [card.id, card] as const
+    )
+  );
+  readonly checkedReceivedCards = computed(() =>
+    this.offered(this.receivedCardIds())
+  );
+  readonly checkedGivenCards = computed(() =>
+    this.offered(this.givenCardIds())
+  );
+
   toggleReceived(card: Card) {
+    this.offeredCards.set(card.id, card);
     this.receivedCardIds.update((ids) => toggle(ids, card.id));
   }
 
   toggleGiven(card: Card) {
+    this.offeredCards.set(card.id, card);
     this.givenCardIds.update((ids) => toggle(ids, card.id));
   }
 
@@ -61,6 +78,10 @@ export class TradeProposalDialogComponent {
         this.sendFailed.set(true);
       }
     );
+  }
+
+  private offered(ids: Set<string>): Card[] {
+    return [...ids].flatMap((id) => this.offeredCards.get(id) ?? []);
   }
 }
 
