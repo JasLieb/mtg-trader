@@ -16,7 +16,7 @@ MtgTrader lets Magic: The Gathering players keep wantlists and a list of tradeab
 
 ### Hooks (`.claude/settings.json`)
 - `protect-files.js` refuses Claude's edits to the files listed under "Leave alone" below. `permissions.deny` in the same settings file blocks the same paths, so a change to that list belongs in all three places.
-- `quality-gate.js` records the uncommitted files when a prompt is sent. When Claude finishes, it builds and tests each side whose files changed during the turn and lints only those files. A failure sends Claude back to fix it, at most three times, so a turn that changed code can take up to a minute longer to end.
+- `quality-gate.js` records HEAD and the uncommitted files when a prompt is sent. When Claude finishes, it builds and tests each side whose files changed during the turn, committed or not, and lints only those files. A failure sends Claude back to fix it, at most three times, so a turn that changed code can take up to a minute longer to end.
 
 ## Domain
 
@@ -30,7 +30,7 @@ Ask first:
 - Adding a NuGet or npm package.
 - Changing anything security-related: JWT validation, the CORS policy, or the `api/` match in the client's auth interceptor.
 - Changing deployment files: the Dockerfiles (including the `.render` variants), `client/nginx/`, `docker-compose.yml` and `environment.render.ts`.
-- Committing or pushing.
+- Committing or pushing. Once a ticket is implemented, suggest `/mtg-commit <feature>/<NN>`: the user typing it is the go-ahead for that ticket's two commits.
 
 Leave alone:
 - Existing migrations in `server/MtgTrader.Infrastructure/Migrations/`. They're generated, so a schema change gets a new migration instead.
@@ -48,7 +48,7 @@ Issues and specs live as local markdown files under `.scratch/<feature>/`. See `
 
 ### Triage labels
 
-The five default triage roles, each label named after its role (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+The five default triage roles, each label named after its role (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`), plus `done` for a ticket committed by `/mtg-commit`. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 

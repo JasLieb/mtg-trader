@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Quality gate, run in two modes:
-//   snapshot  (UserPromptSubmit) records the hash of every uncommitted file in server/ and client/.
-//   check     (Stop) finds the files that changed since that snapshot, then builds, lints and tests
-//             each side that changed. A failure blocks the stop and hands the errors back to Claude.
+//   snapshot  (UserPromptSubmit) records HEAD and the hash of every uncommitted file in server/ and client/.
+//   check     (Stop) finds the files that changed since that snapshot, committed or not, then builds,
+//             lints and tests each side that changed. A failure blocks the stop and hands the errors back to Claude.
 // Only files changed during the turn are linted, because existing code doesn't pass the linters yet.
 
 const { spawn, execFileSync } = require('child_process');
@@ -56,9 +56,41 @@ function dirtyFiles(projectDir) {
   return files;
 }
 
-function changedSince(snapshot, current) {
-  const paths = new Set([...Object.keys(snapshot), ...Object.keys(current)]);
-  return [...paths].filter((file) => snapshot[file] !== current[file] && !file.endsWith('.md'));
+function headCommit(projectDir) {
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], { cwd: projectDir, encoding: 'utf8' }).trim();
+  } catch {
+    return null; // no commit yet
+  }
+}
+
+// Files in server/ and client/ that the commits made since `head` added, changed or deleted.
+function committedSince(projectDir, head) {
+  const current = headCommit(projectDir);
+  if (!head || !current || head === current) return [];
+  try {
+    const out = execFileSync(
+      'git',
+      ['diff', '--name-only', '--no-renames', '-z', head, current, '--', 'server', 'client'],
+      { cwd: projectDir, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 },
+    );
+    return out.split('\0').filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+// A file changed during the turn when its content differs from the snapshot. A file that was uncommitted at the
+// snapshot and has since been committed as it was doesn't count, so /mtg-commit doesn't rerun the gate; a file
+// edited and committed within the turn does, so committing can't skip it.
+function changedSince(state, current, projectDir) {
+  const before = state.files;
+  const paths = new Set([...Object.keys(before), ...Object.keys(current), ...committedSince(projectDir, state.head)]);
+  return [...paths].filter((file) => {
+    if (file.endsWith('.md')) return false;
+    const now = file in current ? current[file] : hashFile(path.join(projectDir, file));
+    return before[file] !== now;
+  });
 }
 
 function statePath(sessionId) {
@@ -188,13 +220,13 @@ function respond(payload) {
 }
 
 async function snapshot(input, projectDir) {
-  saveState(input.session_id, { files: dirtyFiles(projectDir), blocks: 0 });
+  saveState(input.session_id, { files: dirtyFiles(projectDir), head: headCommit(projectDir), blocks: 0 });
   respond();
 }
 
 async function check(input, projectDir) {
   const state = loadState(input.session_id) || { files: {}, blocks: 0 };
-  const changed = changedSince(state.files, dirtyFiles(projectDir));
+  const changed = changedSince(state, dirtyFiles(projectDir), projectDir);
   const serverChanged = changed.some((file) => file.startsWith('server/'));
   const clientChanged = changed.some((file) => file.startsWith('client/'));
   if (!serverChanged && !clientChanged) respond();
