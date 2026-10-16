@@ -8,4 +8,7 @@ public interface ITradeProposalHandler
     TradeProposalsResponse GetProposals(string userId);
     bool SendProposal(string proposerId, SendTradeProposalRequest request);
     PartnerDoublesResponse? GetPartnerDoubles(string userId, string partnerId);
+    TradeProposalActionResult AcceptProposal(string userId, string proposalId);
+    TradeProposalActionResult DeclineProposal(string userId, string proposalId);
+    TradeProposalActionResult WithdrawProposal(string userId, string proposalId);
 }

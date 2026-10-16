@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
@@ -9,6 +9,7 @@ import {
   of,
   switchMap,
   tap,
+  throwError,
 } from 'rxjs';
 import { makeApiUrl } from '../../../../core/utils/makeUrl';
 import { subscribeOnce } from '../../../../core/utils/subscribeExtensions';
@@ -21,6 +22,11 @@ import {
   TradeProposalMin,
   TradeProposalsResponse,
 } from '../../models/trade-proposal';
+import {
+  MissingCardsResponse,
+  TradeProposalAction,
+  TradeProposalRefusal,
+} from '../../models/trade-proposal-action';
 
 @Injectable({
   providedIn: 'root',
@@ -63,6 +69,37 @@ export class TradeProposalService {
   send(request: SendTradeProposalRequest): Observable<TradeProposal[]> {
     return this.publishProposals(
       this.http.post<TradeProposalsResponse>(this.apiTradeProposalsUrl, request)
+    );
+  }
+
+  // Like send, each action answers with all of the user's proposals. A refused action fails
+  // with a TradeProposalRefusal instead of an HTTP error.
+  accept(proposalId: string): Observable<TradeProposal[]> {
+    return this.act(proposalId, 'accept');
+  }
+
+  decline(proposalId: string): Observable<TradeProposal[]> {
+    return this.act(proposalId, 'decline');
+  }
+
+  withdraw(proposalId: string): Observable<TradeProposal[]> {
+    return this.act(proposalId, 'withdraw');
+  }
+
+  private act(
+    proposalId: string,
+    action: TradeProposalAction
+  ): Observable<TradeProposal[]> {
+    const url = `${this.apiTradeProposalsUrl}/${encodeURIComponent(proposalId)}/${action}`;
+    return this.publishProposals(
+      this.http.post<TradeProposalsResponse>(url, null).pipe(
+        catchError((error: unknown) => {
+          const refusal = toRefusal(error);
+          // The proposal changed since it was loaded: reload to show what became of it.
+          if (refusal.reason === 'not-pending') this.refresh();
+          return throwError(() => refusal);
+        })
+      )
     );
   }
 
@@ -110,5 +147,21 @@ export class TradeProposalService {
     return forkJoin(cardIds.map((id) => this.cardService.fetch(id))).pipe(
       map((cards) => cards.filter((card): card is Card => !!card))
     );
+  }
+}
+
+function toRefusal(error: unknown): TradeProposalRefusal {
+  if (!(error instanceof HttpErrorResponse)) return { reason: 'failed' };
+  switch (error.status) {
+    case 422:
+      return {
+        reason: 'missing-cards',
+        missingCards:
+          (error.error as MissingCardsResponse | null)?.missingCards ?? [],
+      };
+    case 409:
+      return { reason: 'not-pending' };
+    default:
+      return { reason: 'failed' };
   }
 }

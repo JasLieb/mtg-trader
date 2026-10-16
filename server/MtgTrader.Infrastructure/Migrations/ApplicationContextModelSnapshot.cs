@@ -64,10 +64,14 @@ namespace MtgTrader.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("RespondedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("State")
+                        .IsConcurrencyToken()
                         .IsRequired()
                         .HasColumnType("text");
 

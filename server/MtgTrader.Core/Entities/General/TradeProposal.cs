@@ -13,6 +13,8 @@ public class TradeProposal(
     public string RecipientId { get; set; } = recipientId;
     public DateTime SentAt { get; set; } = sentAt;
     public TradeProposalState State { get; set; } = state;
+    // When the proposal stopped being pending: accepted, declined or withdrawn. Null while pending.
+    public DateTime? RespondedAt { get; set; }
 
     public ICollection<TradeProposalCard> Cards { get; set; } = [];
 }

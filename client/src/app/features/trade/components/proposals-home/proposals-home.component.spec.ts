@@ -80,7 +80,7 @@ describe('ProposalsHomeComponent', () => {
   it('should keep the order the proposals come in, pending first', () => {
     proposals.next([
       sentToBob,
-      { ...sentToBob, id: 'p2', otherUserName: 'carol@mail', state: 'Accepted' },
+      { ...sentToBob, id: 'p2', otherUserName: 'carol@mail', state: 'Declined' },
     ]);
     fixture.detectChanges();
 

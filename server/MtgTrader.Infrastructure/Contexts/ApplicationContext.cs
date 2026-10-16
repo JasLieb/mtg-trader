@@ -43,6 +43,11 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options) : 
         modelBuilder.Entity<TradeProposal>()
             .Property(e => e.State)
             .HasConversion<string>();
+        // Each update is written only if State still holds the value that was read, so of two
+        // concurrent actions on a pending proposal only the first one succeeds.
+        modelBuilder.Entity<TradeProposal>()
+            .Property(e => e.State)
+            .IsConcurrencyToken();
         // Restrict, not cascade: what deleting an account does to its trades is still to decide (backlog ticket 21).
         modelBuilder.Entity<TradeProposal>()
             .HasOne<User>()

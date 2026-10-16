@@ -30,7 +30,7 @@ public class TradeProposalHandler(
 
         return new(
             proposals
-                .OrderByDescending(proposal => proposal.State == TradeProposalState.Pending)
+                .OrderByDescending(IsPending)
                 .ThenByDescending(proposal => proposal.SentAt)
                 .Select(proposal => ToResponse(proposal, userId, usernames))
         );
@@ -78,22 +78,85 @@ public class TradeProposalHandler(
         return new(doublesCards.Select(card => card.CardId).Distinct());
     }
 
+    // No Trade partner check: being Trade partners is only required to send.
+    public TradeProposalActionResult AcceptProposal(string userId, string proposalId) =>
+        Act(userId, proposalId, TradeProposalSide.Recipient, TradeProposalState.Accepted, RefuseMissingCards);
+
+    public TradeProposalActionResult DeclineProposal(string userId, string proposalId) =>
+        Act(userId, proposalId, TradeProposalSide.Recipient, TradeProposalState.Declined);
+
+    public TradeProposalActionResult WithdrawProposal(string userId, string proposalId) =>
+        Act(userId, proposalId, TradeProposalSide.Proposer, TradeProposalState.Withdrawn);
+
+    // Moves a pending proposal to its final state, when the user is the side allowed to.
+    private TradeProposalActionResult Act(
+        string userId,
+        string proposalId,
+        TradeProposalSide actingSide,
+        TradeProposalState outcome,
+        Func<TradeProposal, TradeProposalActionResult?>? refuseBeforeWriting = null
+    )
+    {
+        var proposal = _tradeProposalRepository.FindProposal(proposalId);
+        if (proposal is null || (proposal.ProposerId != userId && proposal.RecipientId != userId))
+            return new(TradeProposalActionOutcome.NotFound);
+        if (UserIdOf(proposal, actingSide) != userId)
+            return new(TradeProposalActionOutcome.NotAllowed);
+        if (!IsPending(proposal))
+            return new(TradeProposalActionOutcome.NotPending);
+        if (refuseBeforeWriting?.Invoke(proposal) is { } refusal)
+            return refusal;
+
+        // The repository writes the outcome only if the proposal is still pending at that moment.
+        return _tradeProposalRepository.TryRespond(proposal, outcome, _dateTimeService.Now)
+            ? new(TradeProposalActionOutcome.Done)
+            : new(TradeProposalActionOutcome.NotPending);
+    }
+
+    // Each Card must still be in the Doubles list of the User who gives it, on both sides.
+    private TradeProposalActionResult? RefuseMissingCards(TradeProposal proposal)
+    {
+        List<string> missingCards =
+        [
+            .. MissingFromDoublesList(proposal.ProposerId, CardsGivenBy(proposal, TradeProposalSide.Proposer)),
+            .. MissingFromDoublesList(proposal.RecipientId, CardsGivenBy(proposal, TradeProposalSide.Recipient)),
+        ];
+        return missingCards.Count == 0
+            ? null
+            : new(TradeProposalActionOutcome.MissingCards) { MissingCards = missingCards };
+    }
+
+    // The one rule for what state a proposal is in now. The Proposals page and the actions both
+    // go through it, so a proposal the page shows as pending is one that can be acted on.
+    private TradeProposalState CurrentState(TradeProposal proposal) => proposal.State;
+
+    private bool IsPending(TradeProposal proposal) => CurrentState(proposal) == TradeProposalState.Pending;
+
+    private static string UserIdOf(TradeProposal proposal, TradeProposalSide side) =>
+        side == TradeProposalSide.Proposer ? proposal.ProposerId : proposal.RecipientId;
+
+    private static IEnumerable<string> CardsGivenBy(TradeProposal proposal, TradeProposalSide side) =>
+        proposal.Cards.Where(card => card.GivenBy == side).Select(card => card.CardId);
+
     // Trade partners are the users the Trade page lists, so the rule is checked through it.
     private bool AreTradePartners(string userId, string otherUserId) =>
         _tradeHandler.FindTrades(userId).Users.Any(user => user.Id == otherUserId);
 
-    private bool IsInDoublesList(string userId, IEnumerable<string> cardIds)
+    private bool IsInDoublesList(string userId, IEnumerable<string> cardIds) =>
+        !MissingFromDoublesList(userId, cardIds).Any();
+
+    private IEnumerable<string> MissingFromDoublesList(string userId, IEnumerable<string> cardIds)
     {
         var doublesCardIds = _wantlistRepository.GetDoublesList(userId)?.Cards
             .Select(card => card.CardId)
             .ToHashSet() ?? [];
-        return cardIds.All(doublesCardIds.Contains);
+        return cardIds.Where(cardId => !doublesCardIds.Contains(cardId));
     }
 
     private static string OtherUserId(TradeProposal proposal, string userId) =>
         proposal.ProposerId == userId ? proposal.RecipientId : proposal.ProposerId;
 
-    private static TradeProposalResponse ToResponse(
+    private TradeProposalResponse ToResponse(
         TradeProposal proposal,
         string userId,
         Dictionary<string, string> usernames
@@ -110,7 +173,7 @@ public class TradeProposalHandler(
             usernames.GetValueOrDefault(otherUserId) ?? string.Empty,
             proposal.Cards.Where(card => card.GivenBy == mySide).Select(card => card.CardId),
             proposal.Cards.Where(card => card.GivenBy != mySide).Select(card => card.CardId),
-            proposal.State.ToString(),
+            CurrentState(proposal).ToString(),
             proposal.SentAt
         );
     }
