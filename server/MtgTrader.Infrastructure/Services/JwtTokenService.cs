@@ -15,14 +15,14 @@ public class JwtTokenService(IConfiguration configuration) : ITokenService
 
     public string? CheckToken(string token)
     {
-        var key = Encoding.UTF8.GetBytes(GetConfiguration(Config.JwtConstants.Secret));
+        var key = Encoding.UTF8.GetBytes(GetConfiguration(Config.JwtConstants.Secret, nameof(Config.JwtConstants.Secret)));
         var signingKeys = new SymmetricSecurityKey(key);
         var validationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = GetConfiguration(Config.JwtConstants.Issuer),
+            ValidIssuer = GetConfiguration(Config.JwtConstants.Issuer, nameof(Config.JwtConstants.Issuer)),
             ValidateAudience = true,
-            ValidAudience = GetConfiguration(Config.JwtConstants.Audience),
+            ValidAudience = GetConfiguration(Config.JwtConstants.Audience, nameof(Config.JwtConstants.Audience)),
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = signingKeys,
             ValidateLifetime = true
@@ -48,7 +48,7 @@ public class JwtTokenService(IConfiguration configuration) : ITokenService
     public string CreateToken(User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(GetConfiguration(Config.JwtConstants.Secret));
+        var key = Encoding.UTF8.GetBytes(GetConfiguration(Config.JwtConstants.Secret, nameof(Config.JwtConstants.Secret)));
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(
@@ -61,19 +61,19 @@ public class JwtTokenService(IConfiguration configuration) : ITokenService
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature
             ),
-            Issuer = GetConfiguration(Config.JwtConstants.Issuer),
-            Audience = GetConfiguration(Config.JwtConstants.Audience)
+            Issuer = GetConfiguration(Config.JwtConstants.Issuer, nameof(Config.JwtConstants.Issuer)),
+            Audience = GetConfiguration(Config.JwtConstants.Audience, nameof(Config.JwtConstants.Audience))
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
 
-    private string GetConfiguration(string key)
+    private string GetConfiguration(string key, string parameterName)
     {
         var value = _configuration[key];
         if (string.IsNullOrEmpty(value))
-            throw new ArgumentNullException(nameof(key));
+            throw new ArgumentNullException(parameterName, $"Configuration value for '{key}' is missing.");
         return value;
     }
 
